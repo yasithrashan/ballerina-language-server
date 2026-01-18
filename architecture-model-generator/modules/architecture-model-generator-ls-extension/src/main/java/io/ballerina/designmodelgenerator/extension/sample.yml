@@ -1,0 +1,88 @@
+# Project CodeMap Structure
+
+---
+
+File: <filename> : <absolute_file_path>
+
+        SERVICE(ENTRY_POINT):
+          - basePath:
+          - port:
+          - lineRange:
+
+              - RESOURCE_FUNCTIONS
+                  - name:
+                  - modifiers:
+                  - lineRange:
+                  - parameters:
+                  - returns:
+
+              - NON-RESOURCE_FUNCTIONS
+                  - name:
+                  - modifiers:
+                  - lineRange:
+                  - parameters:
+                  - returns:
+
+
+        FUNCTION:
+          - name:
+          - modifiers:
+          - lineRange:
+          - parameters:
+          - returns:
+
+        TYPE:
+          - name:
+          - lineRange:
+          - fields:
+
+        VARIABLE:
+          - name:
+          - type:
+          - lineRange:
+
+        DATA_MAPPER:
+          - name:
+          - modifiers:
+          - lineRange:
+          - parameters:
+          - returns:
+
+        CONFIGURABLE:
+          - name:
+          - line:
+          - type:
+
+        LISTENER:
+          - name:
+          - line:
+          - type:
+          - port:
+          - config:
+          - modifiers:
+
+        CONNECTION:
+          - name:
+          - line:
+          - type:
+          - endpoint:
+          - config:
+          - modifiers:
+
+        CONSTANT:
+          - name:
+          - type:
+          - lineRange:
+
+        AUTOMATION:
+          - name:
+          - lineRange:
+          - modifiers:
+
+---
+
+File: <filename> : <absolute_file_path>
+
+  [Repeat artifact structure as needed]
+
+---
