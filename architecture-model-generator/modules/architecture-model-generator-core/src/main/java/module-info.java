@@ -42,4 +42,5 @@ module io.ballerina.architecturemodelgenerator {
     exports io.ballerina.projectservice.core.baltool;
     exports io.ballerina.copilotagent.core;
     exports io.ballerina.copilotagent.core.models;
+    exports io.ballerina.artifactsgenerator.codemap;
 }
