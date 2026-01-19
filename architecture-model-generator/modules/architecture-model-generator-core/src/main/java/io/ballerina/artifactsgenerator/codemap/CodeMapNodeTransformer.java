@@ -34,6 +34,8 @@ import io.ballerina.compiler.syntax.tree.ExpressionFunctionBodyNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
+import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
+import io.ballerina.compiler.syntax.tree.ImplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.ListenerDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
 import io.ballerina.compiler.syntax.tree.Node;
@@ -148,6 +150,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
         if (firstExpression != null) {
             extractPortFromExpression(firstExpression).ifPresent(serviceBuilder::port);
+            extractListenerType(firstExpression).ifPresent(listenerType ->
+                    serviceBuilder.addProperty("listenerType", listenerType));
         }
 
         serviceBuilder.type("SERVICE");
@@ -359,6 +363,26 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
             return Optional.of(expressionText.replaceAll("\\D", ""));
         }
         return Optional.empty();
+    }
+
+    private Optional<String> extractListenerType(ExpressionNode expression) {
+        if (expression instanceof ExplicitNewExpressionNode explicitNewExpr) {
+            return semanticModel.symbol(explicitNewExpr.typeDescriptor())
+                    .filter(symbol -> symbol instanceof TypeSymbol)
+                    .map(symbol -> io.ballerina.designmodelgenerator.core.CommonUtils
+                            .getTypeSignature((TypeSymbol) symbol, moduleInfo));
+        }
+
+        if (expression instanceof ImplicitNewExpressionNode) {
+            return semanticModel.typeOf(expression)
+                    .map(typeSymbol -> io.ballerina.designmodelgenerator.core.CommonUtils
+                            .getTypeSignature(typeSymbol, moduleInfo));
+        }
+        return semanticModel.symbol(expression)
+                .filter(symbol -> symbol instanceof VariableSymbol)
+                .map(symbol -> ((VariableSymbol) symbol).typeDescriptor())
+                .map(typeSymbol -> io.ballerina.designmodelgenerator.core.CommonUtils
+                        .getTypeSignature(typeSymbol, moduleInfo));
     }
 
     private Optional<ClassSymbol> getConnection(Node node) {

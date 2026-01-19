@@ -1,5 +1,337 @@
 {
   "description": "Simple project with http_service",
   "source": "http_service",
-  "output": {}
+  "output": {
+    "http_service.bal": {
+      "fileName": "http_service.bal",
+      "absoluteFilePath": "http_service.bal",
+      "artifacts": [
+        {
+          "name": "/root/path\\-id",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "http_service.bal",
+            "startLine": {
+              "line": 4,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 32,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": "/root/path\\-id",
+            "port": "9090",
+            "listenerType": "http:Listener"
+          },
+          "children": [
+            {
+              "name": "eting",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 7,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 9,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get\\#gre",
+                "parameters": [],
+                "returns": "string"
+              },
+              "children": []
+            },
+            {
+              "name": "gre\\#eting",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 11,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 13,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "string"
+              },
+              "children": []
+            },
+            {
+              "name": "greeting",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 16,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 18,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "post",
+                "parameters": [
+                  "name: string"
+                ],
+                "returns": "string"
+              },
+              "children": []
+            },
+            {
+              "name": "echo/[string message]",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 21,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 23,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "string"
+              },
+              "children": []
+            },
+            {
+              "name": "data",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 26,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 31,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "post",
+                "parameters": [
+                  "payload: json"
+                ],
+                "returns": "json"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "securedEP",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "http_service.bal",
+            "startLine": {
+              "line": 34,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 41,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "ballerina/http:2.15.4:Listener",
+            "line": 34
+          },
+          "children": []
+        },
+        {
+          "name": "refListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "http_service.bal",
+            "startLine": {
+              "line": 43,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 43,
+              "offset": 47
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "ballerina/http:2.15.4:Listener",
+            "line": 43
+          },
+          "children": []
+        },
+        {
+          "name": "httpClient",
+          "type": "CONNECTION",
+          "lineRange": {
+            "fileName": "http_service.bal",
+            "startLine": {
+              "line": 45,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 45,
+              "offset": 46
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "http:Client",
+            "line": 45
+          },
+          "children": []
+        },
+        {
+          "name": "/",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "http_service.bal",
+            "startLine": {
+              "line": 47,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 64,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": "/",
+            "listenerType": "http:Listener"
+          },
+          "children": [
+            {
+              "name": "init",
+              "type": "FUNCTION",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 52,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 53,
+                  "offset": 5
+                }
+              },
+              "modifiers": [],
+              "properties": {
+                "parameters": [],
+                "returns": "error?"
+              },
+              "children": []
+            },
+            {
+              "name": "greeting",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 55,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 63,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "json|http:InternalServerError"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "/api/v1",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "http_service.bal",
+            "startLine": {
+              "line": 66,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 76,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": "/api/v1",
+            "listenerType": "http:Listener"
+          },
+          "children": [
+            {
+              "name": "path",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "http_service.bal",
+                "startLine": {
+                  "line": 68,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 75,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "json|http:InternalServerError"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
