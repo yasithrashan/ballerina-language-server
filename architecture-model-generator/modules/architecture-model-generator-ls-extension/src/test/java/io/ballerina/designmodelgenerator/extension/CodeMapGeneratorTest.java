@@ -46,7 +46,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
-            //   updateConfig(configJsonPath, updatedConfig);
+//               updateConfig(configJsonPath, updatedConfig);
             compareJsonElements(files, testConfig.output());
             Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
         }
