@@ -24,6 +24,7 @@ import io.ballerina.compiler.api.symbols.Qualifier;
 import io.ballerina.compiler.api.symbols.RecordFieldSymbol;
 import io.ballerina.compiler.api.symbols.RecordTypeSymbol;
 import io.ballerina.compiler.api.symbols.Symbol;
+import io.ballerina.compiler.api.symbols.TypeDefinitionSymbol;
 import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeSymbol;
@@ -174,7 +175,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
         listenerDeclarationNode.typeDescriptor().flatMap(semanticModel::symbol).ifPresent(symbol -> {
             if (symbol instanceof TypeSymbol typeSymbol) {
-                listenerBuilder.addProperty("type", typeSymbol.signature());
+                listenerBuilder.addProperty("type",
+                        io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo));
             }
         });
 
@@ -227,6 +229,17 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(typeDefinitionNode)
                 .name(typeDefinitionNode.typeName().text())
                 .type("TYPE");
+
+        semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
+            if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
+                TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
+                // For records, just use "record" since fields are extracted separately
+                String typeDescriptor = typeSymbol.typeKind() == TypeDescKind.RECORD
+                        ? "record"
+                        : io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
+                typeBuilder.addProperty("typeDescriptor", typeDescriptor);
+            }
+        });
 
         List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
         typeBuilder.fields(fields);
@@ -331,11 +344,15 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
     private List<String> extractFieldsFromTypeDefinition(TypeDefinitionNode typeDefinitionNode) {
         List<String> fields = new ArrayList<>();
         semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
-            if (symbol instanceof TypeSymbol typeSymbol &&
-                typeSymbol.typeKind() == TypeDescKind.RECORD) {
-                RecordTypeSymbol recordType = (RecordTypeSymbol) typeSymbol;
-                for (RecordFieldSymbol field : recordType.fieldDescriptors().values()) {
-                    fields.add(field.getName().orElse("") + ": " + field.typeDescriptor().signature());
+            if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
+                TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
+                if (typeSymbol.typeKind() == TypeDescKind.RECORD) {
+                    RecordTypeSymbol recordType = (RecordTypeSymbol) typeSymbol;
+                    for (RecordFieldSymbol field : recordType.fieldDescriptors().values()) {
+                        fields.add(field.getName().orElse("") + ": " +
+                                io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(
+                                        field.typeDescriptor(), moduleInfo));
+                    }
                 }
             }
         });
