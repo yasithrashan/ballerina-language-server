@@ -136,7 +136,7 @@
             "configurable"
           ],
           "properties": {
-            "type": "table<wso2/test:0.1.0:User> key(name) & readonly",
+            "type": "table<User> key(name) & readonly",
             "line": 19
           },
           "children": []
