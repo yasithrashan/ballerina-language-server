@@ -28,20 +28,23 @@ import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class CodeMapGenerator {
 
-    public static List<CodeMapFile> generateCodeMap(Project project) {
+    public static Map<String, CodeMapFile> generateCodeMap(Project project) {
         Package currentPackage = project.currentPackage();
         Module defaultModule = currentPackage.getDefaultModule();
         SemanticModel semanticModel =
                 PackageUtil.getCompilation(currentPackage).getSemanticModel(defaultModule.moduleId());
 
-        List<CodeMapFile> codeMapFiles = new ArrayList<>();
+        Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
 
+        // Iterate through each document
         for (var documentId : defaultModule.documentIds()) {
             Document document = defaultModule.document(documentId);
             SyntaxTree syntaxTree = document.syntaxTree();
@@ -53,7 +56,7 @@ public class CodeMapGenerator {
                 String absoluteFilePath = syntaxTree.filePath();
 
                 CodeMapFile codeMapFile = new CodeMapFile(fileName, absoluteFilePath, artifacts);
-                codeMapFiles.add(codeMapFile);
+                codeMapFiles.put(fileName, codeMapFile);
             }
         }
 
