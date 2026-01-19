@@ -20,8 +20,6 @@ package io.ballerina.artifactsgenerator.codemap;
 
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.api.symbols.ClassSymbol;
-import io.ballerina.compiler.api.symbols.FunctionSymbol;
-import io.ballerina.compiler.api.symbols.ParameterSymbol;
 import io.ballerina.compiler.api.symbols.Qualifier;
 import io.ballerina.compiler.api.symbols.RecordFieldSymbol;
 import io.ballerina.compiler.api.symbols.RecordTypeSymbol;
@@ -29,7 +27,6 @@ import io.ballerina.compiler.api.symbols.Symbol;
 import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeSymbol;
-import io.ballerina.compiler.api.symbols.UnionTypeSymbol;
 import io.ballerina.compiler.api.symbols.VariableSymbol;
 import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
 import io.ballerina.compiler.syntax.tree.EnumDeclarationNode;
@@ -42,14 +39,18 @@ import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
 import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.NodeList;
 import io.ballerina.compiler.syntax.tree.NodeTransformer;
+import io.ballerina.compiler.syntax.tree.ObjectFieldNode;
+import io.ballerina.compiler.syntax.tree.DefaultableParameterNode;
 import io.ballerina.compiler.syntax.tree.ParameterNode;
 import io.ballerina.compiler.syntax.tree.RequiredParameterNode;
+import io.ballerina.compiler.syntax.tree.RestParameterNode;
 import io.ballerina.compiler.syntax.tree.SeparatedNodeList;
 import io.ballerina.compiler.syntax.tree.ServiceDeclarationNode;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.compiler.syntax.tree.Token;
 import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
 import io.ballerina.compiler.syntax.tree.TypeDescriptorNode;
+import io.ballerina.designmodelgenerator.core.CommonUtils.ModuleInfo;
 import io.ballerina.modelgenerator.commons.CommonUtils;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 
@@ -71,13 +72,15 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
     private final SemanticModel semanticModel;
     private final String projectPath;
+    private final ModuleInfo moduleInfo;
 
     private static final String AUTOMATION_FUNCTION_NAME = "automation";
     private static final String MAIN_FUNCTION_NAME = "main";
 
-    public CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel) {
+    public CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo) {
         this.semanticModel = semanticModel;
         this.projectPath = projectPath;
+        this.moduleInfo = moduleInfo;
     }
 
     @Override
@@ -206,7 +209,9 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
         semanticModel.symbol(moduleVariableDeclarationNode).ifPresent(symbol -> {
             if (symbol instanceof VariableSymbol variableSymbol) {
-                variableBuilder.addProperty("type", variableSymbol.typeDescriptor().signature());
+                variableBuilder.addProperty("type",
+                        io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(
+                                variableSymbol.typeDescriptor(), moduleInfo));
             }
         });
 
@@ -235,15 +240,46 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
     @Override
     public Optional<CodeMapArtifact> transform(ClassDefinitionNode classDefinitionNode) {
-        CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(classDefinitionNode)
+        NodeList<Token> classTypeQualifiers = classDefinitionNode.classTypeQualifiers();
+        boolean isClientClass = hasQualifier(classTypeQualifiers, SyntaxKind.CLIENT_KEYWORD);
+        String artifactType = isClientClass ? "CLIENT_CLASS" : "CLASS";
+
+        CodeMapArtifact.Builder classBuilder = new CodeMapArtifact.Builder(classDefinitionNode)
                 .name(classDefinitionNode.className().text())
-                .type("TYPE");
+                .type(artifactType)
+                .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(), classTypeQualifiers));
 
         classDefinitionNode.members().forEach(member -> {
-            member.apply(this).ifPresent(typeBuilder::addChild);
+            member.apply(this).ifPresent(classBuilder::addChild);
         });
 
-        return Optional.of(typeBuilder.build());
+        return Optional.of(classBuilder.build());
+    }
+
+    @Override
+    public Optional<CodeMapArtifact> transform(ObjectFieldNode objectFieldNode) {
+        String fieldName = objectFieldNode.fieldName().text();
+        String fieldType = objectFieldNode.typeName().toSourceCode().strip();
+
+        List<String> modifiers = new ArrayList<>();
+        objectFieldNode.visibilityQualifier().ifPresent(token -> modifiers.add(token.text()));
+        objectFieldNode.qualifierList().forEach(token -> modifiers.add(token.text()));
+
+        CodeMapArtifact.Builder fieldBuilder = new CodeMapArtifact.Builder(objectFieldNode)
+                .name(fieldName)
+                .type("FIELD")
+                .modifiers(modifiers);
+
+        fieldBuilder.addProperty("type", fieldType);
+
+        return Optional.of(fieldBuilder.build());
+    }
+
+    private List<String> extractModifiers(Optional<Token> visibilityQualifier, NodeList<Token> classTypeQualifiers) {
+        List<String> modifiers = new ArrayList<>();
+        visibilityQualifier.ifPresent(token -> modifiers.add(token.text()));
+        classTypeQualifiers.forEach(token -> modifiers.add(token.text()));
+        return modifiers;
     }
 
     @Override
@@ -266,6 +302,15 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                 String paramType = requiredParam.typeName().toSourceCode().strip();
                 String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
                 parameters.add(paramName + ": " + paramType);
+            } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
+                String paramType = defaultableParam.typeName().toSourceCode().strip();
+                String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
+                String defaultValue = defaultableParam.expression().toSourceCode().strip();
+                parameters.add(paramName + ": " + paramType + " = " + defaultValue);
+            } else if (paramNode instanceof RestParameterNode restParam) {
+                String paramType = restParam.typeName().toSourceCode().strip();
+                String paramName = restParam.paramName().map(name -> name.text()).orElse("");
+                parameters.add(paramName + ": " + paramType + "...");
             } else {
                 parameters.add(paramNode.toSourceCode().strip());
             }

@@ -24,7 +24,7 @@
             "final"
           ],
           "properties": {
-            "type": "ballerina/http:2.15.4:Client",
+            "type": "http:Client",
             "line": 6
           },
           "children": []
@@ -47,7 +47,7 @@
             "final"
           ],
           "properties": {
-            "type": "ballerina/graphql:1.17.0:Client",
+            "type": "graphql:Client",
             "line": 16
           },
           "children": []
@@ -70,7 +70,7 @@
             "final"
           ],
           "properties": {
-            "type": "ballerina/tcp:1.13.2:Client",
+            "type": "tcp:Client",
             "line": 21
           },
           "children": []
@@ -93,14 +93,14 @@
             "final"
           ],
           "properties": {
-            "type": "wso2/test:0.1.0:LocalClient",
+            "type": "LocalClient",
             "line": 26
           },
           "children": []
         },
         {
           "name": "LocalClient",
-          "type": "TYPE",
+          "type": "CLIENT_CLASS",
           "lineRange": {
             "fileName": "connection.bal",
             "startLine": {
@@ -112,9 +112,56 @@
               "offset": 1
             }
           },
-          "modifiers": [],
+          "modifiers": [
+            "public",
+            "client"
+          ],
           "properties": {},
           "children": [
+            {
+              "name": "baseUrl",
+              "type": "FIELD",
+              "lineRange": {
+                "fileName": "connection.bal",
+                "startLine": {
+                  "line": 30,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 30,
+                  "offset": 27
+                }
+              },
+              "modifiers": [
+                "private"
+              ],
+              "properties": {
+                "type": "string"
+              },
+              "children": []
+            },
+            {
+              "name": "timeout",
+              "type": "FIELD",
+              "lineRange": {
+                "fileName": "connection.bal",
+                "startLine": {
+                  "line": 31,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 31,
+                  "offset": 24
+                }
+              },
+              "modifiers": [
+                "private"
+              ],
+              "properties": {
+                "type": "int"
+              },
+              "children": []
+            },
             {
               "name": "init",
               "type": "FUNCTION",
@@ -136,7 +183,7 @@
               "properties": {
                 "parameters": [
                   "baseUrl: string",
-                  "int timeout = 30"
+                  "timeout: int = 30"
                 ],
                 "returns": "error?"
               },
