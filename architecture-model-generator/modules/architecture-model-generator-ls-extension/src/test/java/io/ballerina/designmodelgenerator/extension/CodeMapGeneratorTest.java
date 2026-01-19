@@ -46,7 +46,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
-               updateConfig(configJsonPath, updatedConfig);
+//               updateConfig(configJsonPath, updatedConfig);
             compareJsonElements(files, testConfig.output());
             Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
         }
@@ -61,8 +61,8 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
                 "graphql.json",
                 // TODO: Include this after discussing how to integrate submodules into the artifacts tree
                 "persist.json",
-                "function.json", "http_service.json", "kafka.json",
-                "listener.json", "np.json", "rabbitmq.json", "service_class.json",
+                "kafka.json",
+                "np.json", "rabbitmq.json", "service_class.json",
                 "tcp.json", "type.json"
         };
     }
