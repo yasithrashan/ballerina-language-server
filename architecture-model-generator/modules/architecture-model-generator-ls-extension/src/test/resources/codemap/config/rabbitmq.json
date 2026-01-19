@@ -1,0 +1,79 @@
+{
+  "description": "Simple project with rabbitmq",
+  "source": "rabbitmq",
+  "output": {
+    "rabbitmq.bal": {
+      "fileName": "rabbitmq.bal",
+      "absoluteFilePath": "rabbitmq.bal",
+      "artifacts": [
+        {
+          "name": "rabbitmqListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "rabbitmq.bal",
+            "startLine": {
+              "line": 2,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 2,
+              "offset": 84
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "ballerinax/rabbitmq:3.3.0:Listener",
+            "line": 2
+          },
+          "children": []
+        },
+        {
+          "name": "\"queueName\"",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "rabbitmq.bal",
+            "startLine": {
+              "line": 4,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 11,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": "\"queueName\""
+          },
+          "children": [
+            {
+              "name": "onMessage",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "rabbitmq.bal",
+                "startLine": {
+                  "line": 5,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 10,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "message: rabbitmq:AnydataMessage"
+                ],
+                "returns": "error?"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,6 +1,6 @@
 [package]
-org = "yasithrashan"
-name = "bal_ls_test"
+org = "wso2"
+name = "test"
 version = "0.1.0"
 distribution = "2201.13.1"
 

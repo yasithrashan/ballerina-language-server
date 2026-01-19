@@ -1,0 +1,176 @@
+{
+  "description": "Simple project with connection",
+  "source": "connection",
+  "output": {
+    "connection.bal": {
+      "fileName": "connection.bal",
+      "absoluteFilePath": "connection.bal",
+      "artifacts": [
+        {
+          "name": "httpConnection",
+          "type": "CONNECTION",
+          "lineRange": {
+            "fileName": "connection.bal",
+            "startLine": {
+              "line": 6,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 13,
+              "offset": 3
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "ballerina/http:2.15.4:Client",
+            "line": 6
+          },
+          "children": []
+        },
+        {
+          "name": "graphQlConnection",
+          "type": "CONNECTION",
+          "lineRange": {
+            "fileName": "connection.bal",
+            "startLine": {
+              "line": 16,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 18,
+              "offset": 3
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "ballerina/graphql:1.17.0:Client",
+            "line": 16
+          },
+          "children": []
+        },
+        {
+          "name": "tcpConnection",
+          "type": "CONNECTION",
+          "lineRange": {
+            "fileName": "connection.bal",
+            "startLine": {
+              "line": 21,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 23,
+              "offset": 3
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "ballerina/tcp:1.13.2:Client",
+            "line": 21
+          },
+          "children": []
+        },
+        {
+          "name": "localClient",
+          "type": "CONNECTION",
+          "lineRange": {
+            "fileName": "connection.bal",
+            "startLine": {
+              "line": 26,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 26,
+              "offset": 72
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "wso2/test:0.1.0:LocalClient",
+            "line": 26
+          },
+          "children": []
+        },
+        {
+          "name": "LocalClient",
+          "type": "TYPE",
+          "lineRange": {
+            "fileName": "connection.bal",
+            "startLine": {
+              "line": 29,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 44,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {},
+          "children": [
+            {
+              "name": "init",
+              "type": "FUNCTION",
+              "lineRange": {
+                "fileName": "connection.bal",
+                "startLine": {
+                  "line": 33,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 37,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "public",
+                "isolated"
+              ],
+              "properties": {
+                "parameters": [
+                  "baseUrl: string",
+                  "int timeout = 30"
+                ],
+                "returns": "error?"
+              },
+              "children": []
+            },
+            {
+              "name": "getData",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "connection.bal",
+                "startLine": {
+                  "line": 39,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 43,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote",
+                "isolated"
+              ],
+              "properties": {
+                "parameters": [
+                  "id: string"
+                ],
+                "returns": "string|error"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
