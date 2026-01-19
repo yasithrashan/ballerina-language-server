@@ -1,0 +1,172 @@
+{
+  "description": "Simple project with tcp",
+  "source": "tcp",
+  "output": {
+    "tcp.bal": {
+      "fileName": "tcp.bal",
+      "absoluteFilePath": "tcp.bal",
+      "artifacts": [
+        {
+          "name": "tcpListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "tcp.bal",
+            "startLine": {
+              "line": 2,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 2,
+              "offset": 59
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "ballerina/tcp:1.13.2:Listener",
+            "line": 2
+          },
+          "children": []
+        },
+        {
+          "name": "tcp:Service",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "tcp.bal",
+            "startLine": {
+              "line": 4,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 14,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": ""
+          },
+          "children": [
+            {
+              "name": "onConnect",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "tcp.bal",
+                "startLine": {
+                  "line": 5,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 13,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "caller: tcp:Caller"
+                ],
+                "returns": "tcp:ConnectionService"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "TcpEchoService",
+          "type": "TYPE",
+          "lineRange": {
+            "fileName": "tcp.bal",
+            "startLine": {
+              "line": 16,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 45,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {},
+          "children": [
+            {
+              "name": "onBytes",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "tcp.bal",
+                "startLine": {
+                  "line": 19,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 26,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "caller: tcp:Caller",
+                  "data: readonly & byte[]"
+                ],
+                "returns": "tcp:Error?"
+              },
+              "children": []
+            },
+            {
+              "name": "onError",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "tcp.bal",
+                "startLine": {
+                  "line": 28,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 35,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "tcpError: tcp:Error"
+                ],
+                "returns": "()"
+              },
+              "children": []
+            },
+            {
+              "name": "onClose",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "tcp.bal",
+                "startLine": {
+                  "line": 37,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 44,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [],
+                "returns": "()"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

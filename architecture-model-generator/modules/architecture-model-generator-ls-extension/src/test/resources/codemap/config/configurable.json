@@ -1,0 +1,193 @@
+{
+  "description": "Simple project with configurable",
+  "source": "configurable",
+  "output": {
+    "configurable.bal": {
+      "fileName": "configurable.bal",
+      "absoluteFilePath": "configurable.bal",
+      "artifacts": [
+        {
+          "name": "apiUrl",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 1,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 1,
+              "offset": 55
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "string",
+            "line": 1
+          },
+          "children": []
+        },
+        {
+          "name": "maxRetries",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 4,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 4,
+              "offset": 32
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "int",
+            "line": 4
+          },
+          "children": []
+        },
+        {
+          "name": "enableLogging",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 7,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 7,
+              "offset": 39
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "boolean",
+            "line": 7
+          },
+          "children": []
+        },
+        {
+          "name": "timeout",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 10,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 10,
+              "offset": 34
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "float",
+            "line": 10
+          },
+          "children": []
+        },
+        {
+          "name": "User",
+          "type": "TYPE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 13,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 17,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "fields": []
+          },
+          "children": []
+        },
+        {
+          "name": "users",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 19,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 22,
+              "offset": 2
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "table<wso2/test:0.1.0:User> key(name) & readonly",
+            "line": 19
+          },
+          "children": []
+        },
+        {
+          "name": "serverConfig",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 25,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 29,
+              "offset": 2
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "json & readonly",
+            "line": 25
+          },
+          "children": []
+        },
+        {
+          "name": "defaultSettings",
+          "type": "CONFIGURABLE",
+          "lineRange": {
+            "fileName": "configurable.bal",
+            "startLine": {
+              "line": 32,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 32,
+              "offset": 41
+            }
+          },
+          "modifiers": [
+            "configurable"
+          ],
+          "properties": {
+            "type": "anydata & readonly",
+            "line": 32
+          },
+          "children": []
+        }
+      ]
+    }
+  }
+}

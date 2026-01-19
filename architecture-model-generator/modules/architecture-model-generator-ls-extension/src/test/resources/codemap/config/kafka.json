@@ -1,0 +1,99 @@
+{
+  "description": "Simple project with kafka",
+  "source": "kafka",
+  "output": {
+    "kafka.bal": {
+      "fileName": "kafka.bal",
+      "absoluteFilePath": "kafka.bal",
+      "artifacts": [
+        {
+          "name": "Order",
+          "type": "TYPE",
+          "lineRange": {
+            "fileName": "kafka.bal",
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 8,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "fields": []
+          },
+          "children": []
+        },
+        {
+          "name": "orderListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "kafka.bal",
+            "startLine": {
+              "line": 10,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 13,
+              "offset": 3
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "ballerinax/kafka:4.6.2:Listener",
+            "line": 10
+          },
+          "children": []
+        },
+        {
+          "name": "orderListener",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "kafka.bal",
+            "startLine": {
+              "line": 15,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 25,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": ""
+          },
+          "children": [
+            {
+              "name": "onConsumerRecord",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "kafka.bal",
+                "startLine": {
+                  "line": 17,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 24,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "orders: Order[]"
+                ],
+                "returns": "()"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
