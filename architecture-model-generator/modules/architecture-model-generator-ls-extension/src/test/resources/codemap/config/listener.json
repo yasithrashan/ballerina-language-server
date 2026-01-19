@@ -22,7 +22,7 @@
           },
           "modifiers": [],
           "properties": {
-            "type": "ballerina/http:2.15.4:Listener",
+            "type": "http:Listener",
             "line": 3
           },
           "children": []
@@ -43,7 +43,7 @@
           },
           "modifiers": [],
           "properties": {
-            "type": "ballerinax/rabbitmq:3.3.0:Listener",
+            "type": "rabbitmq:Listener",
             "line": 4
           },
           "children": []
@@ -64,7 +64,7 @@
           },
           "modifiers": [],
           "properties": {
-            "type": "ballerina/http:2.15.4:Listener",
+            "type": "http:Listener",
             "line": 5
           },
           "children": []

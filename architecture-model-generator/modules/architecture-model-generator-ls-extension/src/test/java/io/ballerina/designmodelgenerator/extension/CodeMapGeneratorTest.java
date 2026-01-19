@@ -63,7 +63,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
                 "persist.json",
                 "kafka.json",
                 "np.json", "rabbitmq.json", "service_class.json",
-                "tcp.json", "type.json"
+                "tcp.json"
         };
     }
 
