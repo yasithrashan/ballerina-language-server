@@ -21,9 +21,11 @@ package io.ballerina.artifactsgenerator.codemap;
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
+import io.ballerina.designmodelgenerator.core.CommonUtils.ModuleInfo;
 import io.ballerina.modelgenerator.commons.PackageUtil;
 import io.ballerina.projects.Document;
 import io.ballerina.projects.Module;
+import io.ballerina.projects.ModuleDescriptor;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
 
@@ -43,13 +45,15 @@ public class CodeMapGenerator {
 
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
+        ModuleInfo moduleInfo = createModuleInfo(defaultModule.descriptor());
 
         // Iterate through each document
         for (var documentId : defaultModule.documentIds()) {
             Document document = defaultModule.document(documentId);
             SyntaxTree syntaxTree = document.syntaxTree();
 
-            List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree, semanticModel);
+            List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree, semanticModel,
+                    moduleInfo);
 
             if (!artifacts.isEmpty()) {
                 String fileName = document.name();
@@ -64,8 +68,9 @@ public class CodeMapGenerator {
     }
 
     public static CodeMapFile generateCodeMapForSyntaxTree(String projectPath, SyntaxTree syntaxTree,
-                                                          SemanticModel semanticModel) {
-        List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree, semanticModel);
+                                                          SemanticModel semanticModel, ModuleInfo moduleInfo) {
+        List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree, semanticModel,
+                moduleInfo);
 
         String fileName = syntaxTree.filePath().substring(syntaxTree.filePath().lastIndexOf('/') + 1);
         String absoluteFilePath = syntaxTree.filePath();
@@ -74,14 +79,16 @@ public class CodeMapGenerator {
     }
 
     private static List<CodeMapArtifact> collectArtifactsFromSyntaxTree(String projectPath, SyntaxTree syntaxTree,
-                                                                        SemanticModel semanticModel) {
+                                                                        SemanticModel semanticModel,
+                                                                        ModuleInfo moduleInfo) {
         List<CodeMapArtifact> artifacts = new ArrayList<>();
         if (!syntaxTree.containsModulePart()) {
             return artifacts;
         }
 
         ModulePartNode rootNode = syntaxTree.rootNode();
-        CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer(projectPath, semanticModel);
+        CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer(projectPath, semanticModel,
+                moduleInfo);
 
         rootNode.members().stream()
                 .map(member -> member.apply(codeMapNodeTransformer))
@@ -89,5 +96,13 @@ public class CodeMapGenerator {
                 .forEach(artifacts::add);
 
         return artifacts;
+    }
+
+    private static ModuleInfo createModuleInfo(ModuleDescriptor descriptor) {
+        return new ModuleInfo(
+                descriptor.org().value(),
+                descriptor.packageName().value(),
+                descriptor.name().toString(),
+                descriptor.version().toString());
     }
 }
