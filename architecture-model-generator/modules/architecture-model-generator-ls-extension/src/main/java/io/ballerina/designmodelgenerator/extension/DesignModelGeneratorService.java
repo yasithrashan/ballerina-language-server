@@ -20,12 +20,15 @@ package io.ballerina.designmodelgenerator.extension;
 
 import io.ballerina.artifactsgenerator.ArtifactsCache;
 import io.ballerina.artifactsgenerator.ArtifactsGenerator;
+import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
+import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
 import io.ballerina.designmodelgenerator.extension.request.GetDesignModelRequest;
 import io.ballerina.designmodelgenerator.extension.request.ProjectInfoRequest;
 import io.ballerina.designmodelgenerator.extension.response.ArtifactResponse;
+import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
 import io.ballerina.projects.Project;
@@ -93,6 +96,22 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 String moduleName = workspaceManager.module(projectPath)
                         .map(module -> module.moduleName().moduleNamePart()).orElse(null);
                 response.setProjectAndModuleName(projectName, moduleName);
+            } catch (Throwable e) {
+                response.setError(e);
+            }
+            return response;
+        });
+    }
+
+    @JsonRequest
+    public CompletableFuture<CodeMapResponse> codeMap(CodeMapRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            CodeMapResponse response = new CodeMapResponse();
+            try {
+                Path projectPath = Path.of(request.projectPath());
+                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
+                Project project = workspaceManager.loadProject(projectPath);
+                response.setFiles(CodeMapGenerator.generateCodeMap(project));
             } catch (Throwable e) {
                 response.setError(e);
             }
