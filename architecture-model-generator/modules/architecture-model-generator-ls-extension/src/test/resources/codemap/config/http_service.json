@@ -169,7 +169,7 @@
           },
           "modifiers": [],
           "properties": {
-            "type": "ballerina/http:2.15.4:Listener",
+            "type": "http:Listener",
             "line": 34
           },
           "children": []
@@ -190,7 +190,7 @@
           },
           "modifiers": [],
           "properties": {
-            "type": "ballerina/http:2.15.4:Listener",
+            "type": "http:Listener",
             "line": 43
           },
           "children": []

@@ -114,7 +114,12 @@
           },
           "modifiers": [],
           "properties": {
-            "fields": []
+            "fields": [
+              "name: string",
+              "age: int",
+              "email: string"
+            ],
+            "typeDescriptor": "record"
           },
           "children": []
         },

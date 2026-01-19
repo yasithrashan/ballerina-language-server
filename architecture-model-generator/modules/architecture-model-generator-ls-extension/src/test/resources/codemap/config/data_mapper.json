@@ -22,7 +22,12 @@
           },
           "modifiers": [],
           "properties": {
-            "fields": []
+            "fields": [
+              "name: string",
+              "age: int",
+              "address: string"
+            ],
+            "typeDescriptor": "record"
           },
           "children": []
         },
@@ -42,7 +47,14 @@
           },
           "modifiers": [],
           "properties": {
-            "fields": []
+            "fields": [
+              "firstName: string",
+              "lastName: string",
+              "age: int",
+              "department: string",
+              "salary: float"
+            ],
+            "typeDescriptor": "record"
           },
           "children": []
         },
@@ -62,7 +74,13 @@
           },
           "modifiers": [],
           "properties": {
-            "fields": []
+            "fields": [
+              "id: string",
+              "fullName: string",
+              "email: string",
+              "contactNumbers: string[]"
+            ],
+            "typeDescriptor": "record"
           },
           "children": []
         },
@@ -82,7 +100,12 @@
           },
           "modifiers": [],
           "properties": {
-            "fields": []
+            "fields": [
+              "id: string",
+              "name: string",
+              "primaryContact: string"
+            ],
+            "typeDescriptor": "record"
           },
           "children": []
         },
