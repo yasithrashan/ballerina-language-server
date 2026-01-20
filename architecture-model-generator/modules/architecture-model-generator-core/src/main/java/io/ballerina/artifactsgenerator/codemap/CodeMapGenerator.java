@@ -31,10 +31,12 @@ import io.ballerina.projects.Project;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class CodeMapGenerator {
 
@@ -71,15 +73,47 @@ public class CodeMapGenerator {
         return codeMapFiles;
     }
 
-    public static CodeMapFile generateCodeMapForSyntaxTree(String projectPath, SyntaxTree syntaxTree,
-                                                          SemanticModel semanticModel, ModuleInfo moduleInfo) {
-        List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree, semanticModel,
-                moduleInfo);
+    /**
+     * Generate CodeMap for specific files only.
+     *
+     * @param project   the Ballerina project
+     * @param fileNames list of file names to process (e.g., ["main.bal", "service.bal"])
+     * @return map of relative file paths to CodeMapFile
+     */
+    public static Map<String, CodeMapFile> generateCodeMap(Project project, List<String> fileNames) {
+        Package currentPackage = project.currentPackage();
+        Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
+        String projectPath = project.sourceRoot().toAbsolutePath().toString();
+        Set<String> targetFiles = new HashSet<>(fileNames);
 
-        String fileName = syntaxTree.filePath().substring(syntaxTree.filePath().lastIndexOf('/') + 1);
-        String absoluteFilePath = syntaxTree.filePath();
+        for (var moduleId : currentPackage.moduleIds()) {
+            Module module = currentPackage.module(moduleId);
+            SemanticModel semanticModel =
+                    PackageUtil.getCompilation(currentPackage).getSemanticModel(moduleId);
+            ModuleInfo moduleInfo = createModuleInfo(module.descriptor());
 
-        return new CodeMapFile(fileName, absoluteFilePath, artifacts);
+            for (var documentId : module.documentIds()) {
+                Document document = module.document(documentId);
+                String fileName = document.name();
+
+                // Skip files not in the target list
+                if (!targetFiles.contains(fileName)) {
+                    continue;
+                }
+
+                SyntaxTree syntaxTree = document.syntaxTree();
+                List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree,
+                        semanticModel, moduleInfo);
+
+                if (!artifacts.isEmpty()) {
+                    String relativeFilePath = getRelativeFilePath(module, fileName);
+                    CodeMapFile codeMapFile = new CodeMapFile(fileName, relativeFilePath, artifacts);
+                    codeMapFiles.put(relativeFilePath, codeMapFile);
+                }
+            }
+        }
+
+        return codeMapFiles;
     }
 
     private static List<CodeMapArtifact> collectArtifactsFromSyntaxTree(String projectPath, SyntaxTree syntaxTree,
