@@ -24,6 +24,7 @@ import io.ballerina.compiler.api.symbols.Qualifier;
 import io.ballerina.compiler.api.symbols.RecordFieldSymbol;
 import io.ballerina.compiler.api.symbols.RecordTypeSymbol;
 import io.ballerina.compiler.api.symbols.Symbol;
+import io.ballerina.compiler.api.symbols.IntersectionTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeDefinitionSymbol;
 import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
@@ -33,13 +34,19 @@ import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
 import io.ballerina.compiler.syntax.tree.EnumDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ExpressionFunctionBodyNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
+import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
 import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.ImplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.ListenerDeclarationNode;
+import io.ballerina.compiler.syntax.tree.NamedArgumentNode;
+import io.ballerina.compiler.syntax.tree.NewExpressionNode;
+import io.ballerina.compiler.syntax.tree.ParenthesizedArgList;
+import io.ballerina.compiler.syntax.tree.PositionalArgumentNode;
 import io.ballerina.compiler.syntax.tree.ModuleVariableDeclarationNode;
 import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.NodeFactory;
 import io.ballerina.compiler.syntax.tree.NodeList;
 import io.ballerina.compiler.syntax.tree.NodeTransformer;
 import io.ballerina.compiler.syntax.tree.ObjectFieldNode;
@@ -180,7 +187,49 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
             }
         });
 
+        // Extract initialization arguments
+        Node initializer = listenerDeclarationNode.initializer();
+        if (initializer instanceof NewExpressionNode newExpressionNode) {
+            List<String> args = extractListenerArguments(newExpressionNode);
+            if (!args.isEmpty()) {
+                listenerBuilder.addProperty("arguments", args);
+            }
+        }
+
         return Optional.of(listenerBuilder.build());
+    }
+
+    private List<String> extractListenerArguments(NewExpressionNode newExpressionNode) {
+        List<String> arguments = new ArrayList<>();
+        SeparatedNodeList<FunctionArgumentNode> argList = getArgList(newExpressionNode);
+
+        for (FunctionArgumentNode argNode : argList) {
+            if (argNode instanceof NamedArgumentNode namedArg) {
+                String argName = namedArg.argumentName().name().text();
+                String argValue = normalizeWhitespace(namedArg.expression().toSourceCode());
+                arguments.add(argName + " = " + argValue);
+            } else if (argNode instanceof PositionalArgumentNode positionalArg) {
+                arguments.add(normalizeWhitespace(positionalArg.expression().toSourceCode()));
+            }
+        }
+        return arguments;
+    }
+
+    private String normalizeWhitespace(String source) {
+        // Replace newlines and multiple spaces with single space
+        return source.replaceAll("\\s+", " ").strip();
+    }
+
+    private SeparatedNodeList<FunctionArgumentNode> getArgList(NewExpressionNode newExpressionNode) {
+        if (newExpressionNode instanceof ExplicitNewExpressionNode explicitNew) {
+            return explicitNew.parenthesizedArgList().arguments();
+        } else if (newExpressionNode instanceof ImplicitNewExpressionNode implicitNew) {
+            Optional<ParenthesizedArgList> argList = implicitNew.parenthesizedArgList();
+            if (argList.isPresent()) {
+                return argList.get().arguments();
+            }
+        }
+        return NodeFactory.createSeparatedNodeList();
     }
 
     @Override
@@ -233,8 +282,9 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
             if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
                 TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
-                // For records, just use "record" since fields are extracted separately
-                String typeDescriptor = typeSymbol.typeKind() == TypeDescKind.RECORD
+                // For records (including intersection types like "readonly & record"),
+                // just use "record" since fields are extracted separately
+                String typeDescriptor = isRecordType(typeSymbol)
                         ? "record"
                         : io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
                 typeBuilder.addProperty("typeDescriptor", typeDescriptor);
@@ -346,8 +396,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
             if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
                 TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
-                if (typeSymbol.typeKind() == TypeDescKind.RECORD) {
-                    RecordTypeSymbol recordType = (RecordTypeSymbol) typeSymbol;
+                RecordTypeSymbol recordType = getRecordTypeSymbol(typeSymbol);
+                if (recordType != null) {
                     for (RecordFieldSymbol field : recordType.fieldDescriptors().values()) {
                         fields.add(field.getName().orElse("") + ": " +
                                 io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(
@@ -357,6 +407,25 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
             }
         });
         return fields;
+    }
+
+    private boolean isRecordType(TypeSymbol typeSymbol) {
+        return getRecordTypeSymbol(typeSymbol) != null;
+    }
+
+    private RecordTypeSymbol getRecordTypeSymbol(TypeSymbol typeSymbol) {
+        if (typeSymbol.typeKind() == TypeDescKind.RECORD) {
+            return (RecordTypeSymbol) typeSymbol;
+        }
+        // Handle intersection types like "readonly & record"
+        if (typeSymbol.typeKind() == TypeDescKind.INTERSECTION) {
+            IntersectionTypeSymbol intersectionType = (IntersectionTypeSymbol) typeSymbol;
+            TypeSymbol effectiveType = intersectionType.effectiveTypeDescriptor();
+            if (effectiveType.typeKind() == TypeDescKind.RECORD) {
+                return (RecordTypeSymbol) effectiveType;
+            }
+        }
+        return null;
     }
 
     private String determineServiceName(ServiceDeclarationNode serviceDeclarationNode,
