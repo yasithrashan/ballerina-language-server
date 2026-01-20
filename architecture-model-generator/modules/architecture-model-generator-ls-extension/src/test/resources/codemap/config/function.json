@@ -15,7 +15,7 @@
               "offset": 0
             },
             "endLine": {
-              "line": 5,
+              "line": 6,
               "offset": 1
             }
           },
@@ -24,7 +24,8 @@
           ],
           "properties": {
             "parameters": [],
-            "returns": "()"
+            "returns": "()",
+            "documentation": "Function with documentation"
           },
           "children": []
         },
@@ -33,11 +34,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 8,
+              "line": 9,
               "offset": 0
             },
             "endLine": {
-              "line": 10,
+              "line": 13,
               "offset": 1
             }
           },
@@ -48,7 +49,8 @@
             "parameters": [
               "name: string"
             ],
-            "returns": "()"
+            "returns": "()",
+            "documentation": "Function with,\nMultiple lines of documentation"
           },
           "children": []
         },
@@ -57,11 +59,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 13,
+              "line": 16,
               "offset": 0
             },
             "endLine": {
-              "line": 15,
+              "line": 18,
               "offset": 1
             }
           },
@@ -82,11 +84,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 18,
+              "line": 21,
               "offset": 0
             },
             "endLine": {
-              "line": 22,
+              "line": 25,
               "offset": 1
             }
           },
@@ -107,11 +109,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 25,
+              "line": 28,
               "offset": 0
             },
             "endLine": {
-              "line": 27,
+              "line": 30,
               "offset": 1
             }
           },
@@ -133,11 +135,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 30,
+              "line": 33,
               "offset": 0
             },
             "endLine": {
-              "line": 36,
+              "line": 39,
               "offset": 1
             }
           },
@@ -157,11 +159,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 39,
+              "line": 42,
               "offset": 0
             },
             "endLine": {
-              "line": 44,
+              "line": 47,
               "offset": 1
             }
           },
@@ -182,11 +184,11 @@
           "type": "FUNCTION",
           "lineRange": {
             "startLine": {
-              "line": 47,
+              "line": 50,
               "offset": 0
             },
             "endLine": {
-              "line": 49,
+              "line": 52,
               "offset": 1
             }
           },
@@ -202,11 +204,11 @@
           "type": "AUTOMATION",
           "lineRange": {
             "startLine": {
-              "line": 52,
+              "line": 55,
               "offset": 0
             },
             "endLine": {
-              "line": 71,
+              "line": 74,
               "offset": 1
             }
           },
