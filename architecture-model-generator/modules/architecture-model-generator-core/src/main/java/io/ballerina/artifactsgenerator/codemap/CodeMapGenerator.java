@@ -73,13 +73,6 @@ public class CodeMapGenerator {
         return codeMapFiles;
     }
 
-    /**
-     * Generate CodeMap for specific files only.
-     *
-     * @param project   the Ballerina project
-     * @param fileNames list of file names to process (e.g., ["main.bal", "service.bal"])
-     * @return map of relative file paths to CodeMapFile
-     */
     public static Map<String, CodeMapFile> generateCodeMap(Project project, List<String> fileNames) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
@@ -145,8 +138,6 @@ public class CodeMapGenerator {
     }
 
     private static String getRelativeFilePath(Module module, String fileName) {
-        // For submodules, the path is modules/<module-name>/<filename>
-        // For default module, the path is just <filename>
         if (module.isDefaultModule()) {
             return fileName;
         }
