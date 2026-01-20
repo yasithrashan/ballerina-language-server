@@ -170,7 +170,11 @@
           "modifiers": [],
           "properties": {
             "type": "http:Listener",
-            "line": 34
+            "line": 34,
+            "arguments": [
+              "9091",
+              "secureSocket = { key: { certFile: \"../resource/path/to/public.crt\", keyFile: \"../resource/path/to/private.key\" } }"
+            ]
           },
           "children": []
         },

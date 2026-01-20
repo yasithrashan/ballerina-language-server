@@ -1,5 +1,110 @@
 {
   "description": "Simple project with kafka",
   "source": "kafka",
-  "output": {}
+  "output": {
+    "kafka.bal": {
+      "fileName": "kafka.bal",
+      "absoluteFilePath": "kafka.bal",
+      "artifacts": [
+        {
+          "name": "Order",
+          "type": "TYPE",
+          "lineRange": {
+            "fileName": "kafka.bal",
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 8,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "fields": [
+              "orderId: int",
+              "productName: string",
+              "price: decimal",
+              "isValid: boolean"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "orderListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "kafka.bal",
+            "startLine": {
+              "line": 10,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 13,
+              "offset": 3
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "kafka:Listener",
+            "line": 10,
+            "arguments": [
+              "kafka:DEFAULT_URL",
+              "{ groupId: \"order-group-id\", topics: \"order-topic\" }"
+            ]
+          },
+          "children": []
+        },
+        {
+          "name": "orderListener",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "kafka.bal",
+            "startLine": {
+              "line": 15,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 25,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": "",
+            "listenerType": "kafka:Listener"
+          },
+          "children": [
+            {
+              "name": "onConsumerRecord",
+              "type": "REMOTE",
+              "lineRange": {
+                "fileName": "kafka.bal",
+                "startLine": {
+                  "line": 17,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 24,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "orders: Order[]"
+                ],
+                "returns": "()"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
 }

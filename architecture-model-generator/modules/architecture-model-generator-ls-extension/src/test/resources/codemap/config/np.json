@@ -1,5 +1,104 @@
 {
   "description": "Simple project with np",
   "source": "np",
-  "output": {}
+  "output": {
+    "np.bal": {
+      "fileName": "np.bal",
+      "absoluteFilePath": "np.bal",
+      "artifacts": [
+        {
+          "name": "suggestMovieGenre",
+          "type": "NP_FUNCTION",
+          "lineRange": {
+            "fileName": "np.bal",
+            "startLine": {
+              "line": 2,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 12,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "parameters": [
+              "input: string"
+            ],
+            "returns": "string|error"
+          },
+          "children": []
+        },
+        {
+          "name": "suggestMovieName1",
+          "type": "NP_FUNCTION",
+          "lineRange": {
+            "fileName": "np.bal",
+            "startLine": {
+              "line": 14,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 24,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "parameters": [
+              "genre: string",
+              "n: int"
+            ],
+            "returns": "string|error"
+          },
+          "children": []
+        },
+        {
+          "name": "suggestMovieName2",
+          "type": "NP_FUNCTION",
+          "lineRange": {
+            "fileName": "np.bal",
+            "startLine": {
+              "line": 26,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 35,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "parameters": [],
+            "returns": "string|error"
+          },
+          "children": []
+        },
+        {
+          "name": "getMovieRating",
+          "type": "NP_FUNCTION",
+          "lineRange": {
+            "fileName": "np.bal",
+            "startLine": {
+              "line": 37,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 46,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "parameters": [
+              "model: np:ModelProvider",
+              "movieName: string"
+            ],
+            "returns": "int|error"
+          },
+          "children": []
+        }
+      ]
+    }
+  }
 }
