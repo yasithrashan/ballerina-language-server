@@ -25,10 +25,25 @@ import java.util.List;
 import java.util.Map;
 
 import io.ballerina.compiler.syntax.tree.Node;
-import io.ballerina.tools.text.LineRange;
+import io.ballerina.tools.text.LinePosition;
 
 public record CodeMapArtifact(String name, String type, LineRange lineRange, List<String> modifiers,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {
+
+    public record LineRange(Position startLine, Position endLine) {
+        public record Position(int line, int offset) {
+            public static Position from(LinePosition linePosition) {
+                return new Position(linePosition.line(), linePosition.offset());
+            }
+        }
+
+        public static LineRange from(io.ballerina.tools.text.LineRange lineRange) {
+            return new LineRange(
+                    Position.from(lineRange.startLine()),
+                    Position.from(lineRange.endLine())
+            );
+        }
+    }
 
     public CodeMapArtifact {
         modifiers = modifiers == null ? Collections.emptyList() : Collections.unmodifiableList(modifiers);
@@ -45,7 +60,7 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
         private final List<CodeMapArtifact> children = new ArrayList<>();
 
         public Builder(Node node) {
-            this.lineRange = node.lineRange();
+            this.lineRange = LineRange.from(node.lineRange());
         }
 
         public Builder name(String name) {
@@ -58,8 +73,8 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
             return this;
         }
 
-        public Builder lineRange(LineRange lineRange) {
-            this.lineRange = lineRange;
+        public Builder lineRange(io.ballerina.tools.text.LineRange lineRange) {
+            this.lineRange = LineRange.from(lineRange);
             return this;
         }
 

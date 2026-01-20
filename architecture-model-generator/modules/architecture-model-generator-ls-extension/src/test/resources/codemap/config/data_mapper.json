@@ -4,13 +4,12 @@
   "output": {
     "data_mapper.bal": {
       "fileName": "data_mapper.bal",
-      "absoluteFilePath": "data_mapper.bal",
+      "relativeFilePath": "data_mapper.bal",
       "artifacts": [
         {
           "name": "Person",
           "type": "TYPE",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 3,
               "offset": 0
@@ -35,7 +34,6 @@
           "name": "Employee",
           "type": "TYPE",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 9,
               "offset": 0
@@ -62,7 +60,6 @@
           "name": "Customer",
           "type": "TYPE",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 17,
               "offset": 0
@@ -88,7 +85,6 @@
           "name": "CustomerSummary",
           "type": "TYPE",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 24,
               "offset": 0
@@ -113,7 +109,6 @@
           "name": "celsiusToFahrenheit",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 31,
               "offset": 0
@@ -136,7 +131,6 @@
           "name": "fahrenheitToCelsius",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 33,
               "offset": 0
@@ -159,7 +153,6 @@
           "name": "stringToInt",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 35,
               "offset": 0
@@ -182,7 +175,6 @@
           "name": "concatenateStrings",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 37,
               "offset": 0
@@ -206,7 +198,6 @@
           "name": "personToEmployee",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 40,
               "offset": 0
@@ -229,7 +220,6 @@
           "name": "customerToCustomerSummary",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 48,
               "offset": 0
@@ -252,7 +242,6 @@
           "name": "createPerson",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 54,
               "offset": 0
@@ -276,7 +265,6 @@
           "name": "doubleAllValues",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 61,
               "offset": 0
@@ -299,7 +287,6 @@
           "name": "extractNames",
           "type": "DATA_MAPPER",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 65,
               "offset": 0
@@ -322,7 +309,6 @@
           "name": "automation",
           "type": "AUTOMATION",
           "lineRange": {
-            "fileName": "data_mapper.bal",
             "startLine": {
               "line": 69,
               "offset": 0

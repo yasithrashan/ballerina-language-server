@@ -4,13 +4,12 @@
   "output": {
     "rabbitmq.bal": {
       "fileName": "rabbitmq.bal",
-      "absoluteFilePath": "rabbitmq.bal",
+      "relativeFilePath": "rabbitmq.bal",
       "artifacts": [
         {
           "name": "rabbitmqListener",
           "type": "LISTENER",
           "lineRange": {
-            "fileName": "rabbitmq.bal",
             "startLine": {
               "line": 2,
               "offset": 0
@@ -35,7 +34,6 @@
           "name": "\"queueName\"",
           "type": "SERVICE",
           "lineRange": {
-            "fileName": "rabbitmq.bal",
             "startLine": {
               "line": 4,
               "offset": 0
@@ -55,7 +53,6 @@
               "name": "onMessage",
               "type": "REMOTE",
               "lineRange": {
-                "fileName": "rabbitmq.bal",
                 "startLine": {
                   "line": 5,
                   "offset": 4
