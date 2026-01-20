@@ -23,7 +23,10 @@
           "modifiers": [],
           "properties": {
             "type": "http:Listener",
-            "line": 3
+            "line": 3,
+            "arguments": [
+              "9090"
+            ]
           },
           "children": []
         },
@@ -44,7 +47,11 @@
           "modifiers": [],
           "properties": {
             "type": "rabbitmq:Listener",
-            "line": 4
+            "line": 4,
+            "arguments": [
+              "host = \"localhost\"",
+              "port = 5672"
+            ]
           },
           "children": []
         },
@@ -85,7 +92,10 @@
           },
           "modifiers": [],
           "properties": {
-            "line": 6
+            "line": 6,
+            "arguments": [
+              "9090"
+            ]
           },
           "children": []
         }

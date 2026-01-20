@@ -1,5 +1,126 @@
 {
   "description": "Simple project with agent",
   "source": "agent",
-  "output": {}
+  "output": {
+    "agent.bal": {
+      "fileName": "agent.bal",
+      "absoluteFilePath": "agent.bal",
+      "artifacts": [
+        {
+          "name": "_telegramAgentModel",
+          "type": "VARIABLE",
+          "lineRange": {
+            "fileName": "agent.bal",
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 3,
+              "offset": 87
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "$CompilationError$",
+            "line": 3
+          },
+          "children": []
+        },
+        {
+          "name": "_telegramAgentAgent",
+          "type": "VARIABLE",
+          "lineRange": {
+            "fileName": "agent.bal",
+            "startLine": {
+              "line": 4,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 7,
+              "offset": 44
+            }
+          },
+          "modifiers": [
+            "final"
+          ],
+          "properties": {
+            "type": "$CompilationError$",
+            "line": 4
+          },
+          "children": []
+        },
+        {
+          "name": "telegramAgentListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "fileName": "agent.bal",
+            "startLine": {
+              "line": 9,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 9,
+              "offset": 97
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "line": 9
+          },
+          "children": []
+        },
+        {
+          "name": "/telegramAgent",
+          "type": "SERVICE",
+          "lineRange": {
+            "fileName": "agent.bal",
+            "startLine": {
+              "line": 11,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 17,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "basePath": "/telegramAgent",
+            "listenerType": "$CompilationError$"
+          },
+          "children": [
+            {
+              "name": "chat",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "agent.bal",
+                "startLine": {
+                  "line": 12,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 16,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "post",
+                "parameters": [
+                  "request: agent:ChatReqMessage"
+                ],
+                "returns": "agent:ChatRespMessage|error"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
