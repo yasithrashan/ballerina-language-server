@@ -1,5 +1,222 @@
 {
   "description": "Simple project with service_class",
   "source": "service_class",
-  "output": {}
+  "output": {
+    "service_class.bal": {
+      "fileName": "service_class.bal",
+      "absoluteFilePath": "service_class.bal",
+      "artifacts": [
+        {
+          "name": "Album",
+          "type": "TYPE",
+          "lineRange": {
+            "fileName": "service_class.bal",
+            "startLine": {
+              "line": 2,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 5,
+              "offset": 3
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "fields": [
+              "title: string",
+              "artist: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "MusicService",
+          "type": "CLASS",
+          "lineRange": {
+            "fileName": "service_class.bal",
+            "startLine": {
+              "line": 7,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 47,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public",
+            "service"
+          ],
+          "properties": {},
+          "children": [
+            {
+              "name": "albums",
+              "type": "FIELD",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 10,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 13,
+                  "offset": 6
+                }
+              },
+              "modifiers": [
+                "private"
+              ],
+              "properties": {
+                "type": "table<Album> key(title)"
+              },
+              "children": []
+            },
+            {
+              "name": "albums",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 15,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 17,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "Album[]"
+              },
+              "children": []
+            },
+            {
+              "name": "albums",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 19,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 22,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "post",
+                "parameters": [
+                  "album: Album"
+                ],
+                "returns": "Album"
+              },
+              "children": []
+            },
+            {
+              "name": "albums/[string title]",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 24,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 30,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "Album|http:NotFound"
+              },
+              "children": []
+            },
+            {
+              "name": "albums/[string title]",
+              "type": "RESOURCE",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 32,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 38,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "delete",
+                "parameters": [],
+                "returns": "http:Ok|http:NotFound"
+              },
+              "children": []
+            },
+            {
+              "name": "init",
+              "type": "FUNCTION",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 40,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 42,
+                  "offset": 5
+                }
+              },
+              "modifiers": [],
+              "properties": {
+                "parameters": [],
+                "returns": "error?"
+              },
+              "children": []
+            },
+            {
+              "name": "getAlbumCount",
+              "type": "FUNCTION",
+              "lineRange": {
+                "fileName": "service_class.bal",
+                "startLine": {
+                  "line": 44,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 46,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "public"
+              ],
+              "properties": {
+                "parameters": [],
+                "returns": "int"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
