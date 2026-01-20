@@ -18,14 +18,14 @@
 
 package io.ballerina.artifactsgenerator.codemap;
 
+import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.tools.text.LinePosition;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.ballerina.compiler.syntax.tree.Node;
-import io.ballerina.tools.text.LinePosition;
 
 public record CodeMapArtifact(String name, String type, LineRange lineRange, List<String> modifiers,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {
