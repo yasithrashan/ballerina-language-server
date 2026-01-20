@@ -21,6 +21,7 @@
           },
           "modifiers": [],
           "properties": {
+            "comment": "Basic types",
             "fields": [],
             "documentation": "This is variable with return type int",
             "typeDescriptor": "int"
@@ -143,6 +144,7 @@
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Union types",
             "typeDescriptor": "string|int"
           },
           "children": []
@@ -172,11 +174,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 15,
+              "line": 16,
               "offset": 0
             },
             "endLine": {
-              "line": 20,
+              "line": 21,
               "offset": 2
             }
           },
@@ -188,6 +190,7 @@
               "hobbies: string[]",
               "married: boolean"
             ],
+            "comment": "Record types\nWith fields",
             "typeDescriptor": "record"
           },
           "children": []
@@ -197,11 +200,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 23,
+              "line": 24,
               "offset": 0
             },
             "endLine": {
-              "line": 27,
+              "line": 28,
               "offset": 3
             }
           },
@@ -211,6 +214,7 @@
               "id: string",
               "count: int"
             ],
+            "comment": "Open record with rest field",
             "typeDescriptor": "record"
           },
           "children": []
@@ -220,11 +224,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 30,
+              "line": 31,
               "offset": 0
             },
             "endLine": {
-              "line": 33,
+              "line": 34,
               "offset": 3
             }
           },
@@ -234,6 +238,7 @@
               "id: string",
               "count: int"
             ],
+            "comment": "Closed record without rest field",
             "typeDescriptor": "record"
           },
           "children": []
@@ -243,17 +248,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 36,
+              "line": 37,
               "offset": 0
             },
             "endLine": {
-              "line": 36,
+              "line": 37,
               "offset": 27
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Array types",
             "typeDescriptor": "int[]"
           },
           "children": []
@@ -263,11 +269,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 37,
+              "line": 38,
               "offset": 0
             },
             "endLine": {
-              "line": 37,
+              "line": 38,
               "offset": 33
             }
           },
@@ -283,11 +289,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 38,
+              "line": 39,
               "offset": 0
             },
             "endLine": {
-              "line": 38,
+              "line": 39,
               "offset": 27
             }
           },
@@ -303,17 +309,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 41,
+              "line": 42,
               "offset": 0
             },
             "endLine": {
-              "line": 41,
+              "line": 42,
               "offset": 31
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Tuple types",
             "typeDescriptor": "[string, int]"
           },
           "children": []
@@ -323,11 +330,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 42,
+              "line": 43,
               "offset": 0
             },
             "endLine": {
-              "line": 42,
+              "line": 43,
               "offset": 42
             }
           },
@@ -343,17 +350,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 45,
+              "line": 46,
               "offset": 0
             },
             "endLine": {
-              "line": 45,
+              "line": 46,
               "offset": 34
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Map types",
             "typeDescriptor": "map<string>"
           },
           "children": []
@@ -363,11 +371,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 46,
+              "line": 47,
               "offset": 0
             },
             "endLine": {
-              "line": 46,
+              "line": 47,
               "offset": 34
             }
           },
@@ -383,17 +391,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 49,
+              "line": 50,
               "offset": 0
             },
             "endLine": {
-              "line": 54,
+              "line": 55,
               "offset": 2
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Object types",
             "typeDescriptor": "object {public string name; public int age; public function getFullDetails() returns string;}"
           },
           "children": []
@@ -403,17 +412,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 57,
+              "line": 58,
               "offset": 0
             },
             "endLine": {
-              "line": 57,
+              "line": 58,
               "offset": 60
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Function types",
             "typeDescriptor": "function (string) returns string"
           },
           "children": []
@@ -423,11 +433,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 58,
+              "line": 59,
               "offset": 0
             },
             "endLine": {
-              "line": 58,
+              "line": 59,
               "offset": 55
             }
           },
@@ -443,17 +453,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 61,
+              "line": 62,
               "offset": 0
             },
             "endLine": {
-              "line": 61,
+              "line": 62,
               "offset": 36
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Error types",
             "typeDescriptor": "error"
           },
           "children": []
@@ -463,11 +474,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 62,
+              "line": 63,
               "offset": 0
             },
             "endLine": {
-              "line": 62,
+              "line": 63,
               "offset": 84
             }
           },
@@ -483,17 +494,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 65,
+              "line": 66,
               "offset": 0
             },
             "endLine": {
-              "line": 65,
+              "line": 66,
               "offset": 45
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Intersection types",
             "typeDescriptor": "readonly & Person"
           },
           "children": []
@@ -503,17 +515,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 68,
+              "line": 69,
               "offset": 0
             },
             "endLine": {
-              "line": 68,
+              "line": 69,
               "offset": 38
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Table type",
             "typeDescriptor": "table<Person>"
           },
           "children": []
@@ -523,11 +536,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 69,
+              "line": 70,
               "offset": 0
             },
             "endLine": {
-              "line": 69,
+              "line": 70,
               "offset": 53
             }
           },
@@ -543,17 +556,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 72,
+              "line": 73,
               "offset": 0
             },
             "endLine": {
-              "line": 72,
+              "line": 73,
               "offset": 40
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Stream type",
             "typeDescriptor": "stream<Person>"
           },
           "children": []
@@ -563,17 +577,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 75,
+              "line": 76,
               "offset": 0
             },
             "endLine": {
-              "line": 75,
+              "line": 76,
               "offset": 35
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "XML types",
             "typeDescriptor": "xml:Element"
           },
           "children": []
@@ -583,11 +598,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 76,
+              "line": 77,
               "offset": 0
             },
             "endLine": {
-              "line": 76,
+              "line": 77,
               "offset": 34
             }
           },
@@ -603,11 +618,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 79,
+              "line": 80,
               "offset": 0
             },
             "endLine": {
-              "line": 83,
+              "line": 84,
               "offset": 3
             }
           },
@@ -621,6 +636,7 @@
               "hobbies: string[]",
               "married: boolean"
             ],
+            "comment": "Type inclusion",
             "typeDescriptor": "record"
           },
           "children": []
@@ -630,17 +646,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 86,
+              "line": 87,
               "offset": 0
             },
             "endLine": {
-              "line": 86,
+              "line": 87,
               "offset": 34
             }
           },
           "modifiers": [],
           "properties": {
             "fields": [],
+            "comment": "Constrained types",
             "typeDescriptor": "int:Signed16"
           },
           "children": []
@@ -650,11 +667,11 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 87,
+              "line": 88,
               "offset": 0
             },
             "endLine": {
-              "line": 87,
+              "line": 88,
               "offset": 39
             }
           },
@@ -670,16 +687,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 90,
+              "line": 91,
               "offset": 0
             },
             "endLine": {
-              "line": 96,
+              "line": 97,
               "offset": 1
             }
           },
           "modifiers": [],
-          "properties": {},
+          "properties": {
+            "comment": "Enum type"
+          },
           "children": []
         },
         {
@@ -687,16 +706,18 @@
           "type": "TYPE",
           "lineRange": {
             "startLine": {
-              "line": 99,
+              "line": 100,
               "offset": 0
             },
             "endLine": {
-              "line": 104,
+              "line": 105,
               "offset": 1
             }
           },
           "modifiers": [],
-          "properties": {},
+          "properties": {
+            "comment": "Direction enum type"
+          },
           "children": []
         },
         {
@@ -704,11 +725,11 @@
           "type": "CLASS",
           "lineRange": {
             "startLine": {
-              "line": 107,
+              "line": 108,
               "offset": 0
             },
             "endLine": {
-              "line": 132,
+              "line": 133,
               "offset": 1
             }
           },
@@ -716,18 +737,20 @@
             "public",
             "service"
           ],
-          "properties": {},
+          "properties": {
+            "comment": "Service class definition"
+          },
           "children": [
             {
               "name": "people",
               "type": "FIELD",
               "lineRange": {
                 "startLine": {
-                  "line": 108,
+                  "line": 109,
                   "offset": 4
                 },
                 "endLine": {
-                  "line": 108,
+                  "line": 109,
                   "offset": 39
                 }
               },
@@ -745,11 +768,11 @@
               "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
-                  "line": 110,
+                  "line": 111,
                   "offset": 4
                 },
                 "endLine": {
-                  "line": 113,
+                  "line": 114,
                   "offset": 5
                 }
               },
@@ -767,11 +790,11 @@
               "type": "RESOURCE",
               "lineRange": {
                 "startLine": {
-                  "line": 115,
+                  "line": 116,
                   "offset": 4
                 },
                 "endLine": {
-                  "line": 117,
+                  "line": 118,
                   "offset": 5
                 }
               },
@@ -790,11 +813,11 @@
               "type": "RESOURCE",
               "lineRange": {
                 "startLine": {
-                  "line": 119,
+                  "line": 120,
                   "offset": 4
                 },
                 "endLine": {
-                  "line": 126,
+                  "line": 127,
                   "offset": 5
                 }
               },
@@ -813,11 +836,11 @@
               "type": "RESOURCE",
               "lineRange": {
                 "startLine": {
-                  "line": 128,
+                  "line": 129,
                   "offset": 4
                 },
                 "endLine": {
-                  "line": 131,
+                  "line": 132,
                   "offset": 5
                 }
               },
