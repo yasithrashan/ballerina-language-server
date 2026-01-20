@@ -4,13 +4,12 @@
   "output": {
     "function.bal": {
       "fileName": "function.bal",
-      "absoluteFilePath": "function.bal",
+      "relativeFilePath": "function.bal",
       "artifacts": [
         {
           "name": "sayHello",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 3,
               "offset": 0
@@ -33,7 +32,6 @@
           "name": "greet",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 8,
               "offset": 0
@@ -58,7 +56,6 @@
           "name": "add",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 13,
               "offset": 0
@@ -84,7 +81,6 @@
           "name": "divideAndRemainder",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 18,
               "offset": 0
@@ -110,7 +106,6 @@
           "name": "calculateInterest",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 25,
               "offset": 0
@@ -137,7 +132,6 @@
           "name": "sum",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 30,
               "offset": 0
@@ -162,7 +156,6 @@
           "name": "divide",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 39,
               "offset": 0
@@ -188,7 +181,6 @@
           "name": "fn\\#with\\-Identifiers",
           "type": "FUNCTION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 47,
               "offset": 0
@@ -209,7 +201,6 @@
           "name": "automation",
           "type": "AUTOMATION",
           "lineRange": {
-            "fileName": "function.bal",
             "startLine": {
               "line": 52,
               "offset": 0

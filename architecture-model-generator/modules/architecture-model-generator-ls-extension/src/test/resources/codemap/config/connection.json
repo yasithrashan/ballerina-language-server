@@ -4,13 +4,12 @@
   "output": {
     "connection.bal": {
       "fileName": "connection.bal",
-      "absoluteFilePath": "connection.bal",
+      "relativeFilePath": "connection.bal",
       "artifacts": [
         {
           "name": "httpConnection",
           "type": "CONNECTION",
           "lineRange": {
-            "fileName": "connection.bal",
             "startLine": {
               "line": 6,
               "offset": 0
@@ -33,7 +32,6 @@
           "name": "graphQlConnection",
           "type": "CONNECTION",
           "lineRange": {
-            "fileName": "connection.bal",
             "startLine": {
               "line": 16,
               "offset": 0
@@ -56,7 +54,6 @@
           "name": "tcpConnection",
           "type": "CONNECTION",
           "lineRange": {
-            "fileName": "connection.bal",
             "startLine": {
               "line": 21,
               "offset": 0
@@ -79,7 +76,6 @@
           "name": "localClient",
           "type": "CONNECTION",
           "lineRange": {
-            "fileName": "connection.bal",
             "startLine": {
               "line": 26,
               "offset": 0
@@ -102,7 +98,6 @@
           "name": "LocalClient",
           "type": "CLIENT_CLASS",
           "lineRange": {
-            "fileName": "connection.bal",
             "startLine": {
               "line": 29,
               "offset": 0
@@ -122,7 +117,6 @@
               "name": "baseUrl",
               "type": "FIELD",
               "lineRange": {
-                "fileName": "connection.bal",
                 "startLine": {
                   "line": 30,
                   "offset": 4
@@ -144,7 +138,6 @@
               "name": "timeout",
               "type": "FIELD",
               "lineRange": {
-                "fileName": "connection.bal",
                 "startLine": {
                   "line": 31,
                   "offset": 4
@@ -166,7 +159,6 @@
               "name": "init",
               "type": "FUNCTION",
               "lineRange": {
-                "fileName": "connection.bal",
                 "startLine": {
                   "line": 33,
                   "offset": 4
@@ -193,7 +185,6 @@
               "name": "getData",
               "type": "REMOTE",
               "lineRange": {
-                "fileName": "connection.bal",
                 "startLine": {
                   "line": 39,
                   "offset": 4
