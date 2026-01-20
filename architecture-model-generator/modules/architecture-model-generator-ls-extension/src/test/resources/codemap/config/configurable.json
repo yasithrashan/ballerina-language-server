@@ -24,7 +24,8 @@
           ],
           "properties": {
             "type": "string",
-            "line": 1
+            "line": 1,
+            "comment": "Configurable string variable"
           },
           "children": []
         },
@@ -46,7 +47,8 @@
           ],
           "properties": {
             "type": "int",
-            "line": 4
+            "line": 4,
+            "comment": "Configurable int variable"
           },
           "children": []
         },
@@ -68,7 +70,8 @@
           ],
           "properties": {
             "type": "boolean",
-            "line": 7
+            "line": 7,
+            "comment": "Configurable boolean variable"
           },
           "children": []
         },
@@ -90,7 +93,8 @@
           ],
           "properties": {
             "type": "float",
-            "line": 10
+            "line": 10,
+            "comment": "Configurable float variable"
           },
           "children": []
         },
@@ -114,6 +118,7 @@
               "age: int",
               "email: string"
             ],
+            "comment": "Configurable table array",
             "typeDescriptor": "record"
           },
           "children": []
@@ -158,7 +163,8 @@
           ],
           "properties": {
             "type": "json & readonly",
-            "line": 25
+            "line": 25,
+            "comment": "Configurable json variable"
           },
           "children": []
         },
@@ -180,7 +186,8 @@
           ],
           "properties": {
             "type": "anydata & readonly",
-            "line": 32
+            "line": 32,
+            "comment": "Configurable anydata variable"
           },
           "children": []
         }
