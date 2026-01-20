@@ -1,4 +1,6 @@
 // Basic types
+
+# This is variable with return type int
 public type MyInt int;
 public type MyString string;
 public type MyFloat float;
