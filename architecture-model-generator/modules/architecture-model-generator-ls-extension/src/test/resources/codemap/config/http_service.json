@@ -4,13 +4,12 @@
   "output": {
     "http_service.bal": {
       "fileName": "http_service.bal",
-      "absoluteFilePath": "http_service.bal",
+      "relativeFilePath": "http_service.bal",
       "artifacts": [
         {
           "name": "/root/path\\-id",
           "type": "SERVICE",
           "lineRange": {
-            "fileName": "http_service.bal",
             "startLine": {
               "line": 4,
               "offset": 0
@@ -31,7 +30,6 @@
               "name": "eting",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 7,
                   "offset": 4
@@ -55,7 +53,6 @@
               "name": "gre\\#eting",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 11,
                   "offset": 4
@@ -79,7 +76,6 @@
               "name": "greeting",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 16,
                   "offset": 4
@@ -105,7 +101,6 @@
               "name": "echo/[string message]",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 21,
                   "offset": 4
@@ -129,7 +124,6 @@
               "name": "data",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 26,
                   "offset": 4
@@ -157,7 +151,6 @@
           "name": "securedEP",
           "type": "LISTENER",
           "lineRange": {
-            "fileName": "http_service.bal",
             "startLine": {
               "line": 34,
               "offset": 0
@@ -182,7 +175,6 @@
           "name": "refListener",
           "type": "LISTENER",
           "lineRange": {
-            "fileName": "http_service.bal",
             "startLine": {
               "line": 43,
               "offset": 0
@@ -203,7 +195,6 @@
           "name": "httpClient",
           "type": "CONNECTION",
           "lineRange": {
-            "fileName": "http_service.bal",
             "startLine": {
               "line": 45,
               "offset": 0
@@ -226,7 +217,6 @@
           "name": "/",
           "type": "SERVICE",
           "lineRange": {
-            "fileName": "http_service.bal",
             "startLine": {
               "line": 47,
               "offset": 0
@@ -246,7 +236,6 @@
               "name": "init",
               "type": "FUNCTION",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 52,
                   "offset": 4
@@ -267,7 +256,6 @@
               "name": "greeting",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 55,
                   "offset": 4
@@ -293,7 +281,6 @@
           "name": "/api/v1",
           "type": "SERVICE",
           "lineRange": {
-            "fileName": "http_service.bal",
             "startLine": {
               "line": 66,
               "offset": 0
@@ -313,7 +300,6 @@
               "name": "path",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "http_service.bal",
                 "startLine": {
                   "line": 68,
                   "offset": 4

@@ -4,13 +4,12 @@
   "output": {
     "configurable.bal": {
       "fileName": "configurable.bal",
-      "absoluteFilePath": "configurable.bal",
+      "relativeFilePath": "configurable.bal",
       "artifacts": [
         {
           "name": "apiUrl",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 1,
               "offset": 0
@@ -33,7 +32,6 @@
           "name": "maxRetries",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 4,
               "offset": 0
@@ -56,7 +54,6 @@
           "name": "enableLogging",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 7,
               "offset": 0
@@ -79,7 +76,6 @@
           "name": "timeout",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 10,
               "offset": 0
@@ -102,7 +98,6 @@
           "name": "User",
           "type": "TYPE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 13,
               "offset": 0
@@ -127,7 +122,6 @@
           "name": "users",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 19,
               "offset": 0
@@ -150,7 +144,6 @@
           "name": "serverConfig",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 25,
               "offset": 0
@@ -173,7 +166,6 @@
           "name": "defaultSettings",
           "type": "CONFIGURABLE",
           "lineRange": {
-            "fileName": "configurable.bal",
             "startLine": {
               "line": 32,
               "offset": 0
