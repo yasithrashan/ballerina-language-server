@@ -24,7 +24,8 @@
           ],
           "properties": {
             "type": "http:Client",
-            "line": 6
+            "line": 6,
+            "comment": "HTTP connection"
           },
           "children": []
         },
@@ -46,7 +47,8 @@
           ],
           "properties": {
             "type": "graphql:Client",
-            "line": 16
+            "line": 16,
+            "comment": "GraphQL connection"
           },
           "children": []
         },
@@ -68,7 +70,8 @@
           ],
           "properties": {
             "type": "tcp:Client",
-            "line": 21
+            "line": 21,
+            "comment": "TCP connection"
           },
           "children": []
         },
@@ -90,7 +93,8 @@
           ],
           "properties": {
             "type": "LocalClient",
-            "line": 26
+            "line": 26,
+            "comment": "Create a variable from the local client class"
           },
           "children": []
         },
@@ -111,7 +115,9 @@
             "public",
             "client"
           ],
-          "properties": {},
+          "properties": {
+            "comment": "Define a local client class"
+          },
           "children": [
             {
               "name": "baseUrl",

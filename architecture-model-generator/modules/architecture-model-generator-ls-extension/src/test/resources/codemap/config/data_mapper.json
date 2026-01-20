@@ -26,6 +26,7 @@
               "age: int",
               "address: string"
             ],
+            "comment": "Define some sample record types",
             "typeDescriptor": "record"
           },
           "children": []
@@ -123,7 +124,8 @@
             "parameters": [
               "celsius: float"
             ],
-            "returns": "float"
+            "returns": "float",
+            "comment": "Simple primitive type mappers"
           },
           "children": []
         },
@@ -212,7 +214,8 @@
             "parameters": [
               "person: Person"
             ],
-            "returns": "Employee"
+            "returns": "Employee",
+            "comment": "Record mappers"
           },
           "children": []
         },
@@ -279,7 +282,8 @@
             "parameters": [
               "numbers: int[]"
             ],
-            "returns": "int[]"
+            "returns": "int[]",
+            "comment": "Array transformation mapper"
           },
           "children": []
         },
