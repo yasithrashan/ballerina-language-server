@@ -34,6 +34,9 @@ import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
 import io.ballerina.compiler.syntax.tree.EnumDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ExpressionFunctionBodyNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
+import io.ballerina.compiler.syntax.tree.MarkdownDocumentationLineNode;
+import io.ballerina.compiler.syntax.tree.MarkdownDocumentationNode;
+import io.ballerina.compiler.syntax.tree.MetadataNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
@@ -107,6 +110,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         String returnType = extractReturnType(functionDefinitionNode.functionSignature());
         functionBuilder.returns(returnType);
 
+        extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
+
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
             functionBuilder
                     .name(AUTOMATION_FUNCTION_NAME)
@@ -164,6 +169,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
         serviceBuilder.type("SERVICE");
 
+        extractDocumentation(serviceDeclarationNode.metadata()).ifPresent(serviceBuilder::documentation);
+
         serviceDeclarationNode.members().forEach(member -> {
             member.apply(this).ifPresent(serviceBuilder::addChild);
         });
@@ -195,6 +202,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                 listenerBuilder.addProperty("arguments", args);
             }
         }
+
+        extractDocumentation(listenerDeclarationNode.metadata()).ifPresent(listenerBuilder::documentation);
 
         return Optional.of(listenerBuilder.build());
     }
@@ -270,6 +279,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
             }
         });
 
+        extractDocumentation(moduleVariableDeclarationNode.metadata()).ifPresent(variableBuilder::documentation);
+
         return Optional.of(variableBuilder.build());
     }
 
@@ -294,6 +305,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
         typeBuilder.fields(fields);
 
+        extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
+
         return Optional.of(typeBuilder.build());
     }
 
@@ -302,6 +315,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(enumDeclarationNode)
                 .name(enumDeclarationNode.identifier().text())
                 .type("TYPE");
+        extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
         return Optional.of(typeBuilder.build());
     }
 
@@ -315,6 +329,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                 .name(classDefinitionNode.className().text())
                 .type(artifactType)
                 .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(), classTypeQualifiers));
+
+        extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
 
         classDefinitionNode.members().forEach(member -> {
             member.apply(this).ifPresent(classBuilder::addChild);
@@ -495,5 +511,29 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
 
     private static boolean hasQualifier(NodeList<Token> qualifierList, SyntaxKind kind) {
         return qualifierList.stream().anyMatch(qualifier -> qualifier.kind() == kind);
+    }
+
+    private Optional<String> extractDocumentation(Optional<MetadataNode> metadata) {
+        if (metadata.isEmpty()) {
+            return Optional.empty();
+        }
+        return metadata.get().documentationString()
+                .filter(node -> node instanceof MarkdownDocumentationNode)
+                .map(node -> {
+                    MarkdownDocumentationNode docNode = (MarkdownDocumentationNode) node;
+                    StringBuilder description = new StringBuilder();
+                    for (Node documentationLine : docNode.documentationLines()) {
+                        SyntaxKind lineKind = documentationLine.kind();
+                        if (lineKind == SyntaxKind.MARKDOWN_DOCUMENTATION_LINE ||
+                                lineKind == SyntaxKind.MARKDOWN_REFERENCE_DOCUMENTATION_LINE ||
+                                lineKind == SyntaxKind.MARKDOWN_DEPRECATION_DOCUMENTATION_LINE) {
+                            NodeList<Node> elements =
+                                    ((MarkdownDocumentationLineNode) documentationLine).documentElements();
+                            elements.forEach(element -> description.append(element.toSourceCode()));
+                        }
+                    }
+                    return description.toString().strip();
+                })
+                .filter(doc -> !doc.isEmpty());
     }
 }
