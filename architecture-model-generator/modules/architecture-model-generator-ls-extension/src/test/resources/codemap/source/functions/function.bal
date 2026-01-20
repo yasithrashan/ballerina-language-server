@@ -1,11 +1,14 @@
 import ballerina/io;
 
 // Basic function with no parameters and no return value
+# Function with documentation
 public function sayHello() {
     io:println("Hello, World!");
 }
 
 // Function with parameters
+# Function with,
+# Multiple lines of documentation
 public function greet(string name) {
     io:println("Hello, " + name + "!");
 }
