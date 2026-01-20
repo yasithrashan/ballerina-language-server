@@ -23,8 +23,9 @@
             "public"
           ],
           "properties": {
-            "parameters": [],
             "returns": "()",
+            "comment": "Basic function with no parameters and no return value",
+            "parameters": [],
             "documentation": "Function with documentation"
           },
           "children": []
@@ -46,10 +47,11 @@
             "public"
           ],
           "properties": {
+            "returns": "()",
+            "comment": "Function with parameters",
             "parameters": [
               "name: string"
             ],
-            "returns": "()",
             "documentation": "Function with,\nMultiple lines of documentation"
           },
           "children": []
@@ -75,7 +77,8 @@
               "a: int",
               "b: int"
             ],
-            "returns": "int"
+            "returns": "int",
+            "comment": "Function with return value"
           },
           "children": []
         },
@@ -100,7 +103,8 @@
               "dividend: int",
               "divisor: int"
             ],
-            "returns": "[int, int]"
+            "returns": "[int, int]",
+            "comment": "Function with multiple return values"
           },
           "children": []
         },
@@ -126,7 +130,8 @@
               "rate: decimal",
               "years: int = 1"
             ],
-            "returns": "decimal"
+            "returns": "decimal",
+            "comment": "Function with default parameter values"
           },
           "children": []
         },
@@ -150,7 +155,8 @@
             "parameters": [
               "numbers: int..."
             ],
-            "returns": "int"
+            "returns": "int",
+            "comment": "Function with rest parameters"
           },
           "children": []
         },
@@ -175,7 +181,8 @@
               "a: int",
               "b: int"
             ],
-            "returns": "float|error"
+            "returns": "float|error",
+            "comment": "Function with error handling"
           },
           "children": []
         },
@@ -217,7 +224,8 @@
           ],
           "properties": {
             "parameters": [],
-            "returns": "()"
+            "returns": "()",
+            "comment": "Main function"
           },
           "children": []
         }

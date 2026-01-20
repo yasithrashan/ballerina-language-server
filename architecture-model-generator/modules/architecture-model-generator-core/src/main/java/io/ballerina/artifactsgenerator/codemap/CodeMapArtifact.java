@@ -135,6 +135,10 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
             return addProperty("documentation", documentation);
         }
 
+        public Builder comment(String comment) {
+            return addProperty("comment", comment);
+        }
+
         public CodeMapArtifact build() {
             return new CodeMapArtifact(name, type, lineRange, new ArrayList<>(modifiers),
                     new HashMap<>(properties), new ArrayList<>(children));

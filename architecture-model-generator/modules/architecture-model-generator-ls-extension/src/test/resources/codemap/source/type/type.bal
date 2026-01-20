@@ -13,6 +13,7 @@ public type StringOrInt string|int;
 public type Nullable string?; // string|()
 
 // Record types
+// With fields
 public type Person record {
     readonly string name;
     int age;

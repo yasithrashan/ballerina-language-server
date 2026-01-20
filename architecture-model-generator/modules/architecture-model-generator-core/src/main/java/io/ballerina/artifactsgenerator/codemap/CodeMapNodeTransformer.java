@@ -86,14 +86,21 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
     private final SemanticModel semanticModel;
     private final String projectPath;
     private final ModuleInfo moduleInfo;
+    private final boolean extractComments;
 
     private static final String AUTOMATION_FUNCTION_NAME = "automation";
     private static final String MAIN_FUNCTION_NAME = "main";
 
     public CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo) {
+        this(projectPath, semanticModel, moduleInfo, true);
+    }
+
+    public CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo,
+                                  boolean extractComments) {
         this.semanticModel = semanticModel;
         this.projectPath = projectPath;
         this.moduleInfo = moduleInfo;
+        this.extractComments = extractComments;
     }
 
     @Override
@@ -111,6 +118,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         functionBuilder.returns(returnType);
 
         extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
+        extractComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
 
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
             functionBuilder
@@ -170,6 +178,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         serviceBuilder.type("SERVICE");
 
         extractDocumentation(serviceDeclarationNode.metadata()).ifPresent(serviceBuilder::documentation);
+        extractComments(serviceDeclarationNode).ifPresent(serviceBuilder::comment);
 
         serviceDeclarationNode.members().forEach(member -> {
             member.apply(this).ifPresent(serviceBuilder::addChild);
@@ -204,6 +213,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         }
 
         extractDocumentation(listenerDeclarationNode.metadata()).ifPresent(listenerBuilder::documentation);
+        extractComments(listenerDeclarationNode).ifPresent(listenerBuilder::comment);
 
         return Optional.of(listenerBuilder.build());
     }
@@ -280,6 +290,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         });
 
         extractDocumentation(moduleVariableDeclarationNode.metadata()).ifPresent(variableBuilder::documentation);
+        extractComments(moduleVariableDeclarationNode).ifPresent(variableBuilder::comment);
 
         return Optional.of(variableBuilder.build());
     }
@@ -306,6 +317,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         typeBuilder.fields(fields);
 
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
+        extractComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
 
         return Optional.of(typeBuilder.build());
     }
@@ -316,6 +328,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                 .name(enumDeclarationNode.identifier().text())
                 .type("TYPE");
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
+        extractComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
         return Optional.of(typeBuilder.build());
     }
 
@@ -331,6 +344,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                 .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(), classTypeQualifiers));
 
         extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
+        extractComments(classDefinitionNode).ifPresent(classBuilder::comment);
 
         classDefinitionNode.members().forEach(member -> {
             member.apply(this).ifPresent(classBuilder::addChild);
@@ -354,6 +368,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                 .modifiers(modifiers);
 
         fieldBuilder.addProperty("type", fieldType);
+        extractComments(objectFieldNode).ifPresent(fieldBuilder::comment);
 
         return Optional.of(fieldBuilder.build());
     }
@@ -535,5 +550,26 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
                     return description.toString().strip();
                 })
                 .filter(doc -> !doc.isEmpty());
+    }
+
+    private Optional<String> extractComments(Node node) {
+        if (!extractComments) {
+            return Optional.empty();
+        }
+        List<String> comments = new ArrayList<>();
+        // Extract leading minutiae (comments before the node)
+        node.leadingMinutiae().forEach(minutiae -> {
+            if (minutiae.kind() == SyntaxKind.COMMENT_MINUTIAE) {
+                String commentText = minutiae.text().strip();
+                // Remove the leading "//" and trim
+                if (commentText.startsWith("//")) {
+                    comments.add(commentText.substring(2).strip());
+                }
+            }
+        });
+        if (comments.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(String.join("\n", comments));
     }
 }

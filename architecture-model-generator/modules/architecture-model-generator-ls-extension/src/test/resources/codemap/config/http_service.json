@@ -21,6 +21,7 @@
           },
           "modifiers": [],
           "properties": {
+            "comment": "Define the service",
             "basePath": "/root/path\\-id",
             "port": "9090",
             "listenerType": "http:Listener"
@@ -44,8 +45,9 @@
               ],
               "properties": {
                 "accessor": "get\\#gre",
-                "parameters": [],
-                "returns": "string"
+                "returns": "string",
+                "comment": "Resource fucntions with escaped characters",
+                "parameters": []
               },
               "children": []
             },
@@ -90,10 +92,11 @@
               ],
               "properties": {
                 "accessor": "post",
+                "returns": "string",
+                "comment": "Resource function to handle GET requests at the root path",
                 "parameters": [
                   "name: string"
-                ],
-                "returns": "string"
+                ]
               },
               "children": []
             },
@@ -115,8 +118,9 @@
               ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "string"
+                "returns": "string",
+                "comment": "Resource function with path parameter",
+                "parameters": []
               },
               "children": []
             },
@@ -138,10 +142,11 @@
               ],
               "properties": {
                 "accessor": "post",
+                "returns": "json",
+                "comment": "Resource function to handle POST requests",
                 "parameters": [
                   "payload: json"
-                ],
-                "returns": "json"
+                ]
               },
               "children": []
             }
