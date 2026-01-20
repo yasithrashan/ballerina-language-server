@@ -4,13 +4,12 @@
   "output": {
     "tcp.bal": {
       "fileName": "tcp.bal",
-      "absoluteFilePath": "tcp.bal",
+      "relativeFilePath": "tcp.bal",
       "artifacts": [
         {
           "name": "tcpListener",
           "type": "LISTENER",
           "lineRange": {
-            "fileName": "tcp.bal",
             "startLine": {
               "line": 2,
               "offset": 0
@@ -34,7 +33,6 @@
           "name": "tcp:Service",
           "type": "SERVICE",
           "lineRange": {
-            "fileName": "tcp.bal",
             "startLine": {
               "line": 4,
               "offset": 0
@@ -54,7 +52,6 @@
               "name": "onConnect",
               "type": "REMOTE",
               "lineRange": {
-                "fileName": "tcp.bal",
                 "startLine": {
                   "line": 5,
                   "offset": 4
@@ -81,7 +78,6 @@
           "name": "TcpEchoService",
           "type": "CLASS",
           "lineRange": {
-            "fileName": "tcp.bal",
             "startLine": {
               "line": 16,
               "offset": 0
@@ -100,7 +96,6 @@
               "name": "onBytes",
               "type": "REMOTE",
               "lineRange": {
-                "fileName": "tcp.bal",
                 "startLine": {
                   "line": 19,
                   "offset": 4
@@ -126,7 +121,6 @@
               "name": "onError",
               "type": "REMOTE",
               "lineRange": {
-                "fileName": "tcp.bal",
                 "startLine": {
                   "line": 28,
                   "offset": 4
@@ -151,7 +145,6 @@
               "name": "onClose",
               "type": "REMOTE",
               "lineRange": {
-                "fileName": "tcp.bal",
                 "startLine": {
                   "line": 37,
                   "offset": 4

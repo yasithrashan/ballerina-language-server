@@ -4,13 +4,12 @@
   "output": {
     "service_class.bal": {
       "fileName": "service_class.bal",
-      "absoluteFilePath": "service_class.bal",
+      "relativeFilePath": "service_class.bal",
       "artifacts": [
         {
           "name": "Album",
           "type": "TYPE",
           "lineRange": {
-            "fileName": "service_class.bal",
             "startLine": {
               "line": 2,
               "offset": 0
@@ -34,7 +33,6 @@
           "name": "MusicService",
           "type": "CLASS",
           "lineRange": {
-            "fileName": "service_class.bal",
             "startLine": {
               "line": 7,
               "offset": 0
@@ -54,7 +52,6 @@
               "name": "albums",
               "type": "FIELD",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 10,
                   "offset": 4
@@ -76,7 +73,6 @@
               "name": "albums",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 15,
                   "offset": 4
@@ -100,7 +96,6 @@
               "name": "albums",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 19,
                   "offset": 4
@@ -126,7 +121,6 @@
               "name": "albums/[string title]",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 24,
                   "offset": 4
@@ -150,7 +144,6 @@
               "name": "albums/[string title]",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 32,
                   "offset": 4
@@ -174,7 +167,6 @@
               "name": "init",
               "type": "FUNCTION",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 40,
                   "offset": 4
@@ -195,7 +187,6 @@
               "name": "getAlbumCount",
               "type": "FUNCTION",
               "lineRange": {
-                "fileName": "service_class.bal",
                 "startLine": {
                   "line": 44,
                   "offset": 4

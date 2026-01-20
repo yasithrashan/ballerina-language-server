@@ -21,7 +21,7 @@ package io.ballerina.artifactsgenerator.codemap;
 import java.util.Collections;
 import java.util.List;
 
-public record CodeMapFile(String fileName, String absoluteFilePath, List<CodeMapArtifact> artifacts) {
+public record CodeMapFile(String fileName, String relativeFilePath, List<CodeMapArtifact> artifacts) {
 
     public CodeMapFile {
         artifacts = artifacts == null ? Collections.emptyList() : Collections.unmodifiableList(artifacts);
