@@ -19,13 +19,13 @@
               "offset": 55
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "comment": "Configurable string variable",
+            "modifiers": [
+              "configurable"
+            ],
             "type": "string",
-            "line": 1,
-            "comment": "Configurable string variable"
+            "line": 1
           },
           "children": []
         },
@@ -42,13 +42,13 @@
               "offset": 32
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "comment": "Configurable int variable",
+            "modifiers": [
+              "configurable"
+            ],
             "type": "int",
-            "line": 4,
-            "comment": "Configurable int variable"
+            "line": 4
           },
           "children": []
         },
@@ -65,13 +65,13 @@
               "offset": 39
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "comment": "Configurable boolean variable",
+            "modifiers": [
+              "configurable"
+            ],
             "type": "boolean",
-            "line": 7,
-            "comment": "Configurable boolean variable"
+            "line": 7
           },
           "children": []
         },
@@ -88,13 +88,13 @@
               "offset": 34
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "comment": "Configurable float variable",
+            "modifiers": [
+              "configurable"
+            ],
             "type": "float",
-            "line": 10,
-            "comment": "Configurable float variable"
+            "line": 10
           },
           "children": []
         },
@@ -111,7 +111,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "name: string",
@@ -136,10 +135,10 @@
               "offset": 2
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "modifiers": [
+              "configurable"
+            ],
             "type": "table<User> key(name) & readonly",
             "line": 19
           },
@@ -158,13 +157,13 @@
               "offset": 2
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "comment": "Configurable json variable",
+            "modifiers": [
+              "configurable"
+            ],
             "type": "json & readonly",
-            "line": 25,
-            "comment": "Configurable json variable"
+            "line": 25
           },
           "children": []
         },
@@ -181,13 +180,13 @@
               "offset": 41
             }
           },
-          "modifiers": [
-            "configurable"
-          ],
           "properties": {
+            "comment": "Configurable anydata variable",
+            "modifiers": [
+              "configurable"
+            ],
             "type": "anydata & readonly",
-            "line": 32,
-            "comment": "Configurable anydata variable"
+            "line": 32
           },
           "children": []
         }

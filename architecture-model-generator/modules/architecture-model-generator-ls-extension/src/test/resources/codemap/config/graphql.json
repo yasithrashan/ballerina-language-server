@@ -19,7 +19,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "id: string",
@@ -45,7 +44,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "Person[]",
             "line": 11,
@@ -66,10 +64,10 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "service"
-          ],
           "properties": {
+            "modifiers": [
+              "service"
+            ],
             "comment": "Define the service class"
           },
           "children": [
@@ -86,13 +84,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "Person[]"
+                "returns": "Person[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -109,15 +107,15 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
+                "returns": "Person?",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": [
                   "id: string"
-                ],
-                "returns": "Person?"
+                ]
               },
               "children": []
             }
@@ -136,10 +134,10 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "service"
-          ],
           "properties": {
+            "modifiers": [
+              "service"
+            ],
             "comment": "Define mutations"
           },
           "children": [
@@ -156,10 +154,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "name: string",
                   "age: int",
@@ -184,7 +182,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "comment": "Create and start the GraphQL service",
             "basePath": "/graphql",
@@ -205,13 +202,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "string"
+                "returns": "string",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -228,7 +225,6 @@
                   "offset": 22
                 }
               },
-              "modifiers": [],
               "properties": {
                 "type": "// Include the query and mutation service classes\n    Query",
                 "comment": "Include the query and mutation service classes"
@@ -248,7 +244,6 @@
                   "offset": 28
                 }
               },
-              "modifiers": [],
               "properties": {
                 "type": "Mutation"
               },

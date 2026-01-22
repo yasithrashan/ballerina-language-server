@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public record CodeMapArtifact(String name, String type, LineRange lineRange, List<String> modifiers,
+public record CodeMapArtifact(String name, String type, LineRange lineRange,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {
 
     public record LineRange(Position startLine, Position endLine) {
@@ -46,7 +46,6 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
     }
 
     public CodeMapArtifact {
-        modifiers = modifiers == null ? Collections.emptyList() : Collections.unmodifiableList(modifiers);
         properties = properties == null ? Collections.emptyMap() : Collections.unmodifiableMap(properties);
         children = children == null ? Collections.emptyList() : Collections.unmodifiableList(children);
     }
@@ -55,7 +54,6 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
         private String name;
         private String type;
         private LineRange lineRange;
-        private final List<String> modifiers = new ArrayList<>();
         private final Map<String, Object> properties = new HashMap<>();
         private final List<CodeMapArtifact> children = new ArrayList<>();
 
@@ -78,14 +76,10 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
             return this;
         }
 
-        public Builder addModifier(String modifier) {
-            this.modifiers.add(modifier);
-            return this;
-        }
-
         public Builder modifiers(List<String> modifiers) {
-            this.modifiers.clear();
-            this.modifiers.addAll(modifiers);
+            if (!modifiers.isEmpty()) {
+                this.properties.put("modifiers", new ArrayList<>(modifiers));
+            }
             return this;
         }
 
@@ -140,7 +134,7 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange, Lis
         }
 
         public CodeMapArtifact build() {
-            return new CodeMapArtifact(name, type, lineRange, new ArrayList<>(modifiers),
+            return new CodeMapArtifact(name, type, lineRange,
                     new HashMap<>(properties), new ArrayList<>(children));
         }
     }
