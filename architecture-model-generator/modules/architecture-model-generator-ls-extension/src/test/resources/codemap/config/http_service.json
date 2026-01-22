@@ -46,7 +46,7 @@
               "properties": {
                 "accessor": "get\\#gre",
                 "returns": "string",
-                "comment": "Resource fucntions with escaped characters",
+                "comment": "Resource function with escaped characters",
                 "parameters": []
               },
               "children": []

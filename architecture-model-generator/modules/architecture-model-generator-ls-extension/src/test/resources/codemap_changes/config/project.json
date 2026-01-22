@@ -1,0 +1,235 @@
+{
+  "description": "Simple test project - test incremental code map",
+  "source": "project/main.bal",
+  "output": {
+    "main.bal": {
+      "fileName": "main.bal",
+      "relativeFilePath": "main.bal",
+      "artifacts": [
+        {
+          "name": "sayHello",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 6,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "returns": "()",
+            "comment": "Basic function with no parameters and no return value",
+            "parameters": [],
+            "documentation": "Function with documentation"
+          },
+          "children": []
+        },
+        {
+          "name": "greet",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 9,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 13,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "returns": "()",
+            "comment": "Function with parameters",
+            "parameters": [
+              "name: string"
+            ],
+            "documentation": "Function with,\nMultiple lines of documentation"
+          },
+          "children": []
+        },
+        {
+          "name": "add",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 16,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 18,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "parameters": [
+              "a: int",
+              "b: int"
+            ],
+            "returns": "int",
+            "comment": "Function with return value"
+          },
+          "children": []
+        },
+        {
+          "name": "divideAndRemainder",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 21,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 25,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "parameters": [
+              "dividend: int",
+              "divisor: int"
+            ],
+            "returns": "[int, int]",
+            "comment": "Function with multiple return values"
+          },
+          "children": []
+        },
+        {
+          "name": "calculateInterest",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 28,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 30,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "parameters": [
+              "principal: decimal",
+              "rate: decimal",
+              "years: int = 1"
+            ],
+            "returns": "decimal",
+            "comment": "Function with default parameter values"
+          },
+          "children": []
+        },
+        {
+          "name": "sum",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 33,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 39,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "parameters": [
+              "numbers: int..."
+            ],
+            "returns": "int",
+            "comment": "Function with rest parameters"
+          },
+          "children": []
+        },
+        {
+          "name": "divide",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 42,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 47,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "parameters": [
+              "a: int",
+              "b: int"
+            ],
+            "returns": "float|error",
+            "comment": "Function with error handling"
+          },
+          "children": []
+        },
+        {
+          "name": "fn\\#with\\-Identifiers",
+          "type": "FUNCTION",
+          "lineRange": {
+            "startLine": {
+              "line": 50,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 52,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "parameters": [],
+            "returns": "()"
+          },
+          "children": []
+        },
+        {
+          "name": "automation",
+          "type": "AUTOMATION",
+          "lineRange": {
+            "startLine": {
+              "line": 55,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 74,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "public"
+          ],
+          "properties": {
+            "parameters": [],
+            "returns": "()",
+            "comment": "Main function"
+          },
+          "children": []
+        }
+      ]
+    }
+  }
+}
