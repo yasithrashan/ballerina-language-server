@@ -1,6 +1,6 @@
 {
   "description": "Simple project with http_service",
-  "source": "http_service",
+  "source": "http_service.bal",
   "output": {
     "http_service.bal": {
       "fileName": "http_service.bal",

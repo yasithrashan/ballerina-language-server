@@ -1,6 +1,6 @@
 {
   "description": "Simple project with np",
-  "source": "np",
+  "source": "np.bal",
   "output": {
     "np.bal": {
       "fileName": "np.bal",

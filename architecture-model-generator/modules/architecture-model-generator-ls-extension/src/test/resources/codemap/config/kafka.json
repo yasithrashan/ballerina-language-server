@@ -1,6 +1,6 @@
 {
   "description": "Simple project with kafka",
-  "source": "kafka",
+  "source": "kafka.bal",
   "output": {
     "kafka.bal": {
       "fileName": "kafka.bal",

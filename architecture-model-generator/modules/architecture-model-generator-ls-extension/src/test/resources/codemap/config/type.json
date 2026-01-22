@@ -1,6 +1,6 @@
 {
   "description": "Simple project with type",
-  "source": "type",
+  "source": "type.bal",
   "output": {
     "type.bal": {
       "fileName": "type.bal",
