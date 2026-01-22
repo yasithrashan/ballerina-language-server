@@ -19,7 +19,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "orderId: int",
@@ -44,7 +43,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "kafka:Listener",
             "line": 10,
@@ -68,7 +66,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "",
             "listenerType": "kafka:Listener"
@@ -87,10 +84,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "orders: Order[]"
                 ],

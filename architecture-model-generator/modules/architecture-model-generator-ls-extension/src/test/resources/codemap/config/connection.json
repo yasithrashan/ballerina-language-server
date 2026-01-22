@@ -19,13 +19,13 @@
               "offset": 3
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "comment": "HTTP connection",
+            "modifiers": [
+              "final"
+            ],
             "type": "http:Client",
-            "line": 6,
-            "comment": "HTTP connection"
+            "line": 6
           },
           "children": []
         },
@@ -42,13 +42,13 @@
               "offset": 3
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "comment": "GraphQL connection",
+            "modifiers": [
+              "final"
+            ],
             "type": "graphql:Client",
-            "line": 16,
-            "comment": "GraphQL connection"
+            "line": 16
           },
           "children": []
         },
@@ -65,13 +65,13 @@
               "offset": 3
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "comment": "TCP connection",
+            "modifiers": [
+              "final"
+            ],
             "type": "tcp:Client",
-            "line": 21,
-            "comment": "TCP connection"
+            "line": 21
           },
           "children": []
         },
@@ -88,13 +88,13 @@
               "offset": 72
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "comment": "Create a variable from the local client class",
+            "modifiers": [
+              "final"
+            ],
             "type": "LocalClient",
-            "line": 26,
-            "comment": "Create a variable from the local client class"
+            "line": 26
           },
           "children": []
         },
@@ -111,11 +111,11 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public",
-            "client"
-          ],
           "properties": {
+            "modifiers": [
+              "public",
+              "client"
+            ],
             "comment": "Define a local client class"
           },
           "children": [
@@ -132,10 +132,10 @@
                   "offset": 27
                 }
               },
-              "modifiers": [
-                "private"
-              ],
               "properties": {
+                "modifiers": [
+                  "private"
+                ],
                 "type": "string"
               },
               "children": []
@@ -153,10 +153,10 @@
                   "offset": 24
                 }
               },
-              "modifiers": [
-                "private"
-              ],
               "properties": {
+                "modifiers": [
+                  "private"
+                ],
                 "type": "int"
               },
               "children": []
@@ -174,11 +174,11 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "public",
-                "isolated"
-              ],
               "properties": {
+                "modifiers": [
+                  "public",
+                  "isolated"
+                ],
                 "parameters": [
                   "baseUrl: string",
                   "timeout: int = 30"
@@ -200,11 +200,11 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote",
-                "isolated"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote",
+                  "isolated"
+                ],
                 "parameters": [
                   "id: string"
                 ],

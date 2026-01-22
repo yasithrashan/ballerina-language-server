@@ -19,10 +19,10 @@
               "offset": 87
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "modifiers": [
+              "final"
+            ],
             "type": "$CompilationError$",
             "line": 3
           },
@@ -41,10 +41,10 @@
               "offset": 44
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "modifiers": [
+              "final"
+            ],
             "type": "$CompilationError$",
             "line": 4
           },
@@ -63,7 +63,6 @@
               "offset": 97
             }
           },
-          "modifiers": [],
           "properties": {
             "line": 9,
             "arguments": [
@@ -85,7 +84,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "/telegramAgent",
             "listenerType": "$CompilationError$"
@@ -104,15 +102,15 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "post",
+                "returns": "agent:ChatRespMessage|error",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": [
                   "request: agent:ChatReqMessage"
-                ],
-                "returns": "agent:ChatRespMessage|error"
+                ]
               },
               "children": []
             }

@@ -19,7 +19,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "title: string",
@@ -42,11 +41,12 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public",
-            "service"
-          ],
-          "properties": {},
+          "properties": {
+            "modifiers": [
+              "public",
+              "service"
+            ]
+          },
           "children": [
             {
               "name": "albums",
@@ -61,10 +61,10 @@
                   "offset": 6
                 }
               },
-              "modifiers": [
-                "private"
-              ],
               "properties": {
+                "modifiers": [
+                  "private"
+                ],
                 "type": "table<Album> key(title)"
               },
               "children": []
@@ -82,13 +82,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "Album[]"
+                "returns": "Album[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -105,15 +105,15 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "post",
+                "returns": "Album",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": [
                   "album: Album"
-                ],
-                "returns": "Album"
+                ]
               },
               "children": []
             },
@@ -130,13 +130,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "Album|http:NotFound"
+                "returns": "Album|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -153,13 +153,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "delete",
-                "parameters": [],
-                "returns": "http:Ok|http:NotFound"
+                "returns": "http:Ok|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -176,7 +176,6 @@
                   "offset": 5
                 }
               },
-              "modifiers": [],
               "properties": {
                 "parameters": [],
                 "returns": "error?"
@@ -196,10 +195,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "public"
-              ],
               "properties": {
+                "modifiers": [
+                  "public"
+                ],
                 "parameters": [],
                 "returns": "int"
               },

@@ -19,7 +19,6 @@
               "offset": 48
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "http:Listener",
             "line": 3,
@@ -42,7 +41,6 @@
               "offset": 84
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "rabbitmq:Listener",
             "line": 4,
@@ -66,7 +64,6 @@
               "offset": 71
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "http:Listener",
             "line": 5
@@ -86,7 +83,6 @@
               "offset": 48
             }
           },
-          "modifiers": [],
           "properties": {
             "line": 6,
             "arguments": [
