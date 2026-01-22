@@ -2,254 +2,6 @@
   "description": "Simple project with microservice using gRPC",
   "source": "microservice_grpc",
   "output": {
-    "modules/user_service/user_service.bal": {
-      "fileName": "user_service.bal",
-      "relativeFilePath": "modules/user_service/user_service.bal",
-      "artifacts": [
-        {
-          "name": "userListener",
-          "type": "LISTENER",
-          "lineRange": {
-            "startLine": {
-              "line": 3,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 3,
-              "offset": 49
-            }
-          },
-          "properties": {
-            "type": "grpc:Listener",
-            "line": 3,
-            "arguments": [
-              "9091"
-            ]
-          },
-          "children": []
-        },
-        {
-          "name": "\"UserService\"",
-          "type": "SERVICE",
-          "lineRange": {
-            "startLine": {
-              "line": 5,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 39,
-              "offset": 1
-            }
-          },
-          "properties": {
-            "basePath": "\"UserService\"",
-            "listenerType": "grpc:Listener"
-          },
-          "children": [
-            {
-              "name": "userStore",
-              "type": "FIELD",
-              "lineRange": {
-                "startLine": {
-                  "line": 8,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 8,
-                  "offset": 45
-                }
-              },
-              "properties": {
-                "modifiers": [
-                  "private"
-                ],
-                "type": "map<UserResponse>"
-              },
-              "children": []
-            },
-            {
-              "name": "GetUser",
-              "type": "REMOTE",
-              "lineRange": {
-                "startLine": {
-                  "line": 10,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 17,
-                  "offset": 5
-                }
-              },
-              "properties": {
-                "modifiers": [
-                  "remote"
-                ],
-                "parameters": [
-                  "userRequest: UserRequest"
-                ],
-                "returns": "UserResponse|error"
-              },
-              "children": []
-            },
-            {
-              "name": "CreateUser",
-              "type": "REMOTE",
-              "lineRange": {
-                "startLine": {
-                  "line": 19,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 33,
-                  "offset": 5
-                }
-              },
-              "properties": {
-                "modifiers": [
-                  "remote"
-                ],
-                "parameters": [
-                  "createRequest: CreateUserRequest"
-                ],
-                "returns": "UserResponse|error"
-              },
-              "children": []
-            },
-            {
-              "name": "ListUsers",
-              "type": "REMOTE",
-              "lineRange": {
-                "startLine": {
-                  "line": 35,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 38,
-                  "offset": 5
-                }
-              },
-              "properties": {
-                "modifiers": [
-                  "remote"
-                ],
-                "parameters": [
-                  "emptyRequest: Empty"
-                ],
-                "returns": "UserListResponse|error"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "name": "UserRequest",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 41,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 43,
-              "offset": 3
-            }
-          },
-          "properties": {
-            "fields": [
-              "user_id: string"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "CreateUserRequest",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 45,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 48,
-              "offset": 3
-            }
-          },
-          "properties": {
-            "fields": [
-              "name: string",
-              "email: string"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "UserResponse",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 50,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 55,
-              "offset": 3
-            }
-          },
-          "properties": {
-            "fields": [
-              "user_id: string",
-              "name: string",
-              "email: string",
-              "created_at: string"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "UserListResponse",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 57,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 59,
-              "offset": 3
-            }
-          },
-          "properties": {
-            "fields": [
-              "users: user_service:UserResponse[]"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "Empty",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 61,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 62,
-              "offset": 3
-            }
-          },
-          "properties": {
-            "fields": [],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        }
-      ]
-    },
     "modules/product_service/product_service.bal": {
       "fileName": "product_service.bal",
       "relativeFilePath": "modules/product_service/product_service.bal",
@@ -317,7 +69,7 @@
             },
             {
               "name": "GetProduct",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 10,
@@ -329,19 +81,20 @@
                 }
               },
               "properties": {
+                "returns": "ProductResponse|error",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "productRequest: ProductRequest"
-                ],
-                "returns": "ProductResponse|error"
+                ]
               },
               "children": []
             },
             {
               "name": "CreateProduct",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 19,
@@ -353,19 +106,20 @@
                 }
               },
               "properties": {
+                "returns": "ProductResponse|error",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "createRequest: CreateProductRequest"
-                ],
-                "returns": "ProductResponse|error"
+                ]
               },
               "children": []
             },
             {
               "name": "ListProducts",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 36,
@@ -377,13 +131,14 @@
                 }
               },
               "properties": {
+                "returns": "ProductListResponse|error",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "emptyRequest: Empty"
-                ],
-                "returns": "ProductListResponse|error"
+                ]
               },
               "children": []
             }
@@ -500,13 +255,264 @@
         }
       ]
     },
+    "modules/user_service/user_service.bal": {
+      "fileName": "user_service.bal",
+      "relativeFilePath": "modules/user_service/user_service.bal",
+      "artifacts": [
+        {
+          "name": "userListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 3,
+              "offset": 49
+            }
+          },
+          "properties": {
+            "type": "grpc:Listener",
+            "line": 3,
+            "arguments": [
+              "9091"
+            ]
+          },
+          "children": []
+        },
+        {
+          "name": "\"UserService\"",
+          "type": "SERVICE",
+          "lineRange": {
+            "startLine": {
+              "line": 5,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 39,
+              "offset": 1
+            }
+          },
+          "properties": {
+            "basePath": "\"UserService\"",
+            "listenerType": "grpc:Listener"
+          },
+          "children": [
+            {
+              "name": "userStore",
+              "type": "FIELD",
+              "lineRange": {
+                "startLine": {
+                  "line": 8,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 8,
+                  "offset": 45
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "private"
+                ],
+                "type": "map<UserResponse>"
+              },
+              "children": []
+            },
+            {
+              "name": "GetUser",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 10,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 17,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "returns": "UserResponse|error",
+                "modifiers": [
+                  "remote"
+                ],
+                "category": "REMOTE",
+                "parameters": [
+                  "userRequest: UserRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "CreateUser",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 19,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 33,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "returns": "UserResponse|error",
+                "modifiers": [
+                  "remote"
+                ],
+                "category": "REMOTE",
+                "parameters": [
+                  "createRequest: CreateUserRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "ListUsers",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 35,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 38,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "returns": "UserListResponse|error",
+                "modifiers": [
+                  "remote"
+                ],
+                "category": "REMOTE",
+                "parameters": [
+                  "emptyRequest: Empty"
+                ]
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "UserRequest",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 41,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 43,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "user_id: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "CreateUserRequest",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 45,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 48,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "name: string",
+              "email: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "UserResponse",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 50,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 55,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "user_id: string",
+              "name: string",
+              "email: string",
+              "created_at: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "UserListResponse",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 57,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 59,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "users: user_service:UserResponse[]"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "Empty",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 61,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 62,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        }
+      ]
+    },
     "main.bal": {
       "fileName": "main.bal",
       "relativeFilePath": "main.bal",
       "artifacts": [
         {
           "name": "automation",
-          "type": "AUTOMATION",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 2,
@@ -518,11 +524,12 @@
             }
           },
           "properties": {
+            "returns": "error?",
             "modifiers": [
               "public"
             ],
-            "parameters": [],
-            "returns": "error?"
+            "category": "AUTOMATION",
+            "parameters": []
           },
           "children": []
         }

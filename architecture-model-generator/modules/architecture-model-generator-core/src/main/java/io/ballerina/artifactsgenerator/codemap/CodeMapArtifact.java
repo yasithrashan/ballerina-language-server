@@ -133,6 +133,10 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange,
             return addProperty("comment", comment);
         }
 
+        public Builder category(String category) {
+            return addProperty("category", category);
+        }
+
         public CodeMapArtifact build() {
             return new CodeMapArtifact(name, type, lineRange,
                     new HashMap<>(properties), new ArrayList<>(children));

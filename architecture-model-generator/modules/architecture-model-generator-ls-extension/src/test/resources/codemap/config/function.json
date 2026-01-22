@@ -207,7 +207,7 @@
         },
         {
           "name": "automation",
-          "type": "AUTOMATION",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 55,
@@ -224,6 +224,7 @@
             "modifiers": [
               "public"
             ],
+            "category": "AUTOMATION",
             "parameters": []
           },
           "children": []

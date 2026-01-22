@@ -71,7 +71,7 @@
             },
             {
               "name": "albums",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 15,
@@ -88,13 +88,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "albums",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 19,
@@ -111,6 +112,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": [
                   "album: Album"
                 ]
@@ -119,7 +121,7 @@
             },
             {
               "name": "albums/[string title]",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 24,
@@ -136,13 +138,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "albums/[string title]",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 32,
@@ -159,6 +162,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []

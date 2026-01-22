@@ -73,7 +73,7 @@
           "children": [
             {
               "name": "people",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 19,
@@ -90,13 +90,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "person",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 23,
@@ -113,6 +114,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": [
                   "id: string"
                 ]
@@ -143,7 +145,7 @@
           "children": [
             {
               "name": "addPerson",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 35,
@@ -155,15 +157,16 @@
                 }
               },
               "properties": {
+                "returns": "Person",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "name: string",
                   "age: int",
                   "email: string"
-                ],
-                "returns": "Person"
+                ]
               },
               "children": []
             }
@@ -191,7 +194,7 @@
           "children": [
             {
               "name": "greeting",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 45,
@@ -208,6 +211,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
