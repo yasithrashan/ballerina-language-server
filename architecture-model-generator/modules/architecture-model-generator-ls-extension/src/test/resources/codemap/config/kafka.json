@@ -73,7 +73,7 @@
           "children": [
             {
               "name": "onConsumerRecord",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 17,
@@ -85,13 +85,14 @@
                 }
               },
               "properties": {
+                "returns": "()",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "orders: Order[]"
-                ],
-                "returns": "()"
+                ]
               },
               "children": []
             }

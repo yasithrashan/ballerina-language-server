@@ -91,7 +91,7 @@
           "children": [
             {
               "name": "chat",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 12,
@@ -108,6 +108,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": [
                   "request: agent:ChatReqMessage"
                 ]
