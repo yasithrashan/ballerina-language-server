@@ -1,6 +1,6 @@
 {
   "description": "Simple project with listener",
-  "source": "listener",
+  "source": "listener.bal",
   "output": {
     "listener.bal": {
       "fileName": "listener.bal",

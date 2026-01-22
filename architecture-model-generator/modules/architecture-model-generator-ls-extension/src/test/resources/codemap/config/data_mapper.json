@@ -1,6 +1,6 @@
 {
   "description": "Simple project with data_mapper",
-  "source": "data_mapper",
+  "source": "data_mapper.bal",
   "output": {
     "data_mapper.bal": {
       "fileName": "data_mapper.bal",

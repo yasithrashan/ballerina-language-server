@@ -1,16 +1,15 @@
 {
   "description": "Simple project with agent",
-  "source": "agent",
+  "source": "agent.bal",
   "output": {
     "agent.bal": {
       "fileName": "agent.bal",
-      "absoluteFilePath": "agent.bal",
+      "relativeFilePath": "agent.bal",
       "artifacts": [
         {
           "name": "_telegramAgentModel",
           "type": "VARIABLE",
           "lineRange": {
-            "fileName": "agent.bal",
             "startLine": {
               "line": 3,
               "offset": 0
@@ -33,7 +32,6 @@
           "name": "_telegramAgentAgent",
           "type": "VARIABLE",
           "lineRange": {
-            "fileName": "agent.bal",
             "startLine": {
               "line": 4,
               "offset": 0
@@ -56,7 +54,6 @@
           "name": "telegramAgentListener",
           "type": "LISTENER",
           "lineRange": {
-            "fileName": "agent.bal",
             "startLine": {
               "line": 9,
               "offset": 0
@@ -68,7 +65,10 @@
           },
           "modifiers": [],
           "properties": {
-            "line": 9
+            "line": 9,
+            "arguments": [
+              "listenOn = check http:getDefaultListener()"
+            ]
           },
           "children": []
         },
@@ -76,7 +76,6 @@
           "name": "/telegramAgent",
           "type": "SERVICE",
           "lineRange": {
-            "fileName": "agent.bal",
             "startLine": {
               "line": 11,
               "offset": 0
@@ -96,7 +95,6 @@
               "name": "chat",
               "type": "RESOURCE",
               "lineRange": {
-                "fileName": "agent.bal",
                 "startLine": {
                   "line": 12,
                   "offset": 4
