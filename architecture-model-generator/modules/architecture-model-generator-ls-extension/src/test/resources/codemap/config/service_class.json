@@ -1,6 +1,6 @@
 {
   "description": "Simple project with service_class",
-  "source": "service_class",
+  "source": "service_class.bal",
   "output": {
     "service_class.bal": {
       "fileName": "service_class.bal",

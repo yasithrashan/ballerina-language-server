@@ -1,6 +1,6 @@
 {
   "description": "Simple project with rabbitmq",
-  "source": "rabbitmq",
+  "source": "rabbitmq.bal",
   "output": {
     "rabbitmq.bal": {
       "fileName": "rabbitmq.bal",

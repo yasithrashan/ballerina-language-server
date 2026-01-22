@@ -1,6 +1,6 @@
 {
   "description": "Simple project with configurable",
-  "source": "configurable",
+  "source": "configurable.bal",
   "output": {
     "configurable.bal": {
       "fileName": "configurable.bal",

@@ -56,9 +56,9 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
     protected String[] skipList() {
         return new String[]{
                 // TODO: Need to replace this with the latest ai agent implementation
-                "agent.json",
+//                "agent.json",
                 // TODO: Investigate why the following test fails intermittently in Windows
-                "graphql.json",
+//                "graphql.json",
                 // TODO: Include this after discussing how to integrate submodules into the artifacts tree
         };
     }

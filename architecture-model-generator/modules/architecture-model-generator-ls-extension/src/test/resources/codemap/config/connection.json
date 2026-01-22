@@ -1,6 +1,6 @@
 {
   "description": "Simple project with connection",
-  "source": "connection",
+  "source": "connection.bal",
   "output": {
     "connection.bal": {
       "fileName": "connection.bal",

@@ -1,6 +1,6 @@
 {
   "description": "Simple project with functions",
-  "source": "functions",
+  "source": "function.bal",
   "output": {
     "function.bal": {
       "fileName": "function.bal",
