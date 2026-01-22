@@ -120,35 +120,35 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
         extractComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
 
+        functionBuilder.type("FUNCTION");
+
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
             functionBuilder
                     .name(AUTOMATION_FUNCTION_NAME)
-                    .type("AUTOMATION");
+                    .category("AUTOMATION");
         } else if (functionDefinitionNode.functionBody().kind() == SyntaxKind.EXPRESSION_FUNCTION_BODY) {
             if (BallerinaCompilerApi.getInstance()
                     .isNaturalExpressionBody((ExpressionFunctionBodyNode) functionDefinitionNode.functionBody())) {
                 functionBuilder
                         .name(functionName)
-                        .type("NP_FUNCTION");
+                        .category("NP_FUNCTION");
             } else {
                 functionBuilder
                         .name(functionName)
-                        .type("DATA_MAPPER");
+                        .category("DATA_MAPPER");
             }
         } else if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
             functionBuilder
                     .name(pathString)
-                    .type("RESOURCE")
+                    .category("RESOURCE")
                     .addProperty("accessor", functionName);
         } else if (hasQualifier(functionDefinitionNode.qualifierList(), SyntaxKind.REMOTE_KEYWORD)) {
             functionBuilder
                     .name(functionName)
-                    .type("REMOTE");
+                    .category("REMOTE");
         } else {
-            functionBuilder
-                    .name(functionName)
-                    .type("FUNCTION");
+            functionBuilder.name(functionName);
         }
         return Optional.of(functionBuilder.build());
     }
@@ -264,21 +264,21 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         int line = moduleVariableDeclarationNode.lineRange().startLine().line();
         variableBuilder.line(line);
 
+        variableBuilder.type("VARIABLE");
+
         if (hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
-            variableBuilder.type("CONFIGURABLE");
+            variableBuilder.category("CONFIGURABLE");
         } else {
             Optional<ClassSymbol> connection = getConnection(moduleVariableDeclarationNode);
             if (connection.isPresent()) {
                 variableBuilder
-                        .type("CONNECTION")
+                        .category("CONNECTION")
                         .addProperty("type", connection.get().signature());
                 if (isPersistClient(connection.get(), semanticModel)) {
                     variableBuilder.addProperty(CONNECTOR_TYPE, PERSIST);
                     getPersistModelFilePath(projectPath)
                             .ifPresent(modelFile -> variableBuilder.addProperty(PERSIST_MODEL_FILE, modelFile));
                 }
-            } else {
-                variableBuilder.type("VARIABLE");
             }
         }
 
@@ -337,12 +337,15 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
     public Optional<CodeMapArtifact> transform(ClassDefinitionNode classDefinitionNode) {
         NodeList<Token> classTypeQualifiers = classDefinitionNode.classTypeQualifiers();
         boolean isClientClass = hasQualifier(classTypeQualifiers, SyntaxKind.CLIENT_KEYWORD);
-        String artifactType = isClientClass ? "CLIENT_CLASS" : "CLASS";
 
         CodeMapArtifact.Builder classBuilder = new CodeMapArtifact.Builder(classDefinitionNode)
                 .name(classDefinitionNode.className().text())
-                .type(artifactType)
+                .type("CLASS")
                 .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(), classTypeQualifiers));
+
+        if (isClientClass) {
+            classBuilder.category("CLIENT");
+        }
 
         extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
         extractComments(classDefinitionNode).ifPresent(classBuilder::comment);

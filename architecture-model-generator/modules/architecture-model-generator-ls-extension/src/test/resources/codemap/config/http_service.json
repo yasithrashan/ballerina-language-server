@@ -28,7 +28,7 @@
           "children": [
             {
               "name": "eting",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 7,
@@ -46,13 +46,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "gre\\#eting",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 11,
@@ -69,13 +70,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "greeting",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 16,
@@ -93,6 +95,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": [
                   "name: string"
                 ]
@@ -101,7 +104,7 @@
             },
             {
               "name": "echo/[string message]",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 21,
@@ -119,13 +122,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "data",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 26,
@@ -143,6 +147,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": [
                   "payload: json"
                 ]
@@ -195,7 +200,7 @@
         },
         {
           "name": "httpClient",
-          "type": "CONNECTION",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 45,
@@ -210,6 +215,7 @@
             "modifiers": [
               "final"
             ],
+            "category": "CONNECTION",
             "type": "http:Client",
             "line": 45
           },
@@ -254,7 +260,7 @@
             },
             {
               "name": "greeting",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 55,
@@ -271,6 +277,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
@@ -297,7 +304,7 @@
           "children": [
             {
               "name": "path",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 68,
@@ -314,6 +321,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []

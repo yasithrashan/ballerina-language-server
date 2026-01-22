@@ -753,7 +753,7 @@
             },
             {
               "name": "people",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 116,
@@ -770,13 +770,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "person/[string name]",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 120,
@@ -793,13 +794,14 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
             },
             {
               "name": "person",
-              "type": "RESOURCE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 129,
@@ -816,6 +818,7 @@
                 "modifiers": [
                   "resource"
                 ],
+                "category": "RESOURCE",
                 "parameters": [
                   "newPerson: Person"
                 ]

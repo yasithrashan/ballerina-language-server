@@ -48,7 +48,7 @@
           "children": [
             {
               "name": "onConnect",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 5,
@@ -60,13 +60,14 @@
                 }
               },
               "properties": {
+                "returns": "tcp:ConnectionService",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "caller: tcp:Caller"
-                ],
-                "returns": "tcp:ConnectionService"
+                ]
               },
               "children": []
             }
@@ -93,7 +94,7 @@
           "children": [
             {
               "name": "onBytes",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 19,
@@ -105,20 +106,21 @@
                 }
               },
               "properties": {
+                "returns": "tcp:Error?",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "caller: tcp:Caller",
                   "data: readonly & byte[]"
-                ],
-                "returns": "tcp:Error?"
+                ]
               },
               "children": []
             },
             {
               "name": "onError",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 28,
@@ -130,19 +132,20 @@
                 }
               },
               "properties": {
+                "returns": "()",
                 "modifiers": [
                   "remote"
                 ],
+                "category": "REMOTE",
                 "parameters": [
                   "tcpError: tcp:Error"
-                ],
-                "returns": "()"
+                ]
               },
               "children": []
             },
             {
               "name": "onClose",
-              "type": "REMOTE",
+              "type": "FUNCTION",
               "lineRange": {
                 "startLine": {
                   "line": 37,
@@ -154,11 +157,12 @@
                 }
               },
               "properties": {
+                "returns": "()",
                 "modifiers": [
                   "remote"
                 ],
-                "parameters": [],
-                "returns": "()"
+                "category": "REMOTE",
+                "parameters": []
               },
               "children": []
             }
