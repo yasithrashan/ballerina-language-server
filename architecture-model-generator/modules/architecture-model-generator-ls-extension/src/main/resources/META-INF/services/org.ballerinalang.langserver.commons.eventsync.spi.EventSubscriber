@@ -1,1 +1,2 @@
 io.ballerina.designmodelgenerator.extension.PublishArtifactsSubscriber
+io.ballerina.designmodelgenerator.extension.PublishCodeMapSubscriber
