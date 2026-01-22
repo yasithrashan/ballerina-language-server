@@ -19,7 +19,6 @@
               "offset": 59
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "tcp:Listener",
             "line": 2,
@@ -42,7 +41,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "",
             "listenerType": "tcp:Listener"
@@ -61,10 +59,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "caller: tcp:Caller"
                 ],
@@ -87,10 +85,11 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "service"
-          ],
-          "properties": {},
+          "properties": {
+            "modifiers": [
+              "service"
+            ]
+          },
           "children": [
             {
               "name": "onBytes",
@@ -105,10 +104,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "caller: tcp:Caller",
                   "data: readonly & byte[]"
@@ -130,10 +129,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "tcpError: tcp:Error"
                 ],
@@ -154,10 +153,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [],
                 "returns": "()"
               },

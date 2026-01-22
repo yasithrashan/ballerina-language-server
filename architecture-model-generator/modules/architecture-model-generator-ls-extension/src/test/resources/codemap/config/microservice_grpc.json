@@ -2,29 +2,249 @@
   "description": "Simple project with microservice using gRPC",
   "source": "microservice_grpc",
   "output": {
-    "main.bal": {
-      "fileName": "main.bal",
-      "relativeFilePath": "main.bal",
+    "modules/user_service/user_service.bal": {
+      "fileName": "user_service.bal",
+      "relativeFilePath": "modules/user_service/user_service.bal",
       "artifacts": [
         {
-          "name": "automation",
-          "type": "AUTOMATION",
+          "name": "userListener",
+          "type": "LISTENER",
           "lineRange": {
             "startLine": {
-              "line": 2,
+              "line": 3,
               "offset": 0
             },
             "endLine": {
-              "line": 21,
+              "line": 3,
+              "offset": 49
+            }
+          },
+          "properties": {
+            "type": "grpc:Listener",
+            "line": 3,
+            "arguments": [
+              "9091"
+            ]
+          },
+          "children": []
+        },
+        {
+          "name": "\"UserService\"",
+          "type": "SERVICE",
+          "lineRange": {
+            "startLine": {
+              "line": 5,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 39,
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
-            "parameters": [],
-            "returns": "error?"
+            "basePath": "\"UserService\"",
+            "listenerType": "grpc:Listener"
+          },
+          "children": [
+            {
+              "name": "userStore",
+              "type": "FIELD",
+              "lineRange": {
+                "startLine": {
+                  "line": 8,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 8,
+                  "offset": 45
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "private"
+                ],
+                "type": "map<UserResponse>"
+              },
+              "children": []
+            },
+            {
+              "name": "GetUser",
+              "type": "REMOTE",
+              "lineRange": {
+                "startLine": {
+                  "line": 10,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 17,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "remote"
+                ],
+                "parameters": [
+                  "userRequest: UserRequest"
+                ],
+                "returns": "UserResponse|error"
+              },
+              "children": []
+            },
+            {
+              "name": "CreateUser",
+              "type": "REMOTE",
+              "lineRange": {
+                "startLine": {
+                  "line": 19,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 33,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "remote"
+                ],
+                "parameters": [
+                  "createRequest: CreateUserRequest"
+                ],
+                "returns": "UserResponse|error"
+              },
+              "children": []
+            },
+            {
+              "name": "ListUsers",
+              "type": "REMOTE",
+              "lineRange": {
+                "startLine": {
+                  "line": 35,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 38,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "remote"
+                ],
+                "parameters": [
+                  "emptyRequest: Empty"
+                ],
+                "returns": "UserListResponse|error"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "UserRequest",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 41,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 43,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "user_id: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "CreateUserRequest",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 45,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 48,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "name: string",
+              "email: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "UserResponse",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 50,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 55,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "user_id: string",
+              "name: string",
+              "email: string",
+              "created_at: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "UserListResponse",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 57,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 59,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "users: user_service:UserResponse[]"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "Empty",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 61,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 62,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [],
+            "typeDescriptor": "record"
           },
           "children": []
         }
@@ -47,7 +267,6 @@
               "offset": 52
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "grpc:Listener",
             "line": 3,
@@ -70,7 +289,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "\"ProductService\"",
             "listenerType": "grpc:Listener"
@@ -89,10 +307,10 @@
                   "offset": 51
                 }
               },
-              "modifiers": [
-                "private"
-              ],
               "properties": {
+                "modifiers": [
+                  "private"
+                ],
                 "type": "map<ProductResponse>"
               },
               "children": []
@@ -110,10 +328,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "productRequest: ProductRequest"
                 ],
@@ -134,10 +352,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "createRequest: CreateProductRequest"
                 ],
@@ -158,10 +376,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "emptyRequest: Empty"
                 ],
@@ -184,7 +402,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "product_id: string"
@@ -206,7 +423,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "name: string",
@@ -230,7 +446,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "product_id: string",
@@ -256,7 +471,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "products: product_service:ProductResponse[]"
@@ -278,7 +492,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "record"
@@ -287,256 +500,29 @@
         }
       ]
     },
-    "modules/user_service/user_service.bal": {
-      "fileName": "user_service.bal",
-      "relativeFilePath": "modules/user_service/user_service.bal",
+    "main.bal": {
+      "fileName": "main.bal",
+      "relativeFilePath": "main.bal",
       "artifacts": [
         {
-          "name": "userListener",
-          "type": "LISTENER",
+          "name": "automation",
+          "type": "AUTOMATION",
           "lineRange": {
             "startLine": {
-              "line": 3,
+              "line": 2,
               "offset": 0
             },
             "endLine": {
-              "line": 3,
-              "offset": 49
-            }
-          },
-          "modifiers": [],
-          "properties": {
-            "type": "grpc:Listener",
-            "line": 3,
-            "arguments": [
-              "9091"
-            ]
-          },
-          "children": []
-        },
-        {
-          "name": "\"UserService\"",
-          "type": "SERVICE",
-          "lineRange": {
-            "startLine": {
-              "line": 5,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 39,
+              "line": 21,
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
-            "basePath": "\"UserService\"",
-            "listenerType": "grpc:Listener"
-          },
-          "children": [
-            {
-              "name": "userStore",
-              "type": "FIELD",
-              "lineRange": {
-                "startLine": {
-                  "line": 8,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 8,
-                  "offset": 45
-                }
-              },
-              "modifiers": [
-                "private"
-              ],
-              "properties": {
-                "type": "map<UserResponse>"
-              },
-              "children": []
-            },
-            {
-              "name": "GetUser",
-              "type": "REMOTE",
-              "lineRange": {
-                "startLine": {
-                  "line": 10,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 17,
-                  "offset": 5
-                }
-              },
-              "modifiers": [
-                "remote"
-              ],
-              "properties": {
-                "parameters": [
-                  "userRequest: UserRequest"
-                ],
-                "returns": "UserResponse|error"
-              },
-              "children": []
-            },
-            {
-              "name": "CreateUser",
-              "type": "REMOTE",
-              "lineRange": {
-                "startLine": {
-                  "line": 19,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 33,
-                  "offset": 5
-                }
-              },
-              "modifiers": [
-                "remote"
-              ],
-              "properties": {
-                "parameters": [
-                  "createRequest: CreateUserRequest"
-                ],
-                "returns": "UserResponse|error"
-              },
-              "children": []
-            },
-            {
-              "name": "ListUsers",
-              "type": "REMOTE",
-              "lineRange": {
-                "startLine": {
-                  "line": 35,
-                  "offset": 4
-                },
-                "endLine": {
-                  "line": 38,
-                  "offset": 5
-                }
-              },
-              "modifiers": [
-                "remote"
-              ],
-              "properties": {
-                "parameters": [
-                  "emptyRequest: Empty"
-                ],
-                "returns": "UserListResponse|error"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "name": "UserRequest",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 41,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 43,
-              "offset": 3
-            }
-          },
-          "modifiers": [],
-          "properties": {
-            "fields": [
-              "user_id: string"
+            "modifiers": [
+              "public"
             ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "CreateUserRequest",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 45,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 48,
-              "offset": 3
-            }
-          },
-          "modifiers": [],
-          "properties": {
-            "fields": [
-              "name: string",
-              "email: string"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "UserResponse",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 50,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 55,
-              "offset": 3
-            }
-          },
-          "modifiers": [],
-          "properties": {
-            "fields": [
-              "user_id: string",
-              "name: string",
-              "email: string",
-              "created_at: string"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "UserListResponse",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 57,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 59,
-              "offset": 3
-            }
-          },
-          "modifiers": [],
-          "properties": {
-            "fields": [
-              "users: user_service:UserResponse[]"
-            ],
-            "typeDescriptor": "record"
-          },
-          "children": []
-        },
-        {
-          "name": "Empty",
-          "type": "TYPE",
-          "lineRange": {
-            "startLine": {
-              "line": 61,
-              "offset": 0
-            },
-            "endLine": {
-              "line": 62,
-              "offset": 3
-            }
-          },
-          "modifiers": [],
-          "properties": {
-            "fields": [],
-            "typeDescriptor": "record"
+            "parameters": [],
+            "returns": "error?"
           },
           "children": []
         }

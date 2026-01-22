@@ -19,7 +19,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "comment": "Define the service",
             "basePath": "/root/path\\-id",
@@ -40,13 +39,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get\\#gre",
                 "returns": "string",
                 "comment": "Resource function with escaped characters",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": []
               },
               "children": []
@@ -64,13 +63,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "string"
+                "returns": "string",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -87,13 +86,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "post",
                 "returns": "string",
                 "comment": "Resource function to handle GET requests at the root path",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": [
                   "name: string"
                 ]
@@ -113,13 +112,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
                 "returns": "string",
                 "comment": "Resource function with path parameter",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": []
               },
               "children": []
@@ -137,13 +136,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "post",
                 "returns": "json",
                 "comment": "Resource function to handle POST requests",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": [
                   "payload: json"
                 ]
@@ -165,7 +164,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "http:Listener",
             "line": 34,
@@ -189,7 +187,6 @@
               "offset": 47
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "http:Listener",
             "line": 43
@@ -209,10 +206,10 @@
               "offset": 46
             }
           },
-          "modifiers": [
-            "final"
-          ],
           "properties": {
+            "modifiers": [
+              "final"
+            ],
             "type": "http:Client",
             "line": 45
           },
@@ -231,7 +228,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "/",
             "listenerType": "http:Listener"
@@ -250,7 +246,6 @@
                   "offset": 5
                 }
               },
-              "modifiers": [],
               "properties": {
                 "parameters": [],
                 "returns": "error?"
@@ -270,13 +265,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "json|http:InternalServerError"
+                "returns": "json|http:InternalServerError",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             }
@@ -295,7 +290,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "/api/v1",
             "listenerType": "http:Listener"
@@ -314,13 +308,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "json|http:InternalServerError"
+                "returns": "json|http:InternalServerError",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             }

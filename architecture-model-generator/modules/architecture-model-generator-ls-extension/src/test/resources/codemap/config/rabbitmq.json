@@ -19,7 +19,6 @@
               "offset": 84
             }
           },
-          "modifiers": [],
           "properties": {
             "type": "rabbitmq:Listener",
             "line": 2,
@@ -43,7 +42,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "basePath": "\"queueName\"",
             "listenerType": "rabbitmq:Listener"
@@ -62,10 +60,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "remote"
-              ],
               "properties": {
+                "modifiers": [
+                  "remote"
+                ],
                 "parameters": [
                   "message: rabbitmq:AnydataMessage"
                 ],
