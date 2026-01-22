@@ -104,7 +104,7 @@
         },
         {
           "name": "celsiusToFahrenheit",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 31,
@@ -116,17 +116,18 @@
             }
           },
           "properties": {
+            "returns": "float",
+            "comment": "Simple primitive type mappers",
+            "category": "DATA_MAPPER",
             "parameters": [
               "celsius: float"
-            ],
-            "returns": "float",
-            "comment": "Simple primitive type mappers"
+            ]
           },
           "children": []
         },
         {
           "name": "fahrenheitToCelsius",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 33,
@@ -138,6 +139,7 @@
             }
           },
           "properties": {
+            "category": "DATA_MAPPER",
             "parameters": [
               "fahrenheit: float"
             ],
@@ -147,7 +149,7 @@
         },
         {
           "name": "stringToInt",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 35,
@@ -159,6 +161,7 @@
             }
           },
           "properties": {
+            "category": "DATA_MAPPER",
             "parameters": [
               "value: string"
             ],
@@ -168,7 +171,7 @@
         },
         {
           "name": "concatenateStrings",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 37,
@@ -180,6 +183,7 @@
             }
           },
           "properties": {
+            "category": "DATA_MAPPER",
             "parameters": [
               "first: string",
               "last: string"
@@ -190,7 +194,7 @@
         },
         {
           "name": "personToEmployee",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 40,
@@ -202,17 +206,18 @@
             }
           },
           "properties": {
+            "returns": "Employee",
+            "comment": "Record mappers",
+            "category": "DATA_MAPPER",
             "parameters": [
               "person: Person"
-            ],
-            "returns": "Employee",
-            "comment": "Record mappers"
+            ]
           },
           "children": []
         },
         {
           "name": "customerToCustomerSummary",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 48,
@@ -224,6 +229,7 @@
             }
           },
           "properties": {
+            "category": "DATA_MAPPER",
             "parameters": [
               "customer: Customer"
             ],
@@ -233,7 +239,7 @@
         },
         {
           "name": "createPerson",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 54,
@@ -245,6 +251,7 @@
             }
           },
           "properties": {
+            "category": "DATA_MAPPER",
             "parameters": [
               "name: string",
               "age: int"
@@ -255,7 +262,7 @@
         },
         {
           "name": "doubleAllValues",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 61,
@@ -267,17 +274,18 @@
             }
           },
           "properties": {
+            "returns": "int[]",
+            "comment": "Array transformation mapper",
+            "category": "DATA_MAPPER",
             "parameters": [
               "numbers: int[]"
-            ],
-            "returns": "int[]",
-            "comment": "Array transformation mapper"
+            ]
           },
           "children": []
         },
         {
           "name": "extractNames",
-          "type": "DATA_MAPPER",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 65,
@@ -289,6 +297,7 @@
             }
           },
           "properties": {
+            "category": "DATA_MAPPER",
             "parameters": [
               "people: Person[]"
             ],
@@ -298,7 +307,7 @@
         },
         {
           "name": "automation",
-          "type": "AUTOMATION",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 69,
@@ -310,11 +319,12 @@
             }
           },
           "properties": {
+            "returns": "()",
             "modifiers": [
               "public"
             ],
-            "parameters": [],
-            "returns": "()"
+            "category": "AUTOMATION",
+            "parameters": []
           },
           "children": []
         }

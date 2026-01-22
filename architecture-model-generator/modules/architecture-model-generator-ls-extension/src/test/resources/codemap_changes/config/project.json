@@ -19,12 +19,12 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
             "returns": "()",
             "comment": "Basic function with no parameters and no return value",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [],
             "documentation": "Function with documentation"
           },
@@ -43,12 +43,12 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
             "returns": "()",
             "comment": "Function with parameters",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [
               "name: string"
             ],
@@ -69,16 +69,16 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
+            "returns": "int",
+            "comment": "Function with return value",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [
               "a: int",
               "b: int"
-            ],
-            "returns": "int",
-            "comment": "Function with return value"
+            ]
           },
           "children": []
         },
@@ -95,16 +95,16 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
+            "returns": "[int, int]",
+            "comment": "Function with multiple return values",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [
               "dividend: int",
               "divisor: int"
-            ],
-            "returns": "[int, int]",
-            "comment": "Function with multiple return values"
+            ]
           },
           "children": []
         },
@@ -121,17 +121,17 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
+            "returns": "decimal",
+            "comment": "Function with default parameter values",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [
               "principal: decimal",
               "rate: decimal",
               "years: int = 1"
-            ],
-            "returns": "decimal",
-            "comment": "Function with default parameter values"
+            ]
           },
           "children": []
         },
@@ -148,15 +148,15 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
+            "returns": "int",
+            "comment": "Function with rest parameters",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [
               "numbers: int..."
-            ],
-            "returns": "int",
-            "comment": "Function with rest parameters"
+            ]
           },
           "children": []
         },
@@ -173,16 +173,16 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
+            "returns": "float|error",
+            "comment": "Function with error handling",
+            "modifiers": [
+              "public"
+            ],
             "parameters": [
               "a: int",
               "b: int"
-            ],
-            "returns": "float|error",
-            "comment": "Function with error handling"
+            ]
           },
           "children": []
         },
@@ -199,7 +199,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [],
             "returns": "()"
@@ -208,7 +207,7 @@
         },
         {
           "name": "automation",
-          "type": "AUTOMATION",
+          "type": "FUNCTION",
           "lineRange": {
             "startLine": {
               "line": 55,
@@ -219,13 +218,14 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
-            "parameters": [],
             "returns": "()",
-            "comment": "Main function"
+            "comment": "Main function",
+            "modifiers": [
+              "public"
+            ],
+            "category": "AUTOMATION",
+            "parameters": []
           },
           "children": []
         }

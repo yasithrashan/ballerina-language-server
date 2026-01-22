@@ -8,7 +8,7 @@
       "artifacts": [
         {
           "name": "apiUrl",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 1,
@@ -24,6 +24,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "string",
             "line": 1
           },
@@ -31,7 +32,7 @@
         },
         {
           "name": "maxRetries",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 4,
@@ -47,6 +48,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "int",
             "line": 4
           },
@@ -54,7 +56,7 @@
         },
         {
           "name": "enableLogging",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 7,
@@ -70,6 +72,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "boolean",
             "line": 7
           },
@@ -77,7 +80,7 @@
         },
         {
           "name": "timeout",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 10,
@@ -93,6 +96,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "float",
             "line": 10
           },
@@ -124,7 +128,7 @@
         },
         {
           "name": "users",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 19,
@@ -139,6 +143,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "table<User> key(name) & readonly",
             "line": 19
           },
@@ -146,7 +151,7 @@
         },
         {
           "name": "serverConfig",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 25,
@@ -162,6 +167,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "json & readonly",
             "line": 25
           },
@@ -169,7 +175,7 @@
         },
         {
           "name": "defaultSettings",
-          "type": "CONFIGURABLE",
+          "type": "VARIABLE",
           "lineRange": {
             "startLine": {
               "line": 32,
@@ -185,6 +191,7 @@
             "modifiers": [
               "configurable"
             ],
+            "category": "CONFIGURABLE",
             "type": "anydata & readonly",
             "line": 32
           },
