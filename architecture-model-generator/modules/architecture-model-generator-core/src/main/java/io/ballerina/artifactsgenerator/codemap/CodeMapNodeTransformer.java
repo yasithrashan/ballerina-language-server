@@ -571,6 +571,6 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         if (comments.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(String.join("\n", comments));
+        return Optional.of(String.join(System.lineSeparator(), comments));
     }
 }
