@@ -1,6 +1,6 @@
 {
   "description": "Simple project with tcp",
-  "source": "tcp",
+  "source": "tcp.bal",
   "output": {
     "tcp.bal": {
       "fileName": "tcp.bal",

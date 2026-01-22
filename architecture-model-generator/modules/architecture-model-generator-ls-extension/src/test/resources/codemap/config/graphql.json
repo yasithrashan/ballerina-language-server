@@ -1,5 +1,262 @@
 {
   "description": "Simple project with graphql",
-  "source": "graphql",
-  "output": {}
+  "source": "graphql.bal",
+  "output": {
+    "graphql.bal": {
+      "fileName": "graphql.bal",
+      "relativeFilePath": "graphql.bal",
+      "artifacts": [
+        {
+          "name": "Person",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 8,
+              "offset": 3
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "fields": [
+              "id: string",
+              "name: string",
+              "age: int",
+              "email: string"
+            ],
+            "comment": "Define types for the GraphQL schema",
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "people",
+          "type": "VARIABLE",
+          "lineRange": {
+            "startLine": {
+              "line": 11,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 15,
+              "offset": 2
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "type": "Person[]",
+            "line": 11,
+            "comment": "Mock database for the example"
+          },
+          "children": []
+        },
+        {
+          "name": "Query",
+          "type": "CLASS",
+          "lineRange": {
+            "startLine": {
+              "line": 18,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 31,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "service"
+          ],
+          "properties": {
+            "comment": "Define the service class"
+          },
+          "children": [
+            {
+              "name": "people",
+              "type": "RESOURCE",
+              "lineRange": {
+                "startLine": {
+                  "line": 19,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 21,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "Person[]"
+              },
+              "children": []
+            },
+            {
+              "name": "person",
+              "type": "RESOURCE",
+              "lineRange": {
+                "startLine": {
+                  "line": 23,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 30,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [
+                  "id: string"
+                ],
+                "returns": "Person?"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Mutation",
+          "type": "CLASS",
+          "lineRange": {
+            "startLine": {
+              "line": 34,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 41,
+              "offset": 1
+            }
+          },
+          "modifiers": [
+            "service"
+          ],
+          "properties": {
+            "comment": "Define mutations"
+          },
+          "children": [
+            {
+              "name": "addPerson",
+              "type": "REMOTE",
+              "lineRange": {
+                "startLine": {
+                  "line": 35,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 40,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "remote"
+              ],
+              "properties": {
+                "parameters": [
+                  "name: string",
+                  "age: int",
+                  "email: string"
+                ],
+                "returns": "Person"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "/graphql",
+          "type": "SERVICE",
+          "lineRange": {
+            "startLine": {
+              "line": 44,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 52,
+              "offset": 1
+            }
+          },
+          "modifiers": [],
+          "properties": {
+            "comment": "Create and start the GraphQL service",
+            "basePath": "/graphql",
+            "port": "9000",
+            "listenerType": "graphql:Listener"
+          },
+          "children": [
+            {
+              "name": "greeting",
+              "type": "RESOURCE",
+              "lineRange": {
+                "startLine": {
+                  "line": 45,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 47,
+                  "offset": 5
+                }
+              },
+              "modifiers": [
+                "resource"
+              ],
+              "properties": {
+                "accessor": "get",
+                "parameters": [],
+                "returns": "string"
+              },
+              "children": []
+            },
+            {
+              "name": "query",
+              "type": "FIELD",
+              "lineRange": {
+                "startLine": {
+                  "line": 50,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 50,
+                  "offset": 22
+                }
+              },
+              "modifiers": [],
+              "properties": {
+                "type": "// Include the query and mutation service classes\n    Query",
+                "comment": "Include the query and mutation service classes"
+              },
+              "children": []
+            },
+            {
+              "name": "mutation",
+              "type": "FIELD",
+              "lineRange": {
+                "startLine": {
+                  "line": 51,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 51,
+                  "offset": 28
+                }
+              },
+              "modifiers": [],
+              "properties": {
+                "type": "Mutation"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
