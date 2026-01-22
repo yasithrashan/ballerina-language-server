@@ -20,6 +20,7 @@ package io.ballerina.designmodelgenerator.extension;
 
 import io.ballerina.artifactsgenerator.ArtifactsCache;
 import io.ballerina.artifactsgenerator.ArtifactsGenerator;
+import io.ballerina.artifactsgenerator.codemap.ChangedFilesTracker;
 import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
@@ -43,6 +44,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @JavaSPIService("org.ballerinalang.langserver.commons.service.spi.ExtendedLanguageServerService")
@@ -103,6 +105,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
         });
     }
 
+    // Get code map for full project
     @JsonRequest
     public CompletableFuture<CodeMapResponse> codeMap(CodeMapRequest request) {
         return CompletableFuture.supplyAsync(() -> {
@@ -112,6 +115,35 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
                 response.setFiles(CodeMapGenerator.generateCodeMap(project));
+            } catch (Throwable e) {
+                response.setError(e);
+            }
+            return response;
+        });
+    }
+
+   // Get code map for changed files only
+    @JsonRequest
+    public CompletableFuture<CodeMapResponse> codeMapChanges(CodeMapRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            CodeMapResponse response = new CodeMapResponse();
+            try {
+                Path projectPath = Path.of(request.projectPath());
+                String projectKey = projectPath.toUri().toString();
+                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
+                Project project = workspaceManager.loadProject(projectPath);
+
+                // Get tracked changed files and clear them
+                List<String> changedFiles = ChangedFilesTracker.getInstance()
+                        .getAndClearChangedFiles(projectKey);
+
+                if (changedFiles.isEmpty()) {
+                    // No changes tracked, return empty response
+                    response.setFiles(java.util.Collections.emptyMap());
+                } else {
+                    // Generate code map only for changed files
+                    response.setFiles(CodeMapGenerator.generateCodeMap(project, changedFiles));
+                }
             } catch (Throwable e) {
                 response.setError(e);
             }
