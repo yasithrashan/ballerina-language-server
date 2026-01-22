@@ -19,7 +19,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "input: string"
@@ -41,7 +40,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "genre: string",
@@ -64,7 +62,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [],
             "returns": "string|error"
@@ -84,7 +81,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "model: np:ModelProvider",

@@ -19,7 +19,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "name: string",
@@ -44,7 +43,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "firstName: string",
@@ -70,7 +68,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "id: string",
@@ -95,7 +92,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "id: string",
@@ -119,7 +115,6 @@
               "offset": 80
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "celsius: float"
@@ -142,7 +137,6 @@
               "offset": 88
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "fahrenheit: float"
@@ -164,7 +158,6 @@
               "offset": 78
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "value: string"
@@ -186,7 +179,6 @@
               "offset": 99
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "first: string",
@@ -209,7 +201,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "person: Person"
@@ -232,7 +223,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "customer: Customer"
@@ -254,7 +244,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "name: string",
@@ -277,7 +266,6 @@
               "offset": 19
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "numbers: int[]"
@@ -300,7 +288,6 @@
               "offset": 23
             }
           },
-          "modifiers": [],
           "properties": {
             "parameters": [
               "people: Person[]"
@@ -322,10 +309,10 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public"
-          ],
           "properties": {
+            "modifiers": [
+              "public"
+            ],
             "parameters": [],
             "returns": "()"
           },

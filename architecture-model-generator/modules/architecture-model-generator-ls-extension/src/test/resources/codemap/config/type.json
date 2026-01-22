@@ -19,7 +19,6 @@
               "offset": 22
             }
           },
-          "modifiers": [],
           "properties": {
             "comment": "Basic types",
             "fields": [],
@@ -41,7 +40,6 @@
               "offset": 28
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "string"
@@ -61,7 +59,6 @@
               "offset": 26
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "float"
@@ -81,7 +78,6 @@
               "offset": 30
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "boolean"
@@ -101,7 +97,6 @@
               "offset": 24
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "byte"
@@ -121,7 +116,6 @@
               "offset": 30
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "decimal"
@@ -141,7 +135,6 @@
               "offset": 35
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Union types",
@@ -162,7 +155,6 @@
               "offset": 29
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "string?"
@@ -182,7 +174,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "name: string",
@@ -208,7 +199,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "id: string",
@@ -232,7 +222,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "id: string",
@@ -256,7 +245,6 @@
               "offset": 27
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Array types",
@@ -277,7 +265,6 @@
               "offset": 33
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "string[]"
@@ -297,7 +284,6 @@
               "offset": 27
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "int[][]"
@@ -317,7 +303,6 @@
               "offset": 31
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Tuple types",
@@ -338,7 +323,6 @@
               "offset": 42
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "[string, int, boolean]"
@@ -358,7 +342,6 @@
               "offset": 34
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Map types",
@@ -379,7 +362,6 @@
               "offset": 34
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "map<Person>"
@@ -399,7 +381,6 @@
               "offset": 2
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Object types",
@@ -420,7 +401,6 @@
               "offset": 60
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Function types",
@@ -441,7 +421,6 @@
               "offset": 55
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "function (int, int) returns int"
@@ -461,7 +440,6 @@
               "offset": 36
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Error types",
@@ -482,7 +460,6 @@
               "offset": 84
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "error<record {|string code; string details;|}>"
@@ -502,7 +479,6 @@
               "offset": 45
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Intersection types",
@@ -523,7 +499,6 @@
               "offset": 38
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Table type",
@@ -544,7 +519,6 @@
               "offset": 53
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "table<Person> key(name)"
@@ -564,7 +538,6 @@
               "offset": 40
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Stream type",
@@ -585,7 +558,6 @@
               "offset": 35
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "XML types",
@@ -606,7 +578,6 @@
               "offset": 34
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "xml<xml:Text>"
@@ -626,7 +597,6 @@
               "offset": 3
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [
               "department: string",
@@ -654,7 +624,6 @@
               "offset": 34
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "comment": "Constrained types",
@@ -675,7 +644,6 @@
               "offset": 39
             }
           },
-          "modifiers": [],
           "properties": {
             "fields": [],
             "typeDescriptor": "int:Unsigned32"
@@ -695,7 +663,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "comment": "Enum type"
           },
@@ -714,7 +681,6 @@
               "offset": 1
             }
           },
-          "modifiers": [],
           "properties": {
             "comment": "Direction enum type"
           },
@@ -733,11 +699,11 @@
               "offset": 1
             }
           },
-          "modifiers": [
-            "public",
-            "service"
-          ],
           "properties": {
+            "modifiers": [
+              "public",
+              "service"
+            ],
             "comment": "Service class definition"
           },
           "children": [
@@ -754,11 +720,11 @@
                   "offset": 39
                 }
               },
-              "modifiers": [
-                "private",
-                "final"
-              ],
               "properties": {
+                "modifiers": [
+                  "private",
+                  "final"
+                ],
                 "type": "Person[]"
               },
               "children": []
@@ -776,10 +742,10 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "public"
-              ],
               "properties": {
+                "modifiers": [
+                  "public"
+                ],
                 "parameters": [],
                 "returns": "()"
               },
@@ -798,13 +764,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "Person[]"
+                "returns": "Person[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -821,13 +787,13 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "get",
-                "parameters": [],
-                "returns": "Person|error"
+                "returns": "Person|error",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
               },
               "children": []
             },
@@ -844,15 +810,15 @@
                   "offset": 5
                 }
               },
-              "modifiers": [
-                "resource"
-              ],
               "properties": {
                 "accessor": "post",
+                "returns": "Person|error",
+                "modifiers": [
+                  "resource"
+                ],
                 "parameters": [
                   "newPerson: Person"
-                ],
-                "returns": "Person|error"
+                ]
               },
               "children": []
             }
