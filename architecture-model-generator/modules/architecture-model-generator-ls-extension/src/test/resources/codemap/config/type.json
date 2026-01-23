@@ -664,6 +664,7 @@
             }
           },
           "properties": {
+            "category": "ENUM",
             "comment": "Enum type"
           },
           "children": []
@@ -682,6 +683,7 @@
             }
           },
           "properties": {
+            "category": "ENUM",
             "comment": "Direction enum type"
           },
           "children": []

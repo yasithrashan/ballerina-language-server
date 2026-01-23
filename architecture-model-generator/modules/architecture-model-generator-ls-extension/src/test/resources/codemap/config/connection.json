@@ -7,6 +7,82 @@
       "relativeFilePath": "connection.bal",
       "artifacts": [
         {
+          "name": "ballerina/graphql",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 0,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 0,
+              "offset": 25
+            }
+          },
+          "properties": {
+            "moduleName": "graphql",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 1,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 1,
+              "offset": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/io",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 2,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 2,
+              "offset": 20
+            }
+          },
+          "properties": {
+            "moduleName": "io",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/tcp",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 3,
+              "offset": 21
+            }
+          },
+          "properties": {
+            "moduleName": "tcp",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
           "name": "httpConnection",
           "type": "VARIABLE",
           "lineRange": {

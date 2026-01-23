@@ -7,6 +7,25 @@
       "relativeFilePath": "function.bal",
       "artifacts": [
         {
+          "name": "ballerina/io",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 0,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 0,
+              "offset": 20
+            }
+          },
+          "properties": {
+            "moduleName": "io",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
           "name": "sayHello",
           "type": "FUNCTION",
           "lineRange": {
