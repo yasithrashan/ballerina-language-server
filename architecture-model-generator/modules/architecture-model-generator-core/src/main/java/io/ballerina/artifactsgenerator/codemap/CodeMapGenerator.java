@@ -121,6 +121,13 @@ public class CodeMapGenerator {
         CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer(projectPath, semanticModel,
                 moduleInfo);
 
+        // Process imports
+        rootNode.imports().stream()
+                .map(importNode -> importNode.apply(codeMapNodeTransformer))
+                .flatMap(Optional::stream)
+                .forEach(artifacts::add);
+
+        // Process other members (functions, services, types, etc.)
         rootNode.members().stream()
                 .map(member -> member.apply(codeMapNodeTransformer))
                 .flatMap(Optional::stream)

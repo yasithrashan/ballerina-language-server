@@ -7,6 +7,44 @@
       "relativeFilePath": "agent.bal",
       "artifacts": [
         {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 0,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 0,
+              "offset": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/ai.agent",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 1,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 1,
+              "offset": 26
+            }
+          },
+          "properties": {
+            "moduleName": "ai.agent",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
           "name": "_telegramAgentModel",
           "type": "VARIABLE",
           "lineRange": {
