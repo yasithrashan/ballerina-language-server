@@ -31,6 +31,7 @@ import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeSymbol;
 import io.ballerina.compiler.api.symbols.VariableSymbol;
 import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
+import io.ballerina.compiler.syntax.tree.ConstantDeclarationNode;
 import io.ballerina.compiler.syntax.tree.DefaultableParameterNode;
 import io.ballerina.compiler.syntax.tree.EnumDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
@@ -40,6 +41,7 @@ import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
 import io.ballerina.compiler.syntax.tree.ImplicitNewExpressionNode;
+import io.ballerina.compiler.syntax.tree.ImportDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ListenerDeclarationNode;
 import io.ballerina.compiler.syntax.tree.MarkdownDocumentationLineNode;
 import io.ballerina.compiler.syntax.tree.MarkdownDocumentationNode;
@@ -189,6 +191,44 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
     }
 
     @Override
+    public Optional<CodeMapArtifact> transform(ImportDeclarationNode importDeclarationNode) {
+        // Extract org name
+        String orgName = importDeclarationNode.orgName()
+                .map(org -> org.orgName().text())
+                .orElse("");
+
+        // Extract module name
+        String moduleName = importDeclarationNode.moduleName().stream()
+                .map(Token::text)
+                .collect(Collectors.joining("."));
+
+        // Extract alias/prefix if present
+        Optional<String> alias = importDeclarationNode.prefix()
+                .map(prefix -> prefix.prefix().text());
+
+        // Build full import name
+        String fullImportName = orgName.isEmpty() ? moduleName : orgName + "/" + moduleName;
+        if (alias.isPresent()) {
+            fullImportName += " as " + alias.get();
+        }
+
+        CodeMapArtifact.Builder importBuilder = new CodeMapArtifact.Builder(importDeclarationNode)
+                .name(fullImportName)
+                .type("IMPORT");
+
+        // Add individual components as properties
+        if (!orgName.isEmpty()) {
+            importBuilder.addProperty("orgName", orgName);
+        }
+        importBuilder.addProperty("moduleName", moduleName);
+        alias.ifPresent(a -> importBuilder.addProperty("alias", a));
+
+        extractComments(importDeclarationNode).ifPresent(importBuilder::comment);
+
+        return Optional.of(importBuilder.build());
+    }
+
+    @Override
     public Optional<CodeMapArtifact> transform(ListenerDeclarationNode listenerDeclarationNode) {
         CodeMapArtifact.Builder listenerBuilder = new CodeMapArtifact.Builder(listenerDeclarationNode)
                 .name(listenerDeclarationNode.variableName().text())
@@ -250,6 +290,34 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
             }
         }
         return NodeFactory.createSeparatedNodeList();
+    }
+
+    @Override
+    public Optional<CodeMapArtifact> transform(ConstantDeclarationNode constantDeclarationNode) {
+        CodeMapArtifact.Builder constantBuilder = new CodeMapArtifact.Builder(constantDeclarationNode)
+                .name(constantDeclarationNode.variableName().text())
+                .type("VARIABLE")
+                .category("CONSTANT");
+
+        // Extract the type descriptor
+        constantDeclarationNode.typeDescriptor().ifPresent(typeDesc -> {
+            String typeString = typeDesc.toSourceCode().strip();
+            constantBuilder.addProperty("typeDescriptor", typeString);
+        });
+
+        // Extract the constant value/initializer
+        String value = constantDeclarationNode.initializer().toSourceCode().strip();
+        constantBuilder.addProperty("value", value);
+
+        // Extract visibility qualifier (public, etc.)
+        constantDeclarationNode.visibilityQualifier().ifPresent(visibility -> {
+            constantBuilder.modifiers(List.of(visibility.text()));
+        });
+
+        extractDocumentation(constantDeclarationNode.metadata()).ifPresent(constantBuilder::documentation);
+        extractComments(constantDeclarationNode).ifPresent(constantBuilder::comment);
+
+        return Optional.of(constantBuilder.build());
     }
 
     @Override
@@ -327,7 +395,8 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
     public Optional<CodeMapArtifact> transform(EnumDeclarationNode enumDeclarationNode) {
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(enumDeclarationNode)
                 .name(enumDeclarationNode.identifier().text())
-                .type("TYPE");
+                .type("TYPE")
+                .category("ENUM");
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
         extractComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
         return Optional.of(typeBuilder.build());

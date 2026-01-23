@@ -46,20 +46,18 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
-//               updateConfig(configJsonPath, updatedConfig);
+            updateConfig(configJsonPath, updatedConfig);
             compareJsonElements(files, testConfig.output());
             Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
         }
     }
 
+
     @Override
     protected String[] skipList() {
-        return new String[]{
-                // TODO: Need to replace this with the latest ai agent implementation
-//                "agent.json",
-                // TODO: Investigate why the following test fails intermittently in Windows
-//                "graphql.json",
-                // TODO: Include this after discussing how to integrate submodules into the artifacts tree
+        return new String[] {
+                // TODO: May related to https://github.com/wso2/product-ballerina-integrator/issues/1343
+                "graphql.json"
         };
     }
 
