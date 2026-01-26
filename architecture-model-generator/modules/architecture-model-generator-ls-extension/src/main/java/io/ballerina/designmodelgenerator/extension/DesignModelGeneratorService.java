@@ -105,7 +105,6 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
         });
     }
 
-    // Get code map for full project
     @JsonRequest
     public CompletableFuture<CodeMapResponse> codeMap(CodeMapRequest request) {
         return CompletableFuture.supplyAsync(() -> {
@@ -114,35 +113,19 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 Path projectPath = Path.of(request.projectPath());
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
-                response.setFiles(CodeMapGenerator.generateCodeMap(project));
-            } catch (Throwable e) {
-                response.setError(e);
-            }
-            return response;
-        });
-    }
 
-   // Get code map for changed files only
-    @JsonRequest
-    public CompletableFuture<CodeMapResponse> codeMapChanges(CodeMapRequest request) {
-        return CompletableFuture.supplyAsync(() -> {
-            CodeMapResponse response = new CodeMapResponse();
-            try {
-                Path projectPath = Path.of(request.projectPath());
-                String projectKey = projectPath.toUri().toString();
-                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
-                Project project = workspaceManager.loadProject(projectPath);
+                if (request.changesOnly()) {
+                    String projectKey = projectPath.toUri().toString();
+                    List<String> changedFiles = ChangedFilesTracker.getInstance()
+                            .getAndClearChangedFiles(projectKey);
 
-                // Get tracked changed files and clear them
-                List<String> changedFiles = ChangedFilesTracker.getInstance()
-                        .getAndClearChangedFiles(projectKey);
-
-                if (changedFiles.isEmpty()) {
-                    // No changes tracked, return empty response
-                    response.setFiles(java.util.Collections.emptyMap());
+                    if (changedFiles.isEmpty()) {
+                        response.setFiles(java.util.Collections.emptyMap());
+                    } else {
+                        response.setFiles(CodeMapGenerator.generateCodeMap(project, changedFiles));
+                    }
                 } else {
-                    // Generate code map only for changed files
-                    response.setFiles(CodeMapGenerator.generateCodeMap(project, changedFiles));
+                    response.setFiles(CodeMapGenerator.generateCodeMap(project));
                 }
             } catch (Throwable e) {
                 response.setError(e);
