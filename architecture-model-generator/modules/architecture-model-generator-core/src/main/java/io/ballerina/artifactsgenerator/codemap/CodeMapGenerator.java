@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
+ *  Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com)
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -38,8 +38,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Generates code map from Ballerina projects by extracting artifacts from source files.
+ *
+ * @since 1.6.0
+ */
 public class CodeMapGenerator {
 
+    /**
+     * Generates a code map for all files in the given project.
+     *
+     * @param project the Ballerina project
+     * @return a map of relative file paths to their code map files
+     */
     public static Map<String, CodeMapFile> generateCodeMap(Project project) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
@@ -73,6 +84,13 @@ public class CodeMapGenerator {
         return codeMapFiles;
     }
 
+    /**
+     * Generates a code map for specific files in the given project.
+     *
+     * @param project   the Ballerina project
+     * @param fileNames the list of file names to process
+     * @return a map of relative file paths to their code map files
+     */
     public static Map<String, CodeMapFile> generateCodeMap(Project project, List<String> fileNames) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
