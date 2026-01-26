@@ -65,8 +65,8 @@ import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.compiler.syntax.tree.Token;
 import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
 import io.ballerina.compiler.syntax.tree.TypeDescriptorNode;
-import io.ballerina.designmodelgenerator.core.CommonUtils.ModuleInfo;
 import io.ballerina.modelgenerator.commons.CommonUtils;
+import io.ballerina.modelgenerator.commons.ModuleInfo;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 
 import java.util.ArrayList;
@@ -97,6 +97,47 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
     private static final String AUTOMATION_FUNCTION_NAME = "automation";
     private static final String MAIN_FUNCTION_NAME = "main";
+
+    // Artifact type constants
+    private static final String TYPE_FUNCTION = "FUNCTION";
+    private static final String TYPE_SERVICE = "SERVICE";
+    private static final String TYPE_IMPORT = "IMPORT";
+    private static final String TYPE_LISTENER = "LISTENER";
+    private static final String TYPE_VARIABLE = "VARIABLE";
+    private static final String TYPE_TYPE = "TYPE";
+    private static final String TYPE_CLASS = "CLASS";
+    private static final String TYPE_FIELD = "FIELD";
+
+    // Category constants
+    private static final String CATEGORY_AUTOMATION = "AUTOMATION";
+    private static final String CATEGORY_NP_FUNCTION = "NP_FUNCTION";
+    private static final String CATEGORY_DATA_MAPPER = "DATA_MAPPER";
+    private static final String CATEGORY_RESOURCE = "RESOURCE";
+    private static final String CATEGORY_REMOTE = "REMOTE";
+    private static final String CATEGORY_CONSTANT = "CONSTANT";
+    private static final String CATEGORY_CONFIGURABLE = "CONFIGURABLE";
+    private static final String CATEGORY_CONNECTION = "CONNECTION";
+    private static final String CATEGORY_ENUM = "ENUM";
+    private static final String CATEGORY_CLIENT = "CLIENT";
+
+    // Property key constants
+    private static final String PROP_PARAMETERS = "parameters";
+    private static final String PROP_RETURNS = "returns";
+    private static final String PROP_BASE_PATH = "basePath";
+    private static final String PROP_PORT = "port";
+    private static final String PROP_LISTENER_TYPE = "listenerType";
+    private static final String PROP_ORG_NAME = "orgName";
+    private static final String PROP_MODULE_NAME = "moduleName";
+    private static final String PROP_ALIAS = "alias";
+    private static final String PROP_TYPE = "type";
+    private static final String PROP_ARGUMENTS = "arguments";
+    private static final String PROP_TYPE_DESCRIPTOR = "typeDescriptor";
+    private static final String PROP_VALUE = "value";
+    private static final String PROP_FIELDS = "fields";
+    private static final String PROP_ACCESSOR = "accessor";
+
+    // Other constants
+    private static final String RECORD_TYPE_NAME = "record";
 
     /**
      * Creates a new CodeMapNodeTransformer with comment extraction enabled.
@@ -134,41 +175,41 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         functionBuilder.modifiers(modifiers);
 
         List<String> parameters = extractParameters(functionDefinitionNode.functionSignature());
-        functionBuilder.addProperty("parameters", parameters);
+        functionBuilder.addProperty(PROP_PARAMETERS, parameters);
 
         String returnType = extractReturnType(functionDefinitionNode.functionSignature());
-        functionBuilder.addProperty("returns", returnType);
+        functionBuilder.addProperty(PROP_RETURNS, returnType);
 
         extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
         extractComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
 
-        functionBuilder.type("FUNCTION");
+        functionBuilder.type(TYPE_FUNCTION);
 
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
             functionBuilder
                     .name(AUTOMATION_FUNCTION_NAME)
-                    .category("AUTOMATION");
+                    .category(CATEGORY_AUTOMATION);
         } else if (functionDefinitionNode.functionBody().kind() == SyntaxKind.EXPRESSION_FUNCTION_BODY) {
             if (BallerinaCompilerApi.getInstance()
                     .isNaturalExpressionBody((ExpressionFunctionBodyNode) functionDefinitionNode.functionBody())) {
                 functionBuilder
                         .name(functionName)
-                        .category("NP_FUNCTION");
+                        .category(CATEGORY_NP_FUNCTION);
             } else {
                 functionBuilder
                         .name(functionName)
-                        .category("DATA_MAPPER");
+                        .category(CATEGORY_DATA_MAPPER);
             }
         } else if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
             functionBuilder
                     .name(pathString)
-                    .category("RESOURCE")
-                    .addProperty("accessor", functionName);
+                    .category(CATEGORY_RESOURCE)
+                    .addProperty(PROP_ACCESSOR, functionName);
         } else if (hasQualifier(functionDefinitionNode.qualifierList(), SyntaxKind.REMOTE_KEYWORD)) {
             functionBuilder
                     .name(functionName)
-                    .category("REMOTE");
+                    .category(CATEGORY_REMOTE);
         } else {
             functionBuilder.name(functionName);
         }
@@ -190,15 +231,15 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         serviceBuilder.name(serviceName);
 
         String basePath = getPathString(resourcePaths);
-        serviceBuilder.addProperty("basePath", basePath);
+        serviceBuilder.addProperty(PROP_BASE_PATH, basePath);
 
         if (firstExpression != null) {
-            extractPortFromExpression(firstExpression).ifPresent(port -> serviceBuilder.addProperty("port", port));
+            extractPortFromExpression(firstExpression).ifPresent(port -> serviceBuilder.addProperty(PROP_PORT, port));
             extractListenerType(firstExpression).ifPresent(listenerType ->
-                    serviceBuilder.addProperty("listenerType", listenerType));
+                    serviceBuilder.addProperty(PROP_LISTENER_TYPE, listenerType));
         }
 
-        serviceBuilder.type("SERVICE");
+        serviceBuilder.type(TYPE_SERVICE);
 
         extractDocumentation(serviceDeclarationNode.metadata()).ifPresent(serviceBuilder::documentation);
         extractComments(serviceDeclarationNode).ifPresent(serviceBuilder::comment);
@@ -234,14 +275,14 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         CodeMapArtifact.Builder importBuilder = new CodeMapArtifact.Builder(importDeclarationNode)
                 .name(fullImportName)
-                .type("IMPORT");
+                .type(TYPE_IMPORT);
 
         // Add individual components as properties
         if (!orgName.isEmpty()) {
-            importBuilder.addProperty("orgName", orgName);
+            importBuilder.addProperty(PROP_ORG_NAME, orgName);
         }
-        importBuilder.addProperty("moduleName", moduleName);
-        alias.ifPresent(a -> importBuilder.addProperty("alias", a));
+        importBuilder.addProperty(PROP_MODULE_NAME, moduleName);
+        alias.ifPresent(a -> importBuilder.addProperty(PROP_ALIAS, a));
 
         extractComments(importDeclarationNode).ifPresent(importBuilder::comment);
 
@@ -252,14 +293,14 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     public Optional<CodeMapArtifact> transform(ListenerDeclarationNode listenerDeclarationNode) {
         CodeMapArtifact.Builder listenerBuilder = new CodeMapArtifact.Builder(listenerDeclarationNode)
                 .name(listenerDeclarationNode.variableName().text())
-                .type("LISTENER");
+                .type(TYPE_LISTENER);
 
         int line = listenerDeclarationNode.lineRange().startLine().line();
         listenerBuilder.line(line);
 
         listenerDeclarationNode.typeDescriptor().flatMap(semanticModel::symbol).ifPresent(symbol -> {
             if (symbol instanceof TypeSymbol typeSymbol) {
-                listenerBuilder.addProperty("type",
+                listenerBuilder.addProperty(PROP_TYPE,
                         io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo));
             }
         });
@@ -269,7 +310,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (initializer instanceof NewExpressionNode newExpressionNode) {
             List<String> args = extractListenerArguments(newExpressionNode);
             if (!args.isEmpty()) {
-                listenerBuilder.addProperty("arguments", args);
+                listenerBuilder.addProperty(PROP_ARGUMENTS, args);
             }
         }
 
@@ -316,18 +357,18 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     public Optional<CodeMapArtifact> transform(ConstantDeclarationNode constantDeclarationNode) {
         CodeMapArtifact.Builder constantBuilder = new CodeMapArtifact.Builder(constantDeclarationNode)
                 .name(constantDeclarationNode.variableName().text())
-                .type("VARIABLE")
-                .category("CONSTANT");
+                .type(TYPE_VARIABLE)
+                .category(CATEGORY_CONSTANT);
 
         // Extract the type descriptor
         constantDeclarationNode.typeDescriptor().ifPresent(typeDesc -> {
             String typeString = typeDesc.toSourceCode().strip();
-            constantBuilder.addProperty("typeDescriptor", typeString);
+            constantBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeString);
         });
 
         // Extract the constant value/initializer
         String value = constantDeclarationNode.initializer().toSourceCode().strip();
-        constantBuilder.addProperty("value", value);
+        constantBuilder.addProperty(PROP_VALUE, value);
 
         // Extract visibility qualifier (public, etc.)
         constantDeclarationNode.visibilityQualifier().ifPresent(visibility -> {
@@ -352,16 +393,16 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         int line = moduleVariableDeclarationNode.lineRange().startLine().line();
         variableBuilder.line(line);
 
-        variableBuilder.type("VARIABLE");
+        variableBuilder.type(TYPE_VARIABLE);
 
         if (hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
-            variableBuilder.category("CONFIGURABLE");
+            variableBuilder.category(CATEGORY_CONFIGURABLE);
         } else {
             Optional<ClassSymbol> connection = getConnection(moduleVariableDeclarationNode);
             if (connection.isPresent()) {
                 variableBuilder
-                        .category("CONNECTION")
-                        .addProperty("type", connection.get().signature());
+                        .category(CATEGORY_CONNECTION)
+                        .addProperty(PROP_TYPE, connection.get().signature());
                 if (isPersistClient(connection.get(), semanticModel)) {
                     variableBuilder.addProperty(CONNECTOR_TYPE, PERSIST);
                     getPersistModelFilePath(projectPath)
@@ -372,7 +413,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         semanticModel.symbol(moduleVariableDeclarationNode).ifPresent(symbol -> {
             if (symbol instanceof VariableSymbol variableSymbol) {
-                variableBuilder.addProperty("type",
+                variableBuilder.addProperty(PROP_TYPE,
                         io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(
                                 variableSymbol.typeDescriptor(), moduleInfo));
             }
@@ -388,7 +429,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     public Optional<CodeMapArtifact> transform(TypeDefinitionNode typeDefinitionNode) {
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(typeDefinitionNode)
                 .name(typeDefinitionNode.typeName().text())
-                .type("TYPE");
+                .type(TYPE_TYPE);
 
         semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
             if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
@@ -396,14 +437,14 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 // For records (including intersection types like "readonly & record"),
                 // just use "record" since fields are extracted separately
                 String typeDescriptor = isRecordType(typeSymbol)
-                        ? "record"
+                        ? RECORD_TYPE_NAME
                         : io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
-                typeBuilder.addProperty("typeDescriptor", typeDescriptor);
+                typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeDescriptor);
             }
         });
 
         List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
-        typeBuilder.addProperty("fields", fields);
+        typeBuilder.addProperty(PROP_FIELDS, fields);
 
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
         extractComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
@@ -415,8 +456,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     public Optional<CodeMapArtifact> transform(EnumDeclarationNode enumDeclarationNode) {
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(enumDeclarationNode)
                 .name(enumDeclarationNode.identifier().text())
-                .type("TYPE")
-                .category("ENUM");
+                .type(TYPE_TYPE)
+                .category(CATEGORY_ENUM);
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
         extractComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
         return Optional.of(typeBuilder.build());
@@ -429,11 +470,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         CodeMapArtifact.Builder classBuilder = new CodeMapArtifact.Builder(classDefinitionNode)
                 .name(classDefinitionNode.className().text())
-                .type("CLASS")
+                .type(TYPE_CLASS)
                 .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(), classTypeQualifiers));
 
         if (isClientClass) {
-            classBuilder.category("CLIENT");
+            classBuilder.category(CATEGORY_CLIENT);
         }
 
         extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
@@ -457,10 +498,10 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         CodeMapArtifact.Builder fieldBuilder = new CodeMapArtifact.Builder(objectFieldNode)
                 .name(fieldName)
-                .type("FIELD")
+                .type(TYPE_FIELD)
                 .modifiers(modifiers);
 
-        fieldBuilder.addProperty("type", fieldType);
+        fieldBuilder.addProperty(PROP_TYPE, fieldType);
         extractComments(objectFieldNode).ifPresent(fieldBuilder::comment);
 
         return Optional.of(fieldBuilder.build());

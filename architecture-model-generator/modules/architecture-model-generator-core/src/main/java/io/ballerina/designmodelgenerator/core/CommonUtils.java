@@ -182,6 +182,21 @@ public class CommonUtils {
         return !newText.isEmpty() ? newText.toString() : text;
     }
 
+    /**
+     * Returns the processed type signature of the type symbol. It removes the organization and the package, and checks
+     * if it is the default module which will remove the prefix.
+     *
+     * @param typeSymbol the type symbol
+     * @param moduleInfo the module info from model-generator-commons
+     * @return the processed type signature
+     */
+    public static String getTypeSignature(TypeSymbol typeSymbol,
+                                          io.ballerina.modelgenerator.commons.ModuleInfo moduleInfo) {
+        return getTypeSignature(typeSymbol,
+                new ModuleInfo(moduleInfo.org(), moduleInfo.packageName(), moduleInfo.moduleName(),
+                        moduleInfo.version()));
+    }
+
     public record ModuleInfo(String org, String packageName, String moduleName, String version) {
 
         public static ModuleInfo from(ModuleID moduleId) {

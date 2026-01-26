@@ -7,16 +7,35 @@
       "relativeFilePath": "main.bal",
       "artifacts": [
         {
+          "name": "ballerina/io",
+          "type": "IMPORT",
+          "lineRange": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 20
+            }
+          },
+          "properties": {
+            "moduleName": "io",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
           "name": "sayHello",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 3,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 6,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -34,13 +53,13 @@
           "name": "greet",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 9,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 13,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -60,13 +79,13 @@
           "name": "add",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 16,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 18,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -86,13 +105,13 @@
           "name": "divideAndRemainder",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 21,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 25,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -112,13 +131,13 @@
           "name": "calculateInterest",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 28,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 30,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -139,13 +158,13 @@
           "name": "sum",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 33,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 39,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -164,13 +183,13 @@
           "name": "divide",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 42,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 47,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -190,13 +209,13 @@
           "name": "fn\\#with\\-Identifiers",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 50,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 52,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
@@ -209,13 +228,13 @@
           "name": "automation",
           "type": "FUNCTION",
           "lineRange": {
-            "startLine": {
+            "start": {
               "line": 55,
-              "offset": 0
+              "character": 0
             },
-            "endLine": {
+            "end": {
               "line": 74,
-              "offset": 1
+              "character": 1
             }
           },
           "properties": {
