@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
+ *  Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com)
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -20,6 +20,9 @@ package io.ballerina.artifactsgenerator.codemap;
 
 import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.tools.text.LinePosition;
+import io.ballerina.tools.text.LineRange;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,38 +30,61 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public record CodeMapArtifact(String name, String type, LineRange lineRange,
+/**
+ * Represents a code artifact extracted from Ballerina source code for the code map.
+ *
+ * @param name       the name of the artifact
+ * @param type       the type of the artifact (e.g., function, service, class)
+ * @param lineRange  the line range in source code where this artifact is located
+ * @param properties additional properties of the artifact
+ * @param children   nested artifacts contained within this artifact
+ * @since 1.6.0
+ */
+public record CodeMapArtifact(String name, String type, Range lineRange,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {
 
-    public record LineRange(Position startLine, Position endLine) {
-        public record Position(int line, int offset) {
-            public static Position from(LinePosition linePosition) {
-                return new Position(linePosition.line(), linePosition.offset());
-            }
-        }
+    /**
+     * Converts a Ballerina LineRange to an LSP4J Range.
+     *
+     * @param lineRange the Ballerina line range
+     * @return the corresponding LSP4J Range
+     */
+    public static Range toRange(LineRange lineRange) {
+        return new Range(toPosition(lineRange.startLine()), toPosition(lineRange.endLine()));
+    }
 
-        public static LineRange from(io.ballerina.tools.text.LineRange lineRange) {
-            return new LineRange(
-                    Position.from(lineRange.startLine()),
-                    Position.from(lineRange.endLine())
-            );
-        }
+    /**
+     * Converts a Ballerina LinePosition to an LSP4J Position.
+     *
+     * @param linePosition the Ballerina line position
+     * @return the corresponding LSP4J Position
+     */
+    public static Position toPosition(LinePosition linePosition) {
+        return new Position(linePosition.line(), linePosition.offset());
     }
 
     public CodeMapArtifact {
-        properties = properties == null ? Collections.emptyMap() : Collections.unmodifiableMap(properties);
-        children = children == null ? Collections.emptyList() : Collections.unmodifiableList(children);
+        properties = Collections.unmodifiableMap(properties);
+        children = Collections.unmodifiableList(children);
     }
 
+    /**
+     * Builder class for constructing {@link CodeMapArtifact} instances.
+     */
     public static class Builder {
         private String name;
         private String type;
-        private LineRange lineRange;
+        private Range lineRange;
         private final Map<String, Object> properties = new HashMap<>();
         private final List<CodeMapArtifact> children = new ArrayList<>();
 
+        /**
+         * Creates a new Builder initialized with the line range from the given syntax node.
+         *
+         * @param node the syntax node to extract line range from
+         */
         public Builder(Node node) {
-            this.lineRange = LineRange.from(node.lineRange());
+            this.lineRange = toRange(node.lineRange());
         }
 
         public Builder name(String name) {
@@ -71,8 +97,8 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange,
             return this;
         }
 
-        public Builder lineRange(io.ballerina.tools.text.LineRange lineRange) {
-            this.lineRange = LineRange.from(lineRange);
+        public Builder lineRange(LineRange lineRange) {
+            this.lineRange = toRange(lineRange);
             return this;
         }
 
@@ -93,34 +119,6 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange,
             return this;
         }
 
-        public Builder basePath(String basePath) {
-            return addProperty("basePath", basePath);
-        }
-
-        public Builder port(String port) {
-            return addProperty("port", port);
-        }
-
-        public Builder parameters(List<String> parameters) {
-            return addProperty("parameters", parameters);
-        }
-
-        public Builder returns(String returnType) {
-            return addProperty("returns", returnType);
-        }
-
-        public Builder fields(List<String> fields) {
-            return addProperty("fields", fields);
-        }
-
-        public Builder endpoint(String endpoint) {
-            return addProperty("endpoint", endpoint);
-        }
-
-        public Builder config(String config) {
-            return addProperty("config", config);
-        }
-
         public Builder line(int line) {
             return addProperty("line", line);
         }
@@ -137,6 +135,11 @@ public record CodeMapArtifact(String name, String type, LineRange lineRange,
             return addProperty("category", category);
         }
 
+        /**
+         * Builds and returns the {@link CodeMapArtifact} instance.
+         *
+         * @return the constructed CodeMapArtifact
+         */
         public CodeMapArtifact build() {
             return new CodeMapArtifact(name, type, lineRange,
                     new HashMap<>(properties), new ArrayList<>(children));

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
+ *  Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com)
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,14 @@ package io.ballerina.artifactsgenerator.codemap;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a Ballerina source file with its extracted code map artifacts.
+ *
+ * @param fileName         the name of the source file
+ * @param relativeFilePath the relative path of the file from the project root
+ * @param artifacts        the list of code map artifacts extracted from this file
+ * @since 1.6.0
+ */
 public record CodeMapFile(String fileName, String relativeFilePath, List<CodeMapArtifact> artifacts) {
 
     public CodeMapFile {

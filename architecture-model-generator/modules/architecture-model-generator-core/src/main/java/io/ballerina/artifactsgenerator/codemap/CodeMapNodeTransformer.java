@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
+ *  Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com)
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -83,7 +83,12 @@ import static io.ballerina.modelgenerator.commons.CommonUtils.isAiKnowledgeBase;
 import static io.ballerina.modelgenerator.commons.CommonUtils.isAiVectorStore;
 import static io.ballerina.modelgenerator.commons.CommonUtils.isPersistClient;
 
-public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> {
+/**
+ * Transforms Ballerina syntax tree nodes into {@link CodeMapArtifact} instances.
+ *
+ * @since 1.6.0
+ */
+class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> {
 
     private final SemanticModel semanticModel;
     private final String projectPath;
@@ -93,11 +98,26 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
     private static final String AUTOMATION_FUNCTION_NAME = "automation";
     private static final String MAIN_FUNCTION_NAME = "main";
 
-    public CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo) {
+    /**
+     * Creates a new CodeMapNodeTransformer with comment extraction enabled.
+     *
+     * @param projectPath   the project root path
+     * @param semanticModel the semantic model for symbol resolution
+     * @param moduleInfo    the module information
+     */
+    CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo) {
         this(projectPath, semanticModel, moduleInfo, true);
     }
 
-    public CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo,
+    /**
+     * Creates a new CodeMapNodeTransformer.
+     *
+     * @param projectPath     the project root path
+     * @param semanticModel   the semantic model for symbol resolution
+     * @param moduleInfo      the module information
+     * @param extractComments whether to extract comments from nodes
+     */
+    CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo,
                                   boolean extractComments) {
         this.semanticModel = semanticModel;
         this.projectPath = projectPath;
@@ -114,10 +134,10 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         functionBuilder.modifiers(modifiers);
 
         List<String> parameters = extractParameters(functionDefinitionNode.functionSignature());
-        functionBuilder.parameters(parameters);
+        functionBuilder.addProperty("parameters", parameters);
 
         String returnType = extractReturnType(functionDefinitionNode.functionSignature());
-        functionBuilder.returns(returnType);
+        functionBuilder.addProperty("returns", returnType);
 
         extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
         extractComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
@@ -170,10 +190,10 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         serviceBuilder.name(serviceName);
 
         String basePath = getPathString(resourcePaths);
-        serviceBuilder.basePath(basePath);
+        serviceBuilder.addProperty("basePath", basePath);
 
         if (firstExpression != null) {
-            extractPortFromExpression(firstExpression).ifPresent(serviceBuilder::port);
+            extractPortFromExpression(firstExpression).ifPresent(port -> serviceBuilder.addProperty("port", port));
             extractListenerType(firstExpression).ifPresent(listenerType ->
                     serviceBuilder.addProperty("listenerType", listenerType));
         }
@@ -383,7 +403,7 @@ public class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArti
         });
 
         List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
-        typeBuilder.fields(fields);
+        typeBuilder.addProperty("fields", fields);
 
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
         extractComments(typeDefinitionNode).ifPresent(typeBuilder::comment);

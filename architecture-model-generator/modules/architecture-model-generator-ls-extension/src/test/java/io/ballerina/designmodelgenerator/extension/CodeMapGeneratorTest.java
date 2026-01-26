@@ -31,7 +31,7 @@ import java.nio.file.Path;
 /**
  * Tests for getting the code map for a package.
  *
- * @since 1.0.0
+ * @since 1.6.0
  */
 public class CodeMapGeneratorTest extends AbstractLSTest {
 
@@ -69,7 +69,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
     @Override
     protected String getApiName() {
-        return "codeMap";
+        return "codemap";
     }
 
 
