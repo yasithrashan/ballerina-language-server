@@ -41,7 +41,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Test cases for PublishCodeMapSubscriber and codeMapChanges API.
+ * Test cases for PublishCodeMapSubscriber and codeMap API with changesOnly mode.
  *
  * @since 1.0.0
  */
@@ -87,10 +87,10 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 languageServer.getServerContext()
         );
 
-        // Call the codeMapChanges API and verify response
+        // Call the codeMap API with changesOnly=true and verify response
         Path projectPath = workspaceManager.projectRoot(filePath);
-        CodeMapRequest request = new CodeMapRequest(projectPath.toString());
-        JsonObject codeMapResponse = getResponse(request, "designModelService/codeMapChanges");
+        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true);
+        JsonObject codeMapResponse = getResponse(request, "designModelService/codeMap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 
         if (!files.equals(testConfig.output())) {
@@ -109,9 +109,9 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         String projectKey = projectPath.toUri().toString();
         ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
 
-        // Call codeMapChanges without tracking any files - should return empty
-        CodeMapRequest request = new CodeMapRequest(sourcePath);
-        JsonObject codeMapResponse = getResponse(request, "designModelService/codeMapChanges");
+        // Call codeMap with changesOnly=true without tracking any files - should return empty
+        CodeMapRequest request = new CodeMapRequest(sourcePath, true);
+        JsonObject codeMapResponse = getResponse(request, "designModelService/codeMap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 
         Assert.assertTrue(files.entrySet().isEmpty(),
@@ -231,7 +231,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
     @Override
     protected String getApiName() {
-        return "codeMapChanges";
+        return "codeMap";
     }
 
     public record TestConfig(String description, String source, JsonObject output) {

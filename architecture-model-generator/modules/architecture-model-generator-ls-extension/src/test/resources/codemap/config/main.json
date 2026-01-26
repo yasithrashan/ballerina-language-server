@@ -1,0 +1,307 @@
+{
+  "description": "Ballerina project test",
+  "source": "main.bal",
+  "output": {
+    "main.bal": {
+      "fileName": "main.bal",
+      "relativeFilePath": "main.bal",
+      "artifacts": [
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "lineRange": {
+            "startLine": {
+              "line": 0,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 0,
+              "offset": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "httpListener",
+          "type": "LISTENER",
+          "lineRange": {
+            "startLine": {
+              "line": 3,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 3,
+              "offset": 55
+            }
+          },
+          "properties": {
+            "type": "http:Listener",
+            "line": 3,
+            "comment": "HTTP listener on port 8080"
+          },
+          "children": []
+        },
+        {
+          "name": "User",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 6,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 10,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "id: int",
+              "name: string",
+              "email: string"
+            ],
+            "comment": "Sample record types",
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "CreateUserRequest",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 12,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 15,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "name: string",
+              "email: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "ErrorResponse",
+          "type": "TYPE",
+          "lineRange": {
+            "startLine": {
+              "line": 17,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 19,
+              "offset": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "message: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "users",
+          "type": "VARIABLE",
+          "lineRange": {
+            "startLine": {
+              "line": 22,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 22,
+              "offset": 21
+            }
+          },
+          "properties": {
+            "type": "map<User>",
+            "line": 22,
+            "comment": "In-memory storage for demo"
+          },
+          "children": []
+        },
+        {
+          "name": "nextId",
+          "type": "VARIABLE",
+          "lineRange": {
+            "startLine": {
+              "line": 23,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 23,
+              "offset": 15
+            }
+          },
+          "properties": {
+            "type": "int",
+            "line": 23
+          },
+          "children": []
+        },
+        {
+          "name": "/api",
+          "type": "SERVICE",
+          "lineRange": {
+            "startLine": {
+              "line": 26,
+              "offset": 0
+            },
+            "endLine": {
+              "line": 70,
+              "offset": 1
+            }
+          },
+          "properties": {
+            "basePath": "/api",
+            "listenerType": "http:Listener",
+            "comment": "REST API service"
+          },
+          "children": [
+            {
+              "name": "users",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 29,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 31,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "User[]|error",
+                "comment": "GET /api/users - Get all users",
+                "modifiers": [
+                  "resource"
+                ],
+                "category": "RESOURCE",
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "users/[int id]",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 34,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 44,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "User|http:NotFound|error",
+                "comment": "GET /api/users/{id} - Get user by ID",
+                "modifiers": [
+                  "resource"
+                ],
+                "category": "RESOURCE",
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "users",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 47,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 56,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "accessor": "post",
+                "returns": "User|error",
+                "comment": "POST /api/users - Create a new user",
+                "modifiers": [
+                  "resource"
+                ],
+                "category": "RESOURCE",
+                "parameters": [
+                  "payload: CreateUserRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "search",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 59,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 64,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "User[]|error",
+                "comment": "GET /api/search - Search users by name (query parameter example)",
+                "modifiers": [
+                  "resource"
+                ],
+                "category": "RESOURCE",
+                "parameters": [
+                  "name: string"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "health",
+              "type": "FUNCTION",
+              "lineRange": {
+                "startLine": {
+                  "line": 67,
+                  "offset": 4
+                },
+                "endLine": {
+                  "line": 69,
+                  "offset": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "string",
+                "comment": "GET /api/health - Health check endpoint",
+                "modifiers": [
+                  "resource"
+                ],
+                "category": "RESOURCE",
+                "parameters": []
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
