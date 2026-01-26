@@ -122,11 +122,11 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                     if (changedFiles.isEmpty()) {
                         response.setFiles(java.util.Collections.emptyMap());
                     } else {
-                        response.setFiles(CodeMapGenerator.generateCodeMap(project, changedFiles));
+                        response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager, changedFiles));
                         ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
                     }
                 } else {
-                    response.setFiles(CodeMapGenerator.generateCodeMap(project));
+                    response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager));
                 }
             } catch (Throwable e) {
                 response.setError(e);

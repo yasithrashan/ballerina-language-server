@@ -39,8 +39,7 @@ import java.nio.file.Path;
 public class PublishCodeMapSubscriber implements EventSubscriber {
 
     public static final String NAME = "Publish code map subscriber";
-    private static final String EXPR_URI = "expr";
-    private static final String AI_URI = "ai";
+    private static final String FILE_URI = "file";
     private static final String DID_CHANGE = "text/didChange";
 
     @Override
@@ -58,7 +57,7 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
         }
 
         // Skip tracking for AI cloned projects and expression editor
-        if (context.fileUri().startsWith(AI_URI) || context.fileUri().startsWith(EXPR_URI)) {
+        if (!context.fileUri().startsWith(FILE_URI)) {
             return;
         }
 

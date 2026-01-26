@@ -21,15 +21,16 @@ package io.ballerina.artifactsgenerator.codemap;
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
-import io.ballerina.designmodelgenerator.core.CommonUtils.ModuleInfo;
-import io.ballerina.modelgenerator.commons.PackageUtil;
+import io.ballerina.modelgenerator.commons.ModuleInfo;
 import io.ballerina.projects.Document;
 import io.ballerina.projects.Module;
-import io.ballerina.projects.ModuleDescriptor;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
+import io.ballerina.projects.ProjectKind;
+import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -48,10 +49,11 @@ public class CodeMapGenerator {
     /**
      * Generates a code map for all files in the given project.
      *
-     * @param project the Ballerina project
+     * @param project          the Ballerina project
+     * @param workspaceManager the workspace manager to obtain semantic models
      * @return a map of relative file paths to their code map files
      */
-    public static Map<String, CodeMapFile> generateCodeMap(Project project) {
+    public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
@@ -59,22 +61,25 @@ public class CodeMapGenerator {
         // Iterate through all modules (default module and submodules)
         for (var moduleId : currentPackage.moduleIds()) {
             Module module = currentPackage.module(moduleId);
-            SemanticModel semanticModel =
-                    PackageUtil.getCompilation(currentPackage).getSemanticModel(moduleId);
-            ModuleInfo moduleInfo = createModuleInfo(module.descriptor());
+            ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
 
             // Iterate through each document in the module
             for (var documentId : module.documentIds()) {
                 Document document = module.document(documentId);
-                SyntaxTree syntaxTree = document.syntaxTree();
+                String fileName = document.name();
+                Path filePath = getDocumentPath(project, module, fileName);
 
+                Optional<SemanticModel> semanticModelOpt = workspaceManager.semanticModel(filePath);
+                if (semanticModelOpt.isEmpty()) {
+                    continue;
+                }
+
+                SyntaxTree syntaxTree = document.syntaxTree();
                 List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree,
-                        semanticModel, moduleInfo);
+                        semanticModelOpt.get(), moduleInfo);
 
                 if (!artifacts.isEmpty()) {
-                    String fileName = document.name();
                     String relativeFilePath = getRelativeFilePath(module, fileName);
-
                     CodeMapFile codeMapFile = new CodeMapFile(fileName, relativeFilePath, artifacts);
                     codeMapFiles.put(relativeFilePath, codeMapFile);
                 }
@@ -87,11 +92,13 @@ public class CodeMapGenerator {
     /**
      * Generates a code map for specific files in the given project.
      *
-     * @param project   the Ballerina project
-     * @param fileNames the list of file names to process
+     * @param project          the Ballerina project
+     * @param workspaceManager the workspace manager to obtain semantic models
+     * @param fileNames        the list of file names to process
      * @return a map of relative file paths to their code map files
      */
-    public static Map<String, CodeMapFile> generateCodeMap(Project project, List<String> fileNames) {
+    public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager,
+                                                           List<String> fileNames) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
@@ -99,22 +106,26 @@ public class CodeMapGenerator {
 
         for (var moduleId : currentPackage.moduleIds()) {
             Module module = currentPackage.module(moduleId);
-            SemanticModel semanticModel =
-                    PackageUtil.getCompilation(currentPackage).getSemanticModel(moduleId);
-            ModuleInfo moduleInfo = createModuleInfo(module.descriptor());
+            ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
 
             for (var documentId : module.documentIds()) {
                 Document document = module.document(documentId);
                 String fileName = document.name();
 
-                // Skip files not in the target list
+                // Ignore the file if it is not in the targeted list.
                 if (!targetFiles.contains(fileName)) {
+                    continue;
+                }
+
+                Path filePath = getDocumentPath(project, module, fileName);
+                Optional<SemanticModel> semanticModelOpt = workspaceManager.semanticModel(filePath);
+                if (semanticModelOpt.isEmpty()) {
                     continue;
                 }
 
                 SyntaxTree syntaxTree = document.syntaxTree();
                 List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree,
-                        semanticModel, moduleInfo);
+                        semanticModelOpt.get(), moduleInfo);
 
                 if (!artifacts.isEmpty()) {
                     String relativeFilePath = getRelativeFilePath(module, fileName);
@@ -154,19 +165,22 @@ public class CodeMapGenerator {
         return artifacts;
     }
 
-    private static ModuleInfo createModuleInfo(ModuleDescriptor descriptor) {
-        return new ModuleInfo(
-                descriptor.org().value(),
-                descriptor.packageName().value(),
-                descriptor.name().toString(),
-                descriptor.version().toString());
-    }
-
     private static String getRelativeFilePath(Module module, String fileName) {
         if (module.isDefaultModule()) {
             return fileName;
         }
         String moduleName = module.moduleName().moduleNamePart();
         return "modules" + File.separator + moduleName + File.separator + fileName;
+    }
+
+    private static Path getDocumentPath(Project project, Module module, String fileName) {
+        Path sourceRoot = project.sourceRoot();
+        if (project.kind() == ProjectKind.SINGLE_FILE_PROJECT) {
+            return sourceRoot;
+        }
+        if (module.isDefaultModule()) {
+            return sourceRoot.resolve(fileName);
+        }
+        return sourceRoot.resolve("modules").resolve(module.moduleName().moduleNamePart()).resolve(fileName);
     }
 }
