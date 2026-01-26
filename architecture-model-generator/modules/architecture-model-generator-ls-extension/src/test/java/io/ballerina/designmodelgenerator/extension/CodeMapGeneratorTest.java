@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
+ *  Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com)
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -40,25 +40,16 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
     public void test(Path config) throws IOException {
         Path configJsonPath = configDir.resolve(config);
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
-        CodeMapRequest request = new CodeMapRequest(getSourcePath(testConfig.source()));
+        CodeMapRequest request = new CodeMapRequest(getSourcePath(testConfig.source()), false);
         JsonObject codeMapResponse = getResponseAndCloseFile(request, testConfig.source());
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
-            updateConfig(configJsonPath, updatedConfig);
+//            updateConfig(configJsonPath, updatedConfig);
             compareJsonElements(files, testConfig.output());
             Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
         }
-    }
-
-
-    @Override
-    protected String[] skipList() {
-        return new String[] {
-                // TODO: May related to https://github.com/wso2/product-ballerina-integrator/issues/1343
-                "graphql.json"
-        };
     }
 
     @Override
