@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
+ *  Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com)
  *
  *  WSO2 LLC. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * Test cases for PublishCodeMapSubscriber and codeMap API with changesOnly mode.
  *
- * @since 1.0.0
+ * @since 1.6.0
  */
 public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
@@ -107,7 +107,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         String sourcePath = getSourcePath("project");
         Path projectPath = Path.of(sourcePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
 
         // Call codeMap with changesOnly=true without tracking any files - should return empty
         CodeMapRequest request = new CodeMapRequest(sourcePath, true);
@@ -142,7 +142,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
 
         // Create a mock context with AI URI
         DocumentServiceContext mockContext = Mockito.mock(DocumentServiceContext.class);
@@ -155,7 +155,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, mockContext, languageServer.getServerContext());
 
         // Verify nothing was tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
         Assert.assertTrue(trackedFiles.isEmpty(), "AI URI files should not be tracked");
     }
 
@@ -169,7 +169,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
 
         // Create a mock context with expr URI
         DocumentServiceContext mockContext = Mockito.mock(DocumentServiceContext.class);
@@ -182,7 +182,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, mockContext, languageServer.getServerContext());
 
         // Verify nothing was tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
         Assert.assertTrue(trackedFiles.isEmpty(), "Expr URI files should not be tracked");
     }
 
@@ -204,13 +204,13 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
 
         // This should not track the file due to non-didChange operation
         publishCodeMapSubscriber.onEvent(null, documentServiceContext, languageServer.getServerContext());
 
         // Verify nothing was tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getAndClearChangedFiles(projectKey);
+        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
         Assert.assertTrue(trackedFiles.isEmpty(), "Non-didChange operations should not track files");
     }
 

@@ -106,7 +106,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
     }
 
     @JsonRequest
-    public CompletableFuture<CodeMapResponse> codeMap(CodeMapRequest request) {
+    public CompletableFuture<CodeMapResponse> codemap(CodeMapRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             CodeMapResponse response = new CodeMapResponse();
             try {
@@ -117,12 +117,13 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 if (request.changesOnly()) {
                     String projectKey = projectPath.toUri().toString();
                     List<String> changedFiles = ChangedFilesTracker.getInstance()
-                            .getAndClearChangedFiles(projectKey);
+                            .getChangedFiles(projectKey);
 
                     if (changedFiles.isEmpty()) {
                         response.setFiles(java.util.Collections.emptyMap());
                     } else {
                         response.setFiles(CodeMapGenerator.generateCodeMap(project, changedFiles));
+                        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
                     }
                 } else {
                     response.setFiles(CodeMapGenerator.generateCodeMap(project));
