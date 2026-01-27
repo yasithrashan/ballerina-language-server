@@ -108,13 +108,13 @@ public class ArchitectureModelGeneratorServiceTests {
     public void testGRPCWorkspaceTest() throws IOException, ExecutionException, InterruptedException {
 
         Path project1 = RES_DIR.resolve(BALLERINA).resolve(
-                Path.of("microservice_grpc.json/cart", "cart_service.bal").toString());
+                Path.of("microservice_grpc/cart", "cart_service.bal").toString());
 
         Path project2 = RES_DIR.resolve(BALLERINA).resolve(
-                Path.of("microservice_grpc.json/checkout", "checkout_service.bal").toString());
+                Path.of("microservice_grpc/checkout", "checkout_service.bal").toString());
 
         Path project3 = RES_DIR.resolve(BALLERINA).resolve(
-                Path.of("microservice_grpc.json/frontend", "service.bal").toString());
+                Path.of("microservice_grpc/frontend", "service.bal").toString());
 
         ArchitectureModelRequest request = new ArchitectureModelRequest();
         request.setDocumentUris(List.of(project1.toString(), project2.toString(), project3.toString()));
