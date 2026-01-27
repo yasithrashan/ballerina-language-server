@@ -138,6 +138,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
     // Other constants
     private static final String RECORD_TYPE_NAME = "record";
+    private static final String ALIAS_SEPARATOR = " as ";
 
     /**
      * Creates a new CodeMapNodeTransformer with comment extraction enabled.
@@ -181,7 +182,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         functionBuilder.addProperty(PROP_RETURNS, returnType);
 
         extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
-        extractComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
+        extractInlineComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
 
         functionBuilder.type(TYPE_FUNCTION);
 
@@ -226,9 +227,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         Optional<TypeDescriptorNode> typeDescriptorNode = serviceDeclarationNode.typeDescriptor();
         NodeList<Node> resourcePaths = serviceDeclarationNode.absoluteResourcePath();
 
-        String serviceName = determineServiceName(serviceDeclarationNode, typeDescriptorNode, resourcePaths,
-                firstExpression);
-        serviceBuilder.name(serviceName);
+        determineServiceName(serviceDeclarationNode, typeDescriptorNode, resourcePaths, firstExpression)
+                .ifPresent(serviceBuilder::name);
 
         String basePath = getPathString(resourcePaths);
         serviceBuilder.addProperty(PROP_BASE_PATH, basePath);
@@ -242,7 +242,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         serviceBuilder.type(TYPE_SERVICE);
 
         extractDocumentation(serviceDeclarationNode.metadata()).ifPresent(serviceBuilder::documentation);
-        extractComments(serviceDeclarationNode).ifPresent(serviceBuilder::comment);
+        extractInlineComments(serviceDeclarationNode).ifPresent(serviceBuilder::comment);
 
         serviceDeclarationNode.members().forEach(member -> {
             member.apply(this).ifPresent(serviceBuilder::addChild);
@@ -270,7 +270,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         // Build full import name
         String fullImportName = orgName.isEmpty() ? moduleName : orgName + "/" + moduleName;
         if (alias.isPresent()) {
-            fullImportName += " as " + alias.get();
+            fullImportName += ALIAS_SEPARATOR + alias.get();
         }
 
         CodeMapArtifact.Builder importBuilder = new CodeMapArtifact.Builder(importDeclarationNode)
@@ -284,7 +284,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         importBuilder.addProperty(PROP_MODULE_NAME, moduleName);
         alias.ifPresent(a -> importBuilder.addProperty(PROP_ALIAS, a));
 
-        extractComments(importDeclarationNode).ifPresent(importBuilder::comment);
+        extractInlineComments(importDeclarationNode).ifPresent(importBuilder::comment);
 
         return Optional.of(importBuilder.build());
     }
@@ -315,7 +315,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
 
         extractDocumentation(listenerDeclarationNode.metadata()).ifPresent(listenerBuilder::documentation);
-        extractComments(listenerDeclarationNode).ifPresent(listenerBuilder::comment);
+        extractInlineComments(listenerDeclarationNode).ifPresent(listenerBuilder::comment);
 
         return Optional.of(listenerBuilder.build());
     }
@@ -376,7 +376,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         });
 
         extractDocumentation(constantDeclarationNode.metadata()).ifPresent(constantBuilder::documentation);
-        extractComments(constantDeclarationNode).ifPresent(constantBuilder::comment);
+        extractInlineComments(constantDeclarationNode).ifPresent(constantBuilder::comment);
 
         return Optional.of(constantBuilder.build());
     }
@@ -420,7 +420,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         });
 
         extractDocumentation(moduleVariableDeclarationNode.metadata()).ifPresent(variableBuilder::documentation);
-        extractComments(moduleVariableDeclarationNode).ifPresent(variableBuilder::comment);
+        extractInlineComments(moduleVariableDeclarationNode).ifPresent(variableBuilder::comment);
 
         return Optional.of(variableBuilder.build());
     }
@@ -447,7 +447,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         typeBuilder.addProperty(PROP_FIELDS, fields);
 
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
-        extractComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
+        extractInlineComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
 
         return Optional.of(typeBuilder.build());
     }
@@ -459,7 +459,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .type(TYPE_TYPE)
                 .category(CATEGORY_ENUM);
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
-        extractComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
+        extractInlineComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
         return Optional.of(typeBuilder.build());
     }
 
@@ -478,7 +478,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
 
         extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
-        extractComments(classDefinitionNode).ifPresent(classBuilder::comment);
+        extractInlineComments(classDefinitionNode).ifPresent(classBuilder::comment);
 
         classDefinitionNode.members().forEach(member -> {
             member.apply(this).ifPresent(classBuilder::addChild);
@@ -502,7 +502,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .modifiers(modifiers);
 
         fieldBuilder.addProperty(PROP_TYPE, fieldType);
-        extractComments(objectFieldNode).ifPresent(fieldBuilder::comment);
+        extractInlineComments(objectFieldNode).ifPresent(fieldBuilder::comment);
 
         return Optional.of(fieldBuilder.build());
     }
@@ -593,18 +593,18 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         return null;
     }
 
-    private String determineServiceName(ServiceDeclarationNode serviceDeclarationNode,
+    private Optional<String> determineServiceName(ServiceDeclarationNode serviceDeclarationNode,
                                        Optional<TypeDescriptorNode> typeDescriptorNode,
                                        NodeList<Node> resourcePaths,
                                        ExpressionNode firstExpression) {
         if (typeDescriptorNode.isPresent()) {
-            return typeDescriptorNode.get().toSourceCode().strip();
+            return Optional.of(typeDescriptorNode.get().toSourceCode().strip());
         } else if (!resourcePaths.isEmpty()) {
-            return getPathString(resourcePaths);
+            return Optional.of(getPathString(resourcePaths));
         } else if (firstExpression != null) {
-            return firstExpression.toSourceCode().strip();
+            return Optional.of(firstExpression.toSourceCode().strip());
         } else {
-            return "";
+            return Optional.empty();
         }
     }
 
@@ -686,7 +686,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .filter(doc -> !doc.isEmpty());
     }
 
-    private Optional<String> extractComments(Node node) {
+    private Optional<String> extractInlineComments(Node node) {
         if (!extractComments) {
             return Optional.empty();
         }
