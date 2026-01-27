@@ -281,26 +281,25 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     }
 
     @Test
-    public void testSameFileNameInDifferentModules() {
-        // Test that files with same name in different modules are deduplicated
-        // (since ChangedFilesTracker only stores file names, not full paths)
+    public void testSameFileNameInDifferentModulesTrackedSeparately() {
+        // Negative test: changing root types.bal should NOT track modules/mod1/types.bal
         String projectKey = "file:///test/project/";
         ChangedFilesTracker tracker = ChangedFilesTracker.getInstance();
 
         // Clear tracker first
         tracker.clearChangedFiles(projectKey);
 
-        // Track same filename from root module
+        // Track only the root module file
         tracker.trackFile(projectKey, "types.bal");
 
-        // Track same filename from submodule (simulating modules/mod1/types.bal)
-        tracker.trackFile(projectKey, "types.bal");
-
-        // Verify only one entry exists (deduplication by Set)
+        // Verify only root file is tracked, submodule file should NOT be present
         List<String> trackedFiles = tracker.getChangedFiles(projectKey);
         Assert.assertEquals(trackedFiles.size(), 1,
-                "Same filename should be deduplicated regardless of module path");
-        Assert.assertTrue(trackedFiles.contains("types.bal"), "types.bal should be tracked");
+                "Only one file should be tracked");
+        Assert.assertTrue(trackedFiles.contains("types.bal"),
+                "Root types.bal should be tracked");
+        Assert.assertFalse(trackedFiles.contains("modules/mod1/types.bal"),
+                "Submodule types.bal should NOT be tracked when only root file changed");
 
         // Cleanup
         tracker.clearChangedFiles(projectKey);

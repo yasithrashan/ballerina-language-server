@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ChangedFilesTracker {
 
-    // Map: projectKey (URI) -> Set of changed file names
+    // Map: projectKey (URI) -> Set of changed file relative paths
     private final Map<String, Set<String>> changedFilesMap;
 
     private ChangedFilesTracker() {
@@ -56,20 +56,20 @@ public class ChangedFilesTracker {
     /**
      * Track a changed file for a given project.
      *
-     * @param projectKey the project identifier
-     * @param fileName   the name of the changed file
+     * @param projectKey   the project identifier
+     * @param relativePath the relative path of the changed file from project root
      */
-    public void trackFile(String projectKey, String fileName) {
+    public void trackFile(String projectKey, String relativePath) {
         changedFilesMap
                 .computeIfAbsent(projectKey, k -> ConcurrentHashMap.newKeySet())
-                .add(fileName);
+                .add(relativePath);
     }
 
     /**
      * Retrieves all tracked changed files for the given project.
      *
      * @param projectKey the project URI key
-     * @return list of changed file names, or empty list if none tracked
+     * @return list of changed file relative paths, or empty list if none tracked
      */
     public List<String> getChangedFiles(String projectKey) {
         Set<String> files = changedFilesMap.get(projectKey);
