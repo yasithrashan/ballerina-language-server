@@ -104,11 +104,6 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
             return this;
         }
 
-        public Builder lineRange(LineRange lineRange) {
-            this.lineRange = toRange(lineRange);
-            return this;
-        }
-
         public Builder modifiers(List<String> modifiers) {
             if (!modifiers.isEmpty()) {
                 this.properties.put(MODIFIERS, new ArrayList<>(modifiers));
