@@ -43,6 +43,13 @@ import java.util.Map;
 public record CodeMapArtifact(String name, String type, Range lineRange,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {
 
+    // Property key constants
+    private static final String MODIFIERS = "modifiers";
+    private static final String LINE = "line";
+    private static final String DOCUMENTATION = "documentation";
+    private static final String COMMENT = "comment";
+    private static final String CATEGORY = "category";
+
     /**
      * Converts a Ballerina LineRange to an LSP4J Range.
      *
@@ -104,7 +111,7 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
 
         public Builder modifiers(List<String> modifiers) {
             if (!modifiers.isEmpty()) {
-                this.properties.put("modifiers", new ArrayList<>(modifiers));
+                this.properties.put(MODIFIERS, new ArrayList<>(modifiers));
             }
             return this;
         }
@@ -120,19 +127,19 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
         }
 
         public Builder line(int line) {
-            return addProperty("line", line);
+            return addProperty(LINE, line);
         }
 
         public Builder documentation(String documentation) {
-            return addProperty("documentation", documentation);
+            return addProperty(DOCUMENTATION, documentation);
         }
 
         public Builder comment(String comment) {
-            return addProperty("comment", comment);
+            return addProperty(COMMENT, comment);
         }
 
         public Builder category(String category) {
-            return addProperty("category", category);
+            return addProperty(CATEGORY, category);
         }
 
         /**
