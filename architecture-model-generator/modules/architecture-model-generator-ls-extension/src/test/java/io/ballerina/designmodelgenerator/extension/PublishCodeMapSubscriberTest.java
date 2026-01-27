@@ -19,7 +19,7 @@
 package io.ballerina.designmodelgenerator.extension;
 
 import com.google.gson.JsonObject;
-import io.ballerina.artifactsgenerator.codemap.ChangedFilesTracker;
+import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
 import io.ballerina.modelgenerator.commons.AbstractLSTest;
 import org.ballerinalang.langserver.LSContextOperation;
@@ -107,7 +107,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         String sourcePath = getSourcePath("project");
         Path projectPath = Path.of(sourcePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Call codeMap with changesOnly=true without tracking any files - should return empty
         CodeMapRequest request = new CodeMapRequest(sourcePath, true);
@@ -142,7 +142,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Create a mock context with AI URI
         DocumentServiceContext mockContext = Mockito.mock(DocumentServiceContext.class);
@@ -155,7 +155,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, mockContext, languageServer.getServerContext());
 
         // Verify nothing was tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
         Assert.assertTrue(trackedFiles.isEmpty(), "AI URI files should not be tracked");
     }
 
@@ -169,7 +169,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Create a mock context with expr URI
         DocumentServiceContext mockContext = Mockito.mock(DocumentServiceContext.class);
@@ -182,18 +182,51 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, mockContext, languageServer.getServerContext());
 
         // Verify nothing was tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
         Assert.assertTrue(trackedFiles.isEmpty(), "Expr URI files should not be tracked");
     }
 
     @Test
-    public void testSkipsNonDidChangeOperations() throws IOException {
+    public void testSkipsNonTrackedOperations() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
         String sourcePath = getSourcePath("project/main.bal");
         Path filePath = Path.of(sourcePath);
         String fileUri = filePath.toAbsolutePath().normalize().toUri().toString();
 
-        // Create a context with a different operation (not didChange)
+        // Create a context with a different operation (not didChange or didOpen)
+        DocumentServiceContext documentServiceContext = ContextBuilder.buildDocumentServiceContext(
+                fileUri,
+                workspaceManager,
+                LSContextOperation.TXT_HOVER,
+                languageServer.getServerContext()
+        );
+
+        // Clear tracker first
+        Path projectPath = workspaceManager.projectRoot(filePath);
+        String projectKey = projectPath.toUri().toString();
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
+
+        // This should not track the file due to non-tracked operation
+        publishCodeMapSubscriber.onEvent(null, documentServiceContext, languageServer.getServerContext());
+
+        // Verify nothing was tracked
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
+        Assert.assertTrue(trackedFiles.isEmpty(), "Non-tracked operations should not track files");
+    }
+
+    @Test
+    public void testTracksDidOpenEvents() throws IOException {
+        WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
+        String sourcePath = getSourcePath("project/main.bal");
+        Path filePath = Path.of(sourcePath);
+        String fileUri = filePath.toAbsolutePath().normalize().toUri().toString();
+
+        // Clear tracker first
+        Path projectPath = workspaceManager.projectRoot(filePath);
+        String projectKey = projectPath.toUri().toString();
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
+
+        // Create a context with didOpen operation
         DocumentServiceContext documentServiceContext = ContextBuilder.buildDocumentServiceContext(
                 fileUri,
                 workspaceManager,
@@ -201,17 +234,53 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 languageServer.getServerContext()
         );
 
-        // Clear tracker first
-        Path projectPath = workspaceManager.projectRoot(filePath);
-        String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
-
-        // This should not track the file due to non-didChange operation
+        // This should track the file due to didOpen operation
         publishCodeMapSubscriber.onEvent(null, documentServiceContext, languageServer.getServerContext());
 
-        // Verify nothing was tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
-        Assert.assertTrue(trackedFiles.isEmpty(), "Non-didChange operations should not track files");
+        // Verify file was tracked
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
+        Assert.assertEquals(trackedFiles.size(), 1, "didOpen should track the file");
+        Assert.assertTrue(trackedFiles.contains("main.bal"), "main.bal should be tracked");
+
+        // Cleanup
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
+    }
+
+    @Test
+    public void testTracksBothDidChangeAndDidOpenEvents() throws IOException {
+        WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
+
+        // Get paths for two different files in the same project
+        String sourcePath1 = getSourcePath("project/main.bal");
+        String sourcePath2 = getSourcePath("project/service.bal");
+        Path filePath1 = Path.of(sourcePath1);
+        Path filePath2 = Path.of(sourcePath2);
+
+        // Clear tracker first
+        Path projectPath = workspaceManager.projectRoot(filePath1);
+        String projectKey = projectPath.toUri().toString();
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
+
+        // Trigger didOpen event for first file (simulating new file opened)
+        String fileUri1 = filePath1.toAbsolutePath().normalize().toUri().toString();
+        DocumentServiceContext openContext = ContextBuilder.buildDocumentServiceContext(
+                fileUri1, workspaceManager, LSContextOperation.TXT_DID_OPEN, languageServer.getServerContext());
+        publishCodeMapSubscriber.onEvent(null, openContext, languageServer.getServerContext());
+
+        // Trigger didChange event for second file (simulating file modification)
+        String fileUri2 = filePath2.toAbsolutePath().normalize().toUri().toString();
+        DocumentServiceContext changeContext = ContextBuilder.buildDocumentServiceContext(
+                fileUri2, workspaceManager, LSContextOperation.TXT_DID_CHANGE, languageServer.getServerContext());
+        publishCodeMapSubscriber.onEvent(null, changeContext, languageServer.getServerContext());
+
+        // Verify both files are tracked
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
+        Assert.assertEquals(trackedFiles.size(), 2, "Both didOpen and didChange should track files");
+        Assert.assertTrue(trackedFiles.contains("main.bal"), "main.bal (opened) should be tracked");
+        Assert.assertTrue(trackedFiles.contains("service.bal"), "service.bal (changed) should be tracked");
+
+        // Cleanup
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
     @Test
@@ -227,7 +296,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath1);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Trigger onEvent for first file
         String fileUri1 = filePath1.toAbsolutePath().normalize().toUri().toString();
@@ -242,13 +311,13 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, context2, languageServer.getServerContext());
 
         // Verify both files are tracked
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
         Assert.assertEquals(trackedFiles.size(), 2, "Both files should be tracked");
         Assert.assertTrue(trackedFiles.contains("main.bal"), "main.bal should be tracked");
         Assert.assertTrue(trackedFiles.contains("service.bal"), "service.bal should be tracked");
 
         // Cleanup
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
     @Test
@@ -261,7 +330,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Trigger onEvent multiple times for the same file
         DocumentServiceContext context = ContextBuilder.buildDocumentServiceContext(
@@ -272,28 +341,28 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, context, languageServer.getServerContext());
 
         // Verify the file is tracked only once (no duplicates)
-        List<String> trackedFiles = ChangedFilesTracker.getInstance().getChangedFiles(projectKey);
+        List<String> trackedFiles = CodeMapFilesTracker.getInstance().getModifiedFiles(projectKey);
         Assert.assertEquals(trackedFiles.size(), 1, "File should be tracked only once despite multiple events");
         Assert.assertTrue(trackedFiles.contains("main.bal"), "main.bal should be tracked");
 
         // Cleanup
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
     @Test
     public void testSameFileNameInDifferentModulesTrackedSeparately() {
         // Negative test: changing root types.bal should NOT track modules/mod1/types.bal
         String projectKey = "file:///test/project/";
-        ChangedFilesTracker tracker = ChangedFilesTracker.getInstance();
+        CodeMapFilesTracker tracker = CodeMapFilesTracker.getInstance();
 
         // Clear tracker first
-        tracker.clearChangedFiles(projectKey);
+        tracker.clearModifiedFiles(projectKey);
 
         // Track only the root module file
         tracker.trackFile(projectKey, "types.bal");
 
         // Verify only root file is tracked, submodule file should NOT be present
-        List<String> trackedFiles = tracker.getChangedFiles(projectKey);
+        List<String> trackedFiles = tracker.getModifiedFiles(projectKey);
         Assert.assertEquals(trackedFiles.size(), 1,
                 "Only one file should be tracked");
         Assert.assertTrue(trackedFiles.contains("types.bal"),
@@ -302,7 +371,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 "Submodule types.bal should NOT be tracked when only root file changed");
 
         // Cleanup
-        tracker.clearChangedFiles(projectKey);
+        tracker.clearModifiedFiles(projectKey);
     }
 
     @Test
@@ -315,7 +384,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Clear tracker first
         Path projectPath = workspaceManager.projectRoot(filePath);
         String projectKey = projectPath.toUri().toString();
-        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Track a file
         DocumentServiceContext context = ContextBuilder.buildDocumentServiceContext(
@@ -340,22 +409,22 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         // Test that changes in one project do not leak into another project
         String projectKeyA = "file:///test/projectA/";
         String projectKeyB = "file:///test/projectB/";
-        ChangedFilesTracker tracker = ChangedFilesTracker.getInstance();
+        CodeMapFilesTracker tracker = CodeMapFilesTracker.getInstance();
 
         // Clear both trackers
-        tracker.clearChangedFiles(projectKeyA);
-        tracker.clearChangedFiles(projectKeyB);
+        tracker.clearModifiedFiles(projectKeyA);
+        tracker.clearModifiedFiles(projectKeyB);
 
         // Track file in Project A only
         tracker.trackFile(projectKeyA, "main.bal");
         tracker.trackFile(projectKeyA, "service.bal");
 
         // Verify Project A has tracked files
-        List<String> trackedFilesA = tracker.getChangedFiles(projectKeyA);
+        List<String> trackedFilesA = tracker.getModifiedFiles(projectKeyA);
         Assert.assertEquals(trackedFilesA.size(), 2, "Project A should have 2 tracked files");
 
         // Verify Project B has no tracked files (isolation)
-        List<String> trackedFilesB = tracker.getChangedFiles(projectKeyB);
+        List<String> trackedFilesB = tracker.getModifiedFiles(projectKeyB);
         Assert.assertTrue(trackedFilesB.isEmpty(),
                 "Project B should have no tracked files - changes should not leak between projects");
 
@@ -363,19 +432,19 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         tracker.trackFile(projectKeyB, "utils.bal");
 
         // Verify Project A still has its original files (unchanged)
-        trackedFilesA = tracker.getChangedFiles(projectKeyA);
+        trackedFilesA = tracker.getModifiedFiles(projectKeyA);
         Assert.assertEquals(trackedFilesA.size(), 2, "Project A should still have 2 tracked files");
         Assert.assertFalse(trackedFilesA.contains("utils.bal"),
                 "Project A should not contain Project B's file");
 
         // Verify Project B has only its file
-        trackedFilesB = tracker.getChangedFiles(projectKeyB);
+        trackedFilesB = tracker.getModifiedFiles(projectKeyB);
         Assert.assertEquals(trackedFilesB.size(), 1, "Project B should have 1 tracked file");
         Assert.assertTrue(trackedFilesB.contains("utils.bal"), "Project B should contain utils.bal");
 
         // Cleanup
-        tracker.clearChangedFiles(projectKeyA);
-        tracker.clearChangedFiles(projectKeyB);
+        tracker.clearModifiedFiles(projectKeyA);
+        tracker.clearModifiedFiles(projectKeyB);
     }
 
     @Override

@@ -20,7 +20,7 @@ package io.ballerina.designmodelgenerator.extension;
 
 import io.ballerina.artifactsgenerator.ArtifactsCache;
 import io.ballerina.artifactsgenerator.ArtifactsGenerator;
-import io.ballerina.artifactsgenerator.codemap.ChangedFilesTracker;
+import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
@@ -116,14 +116,14 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 if (request.changesOnly()) {
                     String projectKey = projectPath.toUri().toString();
-                    List<String> changedFiles = ChangedFilesTracker.getInstance()
-                            .getChangedFiles(projectKey);
+                    List<String> modifiedFiles = CodeMapFilesTracker.getInstance()
+                            .getModifiedFiles(projectKey);
 
-                    if (changedFiles.isEmpty()) {
+                    if (modifiedFiles.isEmpty()) {
                         response.setFiles(java.util.Collections.emptyMap());
                     } else {
-                        response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager, changedFiles));
-                        ChangedFilesTracker.getInstance().clearChangedFiles(projectKey);
+                        response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager, modifiedFiles));
+                        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
                     }
                 } else {
                     response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager));

@@ -18,7 +18,7 @@
 
 package io.ballerina.designmodelgenerator.extension;
 
-import io.ballerina.artifactsgenerator.codemap.ChangedFilesTracker;
+import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.langserver.commons.DocumentServiceContext;
 import org.ballerinalang.langserver.commons.LanguageServerContext;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
 
 /**
  * Tracks changed files for incremental code map generation.
- * When a file changes, this subscriber records the file name.
+ * When a file is opened or changed, this subscriber records the file name.
  * The tracked files are used when the client calls the codeMap API.
  *
  * @since 1.6.0
@@ -41,6 +41,7 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
     public static final String NAME = "Publish code map subscriber";
     private static final String FILE_URI = "file";
     private static final String DID_CHANGE = "text/didChange";
+    private static final String DID_OPEN = "text/didOpen";
 
     @Override
     public EventKind eventKind() {
@@ -50,9 +51,9 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
     @Override
     public void onEvent(ExtendedLanguageClient client, DocumentServiceContext context,
                         LanguageServerContext serverContext) {
-        // Only track files on didChange events
+        // Only track files on didChange and didOpen events
         String operationName = context.operation().getName();
-        if (!DID_CHANGE.equals(operationName)) {
+        if (!DID_CHANGE.equals(operationName) && !DID_OPEN.equals(operationName)) {
             return;
         }
 
@@ -70,7 +71,7 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
         String relativePath = projectPath.relativize(context.filePath()).toString();
 
         // Track the changed file
-        ChangedFilesTracker.getInstance().trackFile(projectKey, relativePath);
+        CodeMapFilesTracker.getInstance().trackFile(projectKey, relativePath);
     }
 
     @Override
