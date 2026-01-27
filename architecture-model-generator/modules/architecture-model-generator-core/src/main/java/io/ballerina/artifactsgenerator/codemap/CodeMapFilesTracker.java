@@ -26,22 +26,22 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Tracks changed files per project for incremental code map generation.
- * This singleton maintains a thread-safe record of file changes between API calls.
+ * Tracks modified (changed or added) files per project for incremental code map generation.
+ * This singleton maintains a thread-safe record of file modifications between API calls.
  *
  * @since 1.6.0
  */
-public class ChangedFilesTracker {
+public class CodeMapFilesTracker {
 
-    // Map: projectKey (URI) -> Set of changed file relative paths
-    private final Map<String, Set<String>> changedFilesMap;
+    // Map: projectKey (URI) -> Set of modified (changed or added) file relative paths
+    private final Map<String, Set<String>> modifiedFilesMap;
 
-    private ChangedFilesTracker() {
-        this.changedFilesMap = new ConcurrentHashMap<>();
+    private CodeMapFilesTracker() {
+        this.modifiedFilesMap = new ConcurrentHashMap<>();
     }
 
     private static class Holder {
-        private static final ChangedFilesTracker INSTANCE = new ChangedFilesTracker();
+        private static final CodeMapFilesTracker INSTANCE = new CodeMapFilesTracker();
     }
 
     /**
@@ -49,7 +49,7 @@ public class ChangedFilesTracker {
      *
      * @return the ChangedFilesTracker instance
      */
-    public static ChangedFilesTracker getInstance() {
+    public static CodeMapFilesTracker getInstance() {
         return Holder.INSTANCE;
     }
 
@@ -60,19 +60,19 @@ public class ChangedFilesTracker {
      * @param relativePath the relative path of the changed file from project root
      */
     public void trackFile(String projectKey, String relativePath) {
-        changedFilesMap
+        modifiedFilesMap
                 .computeIfAbsent(projectKey, k -> ConcurrentHashMap.newKeySet())
                 .add(relativePath);
     }
 
     /**
-     * Retrieves all tracked changed files for the given project.
+     * Retrieves all tracked modified files for the given project.
      *
      * @param projectKey the project URI key
-     * @return list of changed file relative paths, or empty list if none tracked
+     * @return list of modified file relative paths, or empty list if none tracked
      */
-    public List<String> getChangedFiles(String projectKey) {
-        Set<String> files = changedFilesMap.get(projectKey);
+    public List<String> getModifiedFiles(String projectKey) {
+        Set<String> files = modifiedFilesMap.get(projectKey);
         if (files == null || files.isEmpty()) {
             return Collections.emptyList();
         }
@@ -80,12 +80,12 @@ public class ChangedFilesTracker {
     }
 
     /**
-     * Clears all tracked changed files for the given project.
+     * Clears all tracked modified files for the given project.
      *
      * @param projectKey the project URI key
      */
-    public void clearChangedFiles(String projectKey) {
-        changedFilesMap.remove(projectKey);
+    public void clearModifiedFiles(String projectKey) {
+        modifiedFilesMap.remove(projectKey);
     }
 
 }
