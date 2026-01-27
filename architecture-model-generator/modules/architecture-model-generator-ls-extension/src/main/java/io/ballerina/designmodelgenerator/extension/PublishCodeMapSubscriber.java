@@ -61,17 +61,16 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
             return;
         }
 
-        // Get the project key and file name
+        // Get the project key and relative file path
         Path projectPath = context.workspace().projectRoot(context.filePath());
-        Path fileNamePath = context.filePath().getFileName();
-        if (projectPath == null || fileNamePath == null) {
+        if (projectPath == null) {
             return;
         }
         String projectKey = projectPath.toUri().toString();
-        String fileName = fileNamePath.toString();
+        String relativePath = projectPath.relativize(context.filePath()).toString();
 
         // Track the changed file
-        ChangedFilesTracker.getInstance().trackFile(projectKey, fileName);
+        ChangedFilesTracker.getInstance().trackFile(projectKey, relativePath);
     }
 
     @Override
