@@ -111,9 +111,10 @@ public class CodeMapGenerator {
             for (var documentId : module.documentIds()) {
                 Document document = module.document(documentId);
                 String fileName = document.name();
+                String relativeFilePath = getRelativeFilePath(module, fileName);
 
                 // Ignore the file if it is not in the targeted list.
-                if (!targetFiles.contains(fileName)) {
+                if (!targetFiles.contains(relativeFilePath)) {
                     continue;
                 }
 
@@ -128,7 +129,6 @@ public class CodeMapGenerator {
                         semanticModelOpt.get(), moduleInfo);
 
                 if (!artifacts.isEmpty()) {
-                    String relativeFilePath = getRelativeFilePath(module, fileName);
                     CodeMapFile codeMapFile = new CodeMapFile(fileName, relativeFilePath, artifacts);
                     codeMapFiles.put(relativeFilePath, codeMapFile);
                 }
