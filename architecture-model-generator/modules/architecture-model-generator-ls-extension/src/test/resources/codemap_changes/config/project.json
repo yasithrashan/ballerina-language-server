@@ -225,7 +225,7 @@
           "children": []
         },
         {
-          "name": "automation",
+          "name": "main",
           "type": "FUNCTION",
           "lineRange": {
             "start": {
