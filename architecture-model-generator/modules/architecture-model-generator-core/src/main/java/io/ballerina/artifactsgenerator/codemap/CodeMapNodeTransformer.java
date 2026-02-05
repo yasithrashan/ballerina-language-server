@@ -188,7 +188,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
             functionBuilder
-                    .name(AUTOMATION_FUNCTION_NAME)
+                    .name(MAIN_FUNCTION_NAME)
                     .category(CATEGORY_AUTOMATION);
         } else if (functionDefinitionNode.functionBody().kind() == SyntaxKind.EXPRESSION_FUNCTION_BODY) {
             if (BallerinaCompilerApi.getInstance()
