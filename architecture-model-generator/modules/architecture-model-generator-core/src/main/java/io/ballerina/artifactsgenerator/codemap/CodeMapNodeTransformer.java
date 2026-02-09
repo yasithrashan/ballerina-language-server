@@ -108,7 +108,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String TYPE_FIELD = "FIELD";
 
     // Category constants
-    private static final String CATEGORY_AUTOMATION = "AUTOMATION";
+    private static final String CATEGORY_MAIN = "MAIN";
     private static final String CATEGORY_NP_FUNCTION = "NP_FUNCTION";
     private static final String CATEGORY_DATA_MAPPER = "DATA_MAPPER";
     private static final String CATEGORY_RESOURCE = "RESOURCE";
@@ -188,7 +188,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
             functionBuilder
                     .name(MAIN_FUNCTION_NAME)
-                    .category(CATEGORY_AUTOMATION);
+                    .category(CATEGORY_MAIN);
         } else if (functionDefinitionNode.functionBody().kind() == SyntaxKind.EXPRESSION_FUNCTION_BODY) {
             if (BallerinaCompilerApi.getInstance()
                     .isNaturalExpressionBody((ExpressionFunctionBodyNode) functionDefinitionNode.functionBody())) {
