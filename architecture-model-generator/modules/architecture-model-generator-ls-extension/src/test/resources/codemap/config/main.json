@@ -3,12 +3,11 @@
   "source": "main.bal",
   "output": {
     "main.bal": {
-      "filePath": "main.bal",
       "artifacts": [
         {
           "name": "ballerina/http",
           "type": "IMPORT",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 0,
               "character": 0
@@ -27,7 +26,7 @@
         {
           "name": "httpListener",
           "type": "LISTENER",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 3,
               "character": 0
@@ -46,7 +45,7 @@
         {
           "name": "User",
           "type": "TYPE",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 6,
               "character": 0
@@ -70,7 +69,7 @@
         {
           "name": "CreateUserRequest",
           "type": "TYPE",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 12,
               "character": 0
@@ -92,7 +91,7 @@
         {
           "name": "ErrorResponse",
           "type": "TYPE",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 17,
               "character": 0
@@ -113,7 +112,7 @@
         {
           "name": "users",
           "type": "VARIABLE",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 22,
               "character": 0
@@ -132,7 +131,7 @@
         {
           "name": "nextId",
           "type": "VARIABLE",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 23,
               "character": 0
@@ -150,7 +149,7 @@
         {
           "name": "/api",
           "type": "SERVICE",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 26,
               "character": 0
@@ -169,7 +168,7 @@
             {
               "name": "users",
               "type": "FUNCTION",
-              "lineRange": {
+              "range": {
                 "start": {
                   "line": 29,
                   "character": 4
@@ -194,7 +193,7 @@
             {
               "name": "users/[int id]",
               "type": "FUNCTION",
-              "lineRange": {
+              "range": {
                 "start": {
                   "line": 34,
                   "character": 4
@@ -219,7 +218,7 @@
             {
               "name": "users",
               "type": "FUNCTION",
-              "lineRange": {
+              "range": {
                 "start": {
                   "line": 47,
                   "character": 4
@@ -246,7 +245,7 @@
             {
               "name": "search",
               "type": "FUNCTION",
-              "lineRange": {
+              "range": {
                 "start": {
                   "line": 59,
                   "character": 4
@@ -273,7 +272,7 @@
             {
               "name": "health",
               "type": "FUNCTION",
-              "lineRange": {
+              "range": {
                 "start": {
                   "line": 67,
                   "character": 4

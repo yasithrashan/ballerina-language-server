@@ -3,12 +3,11 @@
   "source": "project/main.bal",
   "output": {
     "main.bal": {
-      "filePath": "main.bal",
       "artifacts": [
         {
           "name": "ballerina/io",
           "type": "IMPORT",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 0,
               "character": 0
@@ -27,7 +26,7 @@
         {
           "name": "sayHello",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 3,
               "character": 0
@@ -51,7 +50,7 @@
         {
           "name": "greet",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 9,
               "character": 0
@@ -77,7 +76,7 @@
         {
           "name": "add",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 16,
               "character": 0
@@ -103,7 +102,7 @@
         {
           "name": "divideAndRemainder",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 21,
               "character": 0
@@ -129,7 +128,7 @@
         {
           "name": "calculateInterest",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 28,
               "character": 0
@@ -156,7 +155,7 @@
         {
           "name": "sum",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 33,
               "character": 0
@@ -181,7 +180,7 @@
         {
           "name": "divide",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 42,
               "character": 0
@@ -207,7 +206,7 @@
         {
           "name": "fn\\#with\\-Identifiers",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 50,
               "character": 0
@@ -226,7 +225,7 @@
         {
           "name": "main",
           "type": "FUNCTION",
-          "lineRange": {
+          "range": {
             "start": {
               "line": 55,
               "character": 0
