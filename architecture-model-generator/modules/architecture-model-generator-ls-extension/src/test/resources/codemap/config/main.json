@@ -3,8 +3,7 @@
   "source": "main.bal",
   "output": {
     "main.bal": {
-      "fileName": "main.bal",
-      "relativeFilePath": "main.bal",
+      "filePath": "main.bal",
       "artifacts": [
         {
           "name": "ballerina/http",
@@ -40,7 +39,6 @@
           },
           "properties": {
             "type": "http:Listener",
-            "line": 3,
             "comment": "HTTP listener on port 8080"
           },
           "children": []
@@ -127,7 +125,6 @@
           },
           "properties": {
             "type": "map<User>",
-            "line": 22,
             "comment": "In-memory storage for demo"
           },
           "children": []
@@ -146,8 +143,7 @@
             }
           },
           "properties": {
-            "type": "int",
-            "line": 23
+            "type": "int"
           },
           "children": []
         },

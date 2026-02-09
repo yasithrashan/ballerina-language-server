@@ -24,12 +24,11 @@ import java.util.List;
 /**
  * Represents a Ballerina source file with its extracted code map artifacts.
  *
- * @param fileName         the name of the source file
- * @param relativeFilePath the relative path of the file from the project root
- * @param artifacts        the list of code map artifacts extracted from this file
+ * @param filePath  the relative path of the file from the project root
+ * @param artifacts the list of code map artifacts extracted from this file
  * @since 1.6.0
  */
-public record CodeMapFile(String fileName, String relativeFilePath, List<CodeMapArtifact> artifacts) {
+public record CodeMapFile(String filePath, List<CodeMapArtifact> artifacts) {
 
     public CodeMapFile {
         artifacts = artifacts == null ? Collections.emptyList() : Collections.unmodifiableList(artifacts);

@@ -3,8 +3,7 @@
   "source": "project/main.bal",
   "output": {
     "main.bal": {
-      "fileName": "main.bal",
-      "relativeFilePath": "main.bal",
+      "filePath": "main.bal",
       "artifacts": [
         {
           "name": "ballerina/io",
