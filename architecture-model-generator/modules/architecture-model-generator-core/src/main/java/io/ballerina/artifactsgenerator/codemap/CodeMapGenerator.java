@@ -54,47 +54,16 @@ public class CodeMapGenerator {
      * @return a map of relative file paths to their code map files
      */
     public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager) {
-        Package currentPackage = project.currentPackage();
-        Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
-        String projectPath = project.sourceRoot().toAbsolutePath().toString();
-
-        // Iterate through all modules (default module and submodules)
-        for (var moduleId : currentPackage.moduleIds()) {
-            Module module = currentPackage.module(moduleId);
-            ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
-
-            // Iterate through each document in the module
-            for (var documentId : module.documentIds()) {
-                Document document = module.document(documentId);
-                String fileName = document.name();
-                Path filePath = getDocumentPath(project, module, fileName);
-
-                Optional<SemanticModel> semanticModelOpt = workspaceManager.semanticModel(filePath);
-                if (semanticModelOpt.isEmpty()) {
-                    continue;
-                }
-
-                SyntaxTree syntaxTree = document.syntaxTree();
-                List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree,
-                        semanticModelOpt.get(), moduleInfo);
-
-                if (!artifacts.isEmpty()) {
-                    String relativeFilePath = getRelativeFilePath(module, fileName);
-                    CodeMapFile codeMapFile = new CodeMapFile(fileName, relativeFilePath, artifacts);
-                    codeMapFiles.put(relativeFilePath, codeMapFile);
-                }
-            }
-        }
-
-        return codeMapFiles;
+        return generateCodeMap(project, workspaceManager, null);
     }
 
     /**
-     * Generates a code map for specific files in the given project.
+     * Generates a code map for specific files in the given project. If {@code fileNames} is {@code null},
+     * all files in the project are processed.
      *
      * @param project          the Ballerina project
      * @param workspaceManager the workspace manager to obtain semantic models
-     * @param fileNames        the list of file names to process
+     * @param fileNames        the list of file names to process, or {@code null} to process all files
      * @return a map of relative file paths to their code map files
      */
     public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager,
@@ -102,7 +71,7 @@ public class CodeMapGenerator {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
-        Set<String> targetFiles = new HashSet<>(fileNames);
+        Set<String> targetFiles = fileNames != null ? new HashSet<>(fileNames) : null;
 
         for (var moduleId : currentPackage.moduleIds()) {
             Module module = currentPackage.module(moduleId);
@@ -114,7 +83,7 @@ public class CodeMapGenerator {
                 String relativeFilePath = getRelativeFilePath(module, fileName);
 
                 // Ignore the file if it is not in the targeted list.
-                if (!targetFiles.contains(relativeFilePath)) {
+                if (targetFiles != null && !targetFiles.contains(relativeFilePath)) {
                     continue;
                 }
 
@@ -129,7 +98,7 @@ public class CodeMapGenerator {
                         semanticModelOpt.get(), moduleInfo);
 
                 if (!artifacts.isEmpty()) {
-                    CodeMapFile codeMapFile = new CodeMapFile(fileName, relativeFilePath, artifacts);
+                    CodeMapFile codeMapFile = new CodeMapFile(relativeFilePath, artifacts);
                     codeMapFiles.put(relativeFilePath, codeMapFile);
                 }
             }
