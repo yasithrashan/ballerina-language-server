@@ -95,7 +95,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private final ModuleInfo moduleInfo;
     private final boolean extractComments;
 
-    private static final String AUTOMATION_FUNCTION_NAME = "automation";
     private static final String MAIN_FUNCTION_NAME = "main";
 
     // Artifact type constants
@@ -295,9 +294,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .name(listenerDeclarationNode.variableName().text())
                 .type(TYPE_LISTENER);
 
-        int line = listenerDeclarationNode.lineRange().startLine().line();
-        listenerBuilder.line(line);
-
         listenerDeclarationNode.typeDescriptor().flatMap(semanticModel::symbol).ifPresent(symbol -> {
             if (symbol instanceof TypeSymbol typeSymbol) {
                 listenerBuilder.addProperty(PROP_TYPE,
@@ -389,9 +385,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         List<String> modifiers = extractModifiers(moduleVariableDeclarationNode.qualifiers());
         variableBuilder.modifiers(modifiers);
-
-        int line = moduleVariableDeclarationNode.lineRange().startLine().line();
-        variableBuilder.line(line);
 
         variableBuilder.type(TYPE_VARIABLE);
 

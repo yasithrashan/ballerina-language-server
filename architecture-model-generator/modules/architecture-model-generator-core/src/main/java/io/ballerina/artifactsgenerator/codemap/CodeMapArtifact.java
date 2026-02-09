@@ -45,7 +45,6 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
 
     // Property key constants
     private static final String MODIFIERS = "modifiers";
-    private static final String LINE = "line";
     private static final String DOCUMENTATION = "documentation";
     private static final String COMMENT = "comment";
     private static final String CATEGORY = "category";
@@ -119,10 +118,6 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
         public Builder addChild(CodeMapArtifact child) {
             this.children.add(child);
             return this;
-        }
-
-        public Builder line(int line) {
-            return addProperty(LINE, line);
         }
 
         public Builder documentation(String documentation) {
