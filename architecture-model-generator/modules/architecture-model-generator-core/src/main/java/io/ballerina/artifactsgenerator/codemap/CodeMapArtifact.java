@@ -35,12 +35,12 @@ import java.util.Map;
  *
  * @param name       the name of the artifact
  * @param type       the type of the artifact (e.g., function, service, class)
- * @param lineRange  the line range in source code where this artifact is located
+ * @param range      the range in source code where this artifact is located
  * @param properties additional properties of the artifact
  * @param children   nested artifacts contained within this artifact
  * @since 1.6.0
  */
-public record CodeMapArtifact(String name, String type, Range lineRange,
+public record CodeMapArtifact(String name, String type, Range range,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {
 
     // Property key constants
@@ -80,7 +80,7 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
     public static class Builder {
         private String name;
         private String type;
-        private Range lineRange;
+        private Range range;
         private final Map<String, Object> properties = new HashMap<>();
         private final List<CodeMapArtifact> children = new ArrayList<>();
 
@@ -90,7 +90,7 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
          * @param node the syntax node to extract line range from
          */
         public Builder(Node node) {
-            this.lineRange = toRange(node.lineRange());
+            this.range = toRange(node.lineRange());
         }
 
         public Builder name(String name) {
@@ -138,7 +138,7 @@ public record CodeMapArtifact(String name, String type, Range lineRange,
          * @return the constructed CodeMapArtifact
          */
         public CodeMapArtifact build() {
-            return new CodeMapArtifact(name, type, lineRange,
+            return new CodeMapArtifact(name, type, range,
                     new HashMap<>(properties), new ArrayList<>(children));
         }
     }
