@@ -98,7 +98,7 @@ public class CodeMapGenerator {
                         semanticModelOpt.get(), moduleInfo);
 
                 if (!artifacts.isEmpty()) {
-                    CodeMapFile codeMapFile = new CodeMapFile(relativeFilePath, artifacts);
+                    CodeMapFile codeMapFile = new CodeMapFile(artifacts);
                     codeMapFiles.put(relativeFilePath, codeMapFile);
                 }
             }
