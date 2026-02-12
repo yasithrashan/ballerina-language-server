@@ -34,6 +34,7 @@ import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
 import io.ballerina.compiler.syntax.tree.ConstantDeclarationNode;
 import io.ballerina.compiler.syntax.tree.DefaultableParameterNode;
 import io.ballerina.compiler.syntax.tree.EnumDeclarationNode;
+import io.ballerina.compiler.syntax.tree.EnumMemberNode;
 import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
@@ -125,6 +126,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
     // Other constants
     private static final String RECORD_TYPE_NAME = "record";
+    private static final String ENUM_TYPE_NAME = "enum";
     private static final String ALIAS_SEPARATOR = " as ";
 
     /**
@@ -417,6 +419,17 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(enumDeclarationNode)
                 .name(enumDeclarationNode.identifier().text())
                 .type(TYPE_TYPE);
+
+        typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, ENUM_TYPE_NAME);
+
+        List<String> members = new ArrayList<>();
+        for (Node memberNode : enumDeclarationNode.enumMemberList()) {
+            if (memberNode instanceof EnumMemberNode enumMember) {
+                members.add(enumMember.identifier().text());
+            }
+        }
+        typeBuilder.addProperty(PROP_FIELDS, members);
+
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
         extractInlineComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
         return Optional.of(typeBuilder.build());
