@@ -97,10 +97,8 @@ public class CodeMapGenerator {
                 List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree,
                         semanticModelOpt.get(), moduleInfo);
 
-                if (!artifacts.isEmpty()) {
-                    CodeMapFile codeMapFile = new CodeMapFile(artifacts);
-                    codeMapFiles.put(relativeFilePath, codeMapFile);
-                }
+                CodeMapFile codeMapFile = new CodeMapFile(artifacts);
+                codeMapFiles.put(relativeFilePath, codeMapFile);
             }
         }
 
