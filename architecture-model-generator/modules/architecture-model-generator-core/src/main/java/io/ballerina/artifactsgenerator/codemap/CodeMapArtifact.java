@@ -47,7 +47,7 @@ public record CodeMapArtifact(String name, String type, Range range,
     private static final String MODIFIERS = "modifiers";
     private static final String DOCUMENTATION = "documentation";
     private static final String COMMENT = "comment";
-    private static final String CATEGORY = "category";
+
 
     /**
      * Converts a Ballerina LineRange to an LSP4J Range.
@@ -128,9 +128,6 @@ public record CodeMapArtifact(String name, String type, Range range,
             return addProperty(COMMENT, comment);
         }
 
-        public Builder category(String category) {
-            return addProperty(CATEGORY, category);
-        }
 
         /**
          * Builds and returns the {@link CodeMapArtifact} instance.

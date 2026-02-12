@@ -35,7 +35,6 @@ import io.ballerina.compiler.syntax.tree.ConstantDeclarationNode;
 import io.ballerina.compiler.syntax.tree.DefaultableParameterNode;
 import io.ballerina.compiler.syntax.tree.EnumDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
-import io.ballerina.compiler.syntax.tree.ExpressionFunctionBodyNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
@@ -67,7 +66,7 @@ import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
 import io.ballerina.compiler.syntax.tree.TypeDescriptorNode;
 import io.ballerina.modelgenerator.commons.CommonUtils;
 import io.ballerina.modelgenerator.commons.ModuleInfo;
-import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,17 +106,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String TYPE_CLASS = "CLASS";
     private static final String TYPE_FIELD = "FIELD";
 
-    // Category constants
-    private static final String CATEGORY_MAIN = "MAIN";
-    private static final String CATEGORY_NP_FUNCTION = "NP_FUNCTION";
-    private static final String CATEGORY_DATA_MAPPER = "DATA_MAPPER";
-    private static final String CATEGORY_RESOURCE = "RESOURCE";
-    private static final String CATEGORY_REMOTE = "REMOTE";
-    private static final String CATEGORY_CONSTANT = "CONSTANT";
-    private static final String CATEGORY_CONFIGURABLE = "CONFIGURABLE";
-    private static final String CATEGORY_CONNECTION = "CONNECTION";
-    private static final String CATEGORY_ENUM = "ENUM";
-    private static final String CATEGORY_CLIENT = "CLIENT";
 
     // Property key constants
     private static final String PROP_PARAMETERS = "parameters";
@@ -186,30 +174,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         functionBuilder.type(TYPE_FUNCTION);
 
         if (functionName.equals(MAIN_FUNCTION_NAME)) {
-            functionBuilder
-                    .name(MAIN_FUNCTION_NAME)
-                    .category(CATEGORY_MAIN);
-        } else if (functionDefinitionNode.functionBody().kind() == SyntaxKind.EXPRESSION_FUNCTION_BODY) {
-            if (BallerinaCompilerApi.getInstance()
-                    .isNaturalExpressionBody((ExpressionFunctionBodyNode) functionDefinitionNode.functionBody())) {
-                functionBuilder
-                        .name(functionName)
-                        .category(CATEGORY_NP_FUNCTION);
-            } else {
-                functionBuilder
-                        .name(functionName)
-                        .category(CATEGORY_DATA_MAPPER);
-            }
+            functionBuilder.name(MAIN_FUNCTION_NAME);
         } else if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
             functionBuilder
                     .name(pathString)
-                    .category(CATEGORY_RESOURCE)
                     .addProperty(PROP_ACCESSOR, functionName);
-        } else if (hasQualifier(functionDefinitionNode.qualifierList(), SyntaxKind.REMOTE_KEYWORD)) {
-            functionBuilder
-                    .name(functionName)
-                    .category(CATEGORY_REMOTE);
         } else {
             functionBuilder.name(functionName);
         }
@@ -353,8 +323,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     public Optional<CodeMapArtifact> transform(ConstantDeclarationNode constantDeclarationNode) {
         CodeMapArtifact.Builder constantBuilder = new CodeMapArtifact.Builder(constantDeclarationNode)
                 .name(constantDeclarationNode.variableName().text())
-                .type(TYPE_VARIABLE)
-                .category(CATEGORY_CONSTANT);
+                .type(TYPE_VARIABLE);
 
         // Extract the type descriptor
         constantDeclarationNode.typeDescriptor().ifPresent(typeDesc -> {
@@ -389,12 +358,10 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         variableBuilder.type(TYPE_VARIABLE);
 
         if (hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
-            variableBuilder.category(CATEGORY_CONFIGURABLE);
         } else {
             Optional<ClassSymbol> connection = getConnection(moduleVariableDeclarationNode);
             if (connection.isPresent()) {
                 variableBuilder
-                        .category(CATEGORY_CONNECTION)
                         .addProperty(PROP_TYPE, connection.get().signature());
                 if (isPersistClient(connection.get(), semanticModel)) {
                     variableBuilder.addProperty(CONNECTOR_TYPE, PERSIST);
@@ -449,8 +416,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     public Optional<CodeMapArtifact> transform(EnumDeclarationNode enumDeclarationNode) {
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(enumDeclarationNode)
                 .name(enumDeclarationNode.identifier().text())
-                .type(TYPE_TYPE)
-                .category(CATEGORY_ENUM);
+                .type(TYPE_TYPE);
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
         extractInlineComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
         return Optional.of(typeBuilder.build());
@@ -459,16 +425,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     @Override
     public Optional<CodeMapArtifact> transform(ClassDefinitionNode classDefinitionNode) {
         NodeList<Token> classTypeQualifiers = classDefinitionNode.classTypeQualifiers();
-        boolean isClientClass = hasQualifier(classTypeQualifiers, SyntaxKind.CLIENT_KEYWORD);
 
         CodeMapArtifact.Builder classBuilder = new CodeMapArtifact.Builder(classDefinitionNode)
                 .name(classDefinitionNode.className().text())
                 .type(TYPE_CLASS)
                 .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(), classTypeQualifiers));
-
-        if (isClientClass) {
-            classBuilder.category(CATEGORY_CLIENT);
-        }
 
         extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
         extractInlineComments(classDefinitionNode).ifPresent(classBuilder::comment);
