@@ -18,7 +18,8 @@
 
 package io.ballerina.designmodelgenerator.extension;
 
-import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
+import java.nio.file.Path;
+
 import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.langserver.commons.DocumentServiceContext;
 import org.ballerinalang.langserver.commons.LanguageServerContext;
@@ -26,7 +27,7 @@ import org.ballerinalang.langserver.commons.client.ExtendedLanguageClient;
 import org.ballerinalang.langserver.commons.eventsync.EventKind;
 import org.ballerinalang.langserver.commons.eventsync.spi.EventSubscriber;
 
-import java.nio.file.Path;
+import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 
 /**
  * Tracks changed files for incremental code map generation.

@@ -185,7 +185,6 @@
                 "modifiers": [
                   "resource"
                 ],
-                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
@@ -210,7 +209,6 @@
                 "modifiers": [
                   "resource"
                 ],
-                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
@@ -235,7 +233,6 @@
                 "modifiers": [
                   "resource"
                 ],
-                "category": "RESOURCE",
                 "parameters": [
                   "payload: CreateUserRequest"
                 ]
@@ -262,7 +259,6 @@
                 "modifiers": [
                   "resource"
                 ],
-                "category": "RESOURCE",
                 "parameters": [
                   "name: string"
                 ]
@@ -289,7 +285,6 @@
                 "modifiers": [
                   "resource"
                 ],
-                "category": "RESOURCE",
                 "parameters": []
               },
               "children": []
