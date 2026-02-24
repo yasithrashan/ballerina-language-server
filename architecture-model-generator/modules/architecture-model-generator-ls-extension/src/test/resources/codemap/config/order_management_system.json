@@ -1,0 +1,2375 @@
+{
+  "description": "Ballerina Order Management System test",
+  "source": "order_management_system",
+  "output": {
+    "modules/product/constants.bal": {
+      "artifacts": [
+        {
+          "name": "PRODUCT_ID_PREFIX",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 47
+            }
+          },
+          "properties": {
+            "comment": "Product module constants",
+            "modifiers": [
+              "public"
+            ],
+            "value": "\"PROD\"",
+            "typeDescriptor": "string"
+          },
+          "children": []
+        },
+        {
+          "name": "MIN_PRICE",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 38
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "0.01",
+            "typeDescriptor": "decimal"
+          },
+          "children": []
+        },
+        {
+          "name": "MIN_STOCK",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 31
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "0",
+            "typeDescriptor": "int"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/product/service.bal": {
+      "artifacts": [
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "comment": "Product service implementation",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/time",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "time",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/uuid",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "uuid",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "productStore",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 0
+            },
+            "end": {
+              "line": 6,
+              "character": 37
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "final"
+            ],
+            "type": "map<product:Product>"
+          },
+          "children": []
+        },
+        {
+          "name": "ProductService",
+          "type": "CLASS",
+          "range": {
+            "start": {
+              "line": 8,
+              "character": 0
+            },
+            "end": {
+              "line": 128,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public",
+              "service"
+            ]
+          },
+          "children": [
+            {
+              "name": "getProduct",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 11,
+                  "character": 4
+                },
+                "end": {
+                  "line": 17,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "public"
+                ],
+                "parameters": [
+                  "productId: string"
+                ],
+                "returns": "Product|http:NotFound"
+              },
+              "children": []
+            },
+            {
+              "name": "products",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 19,
+                  "character": 4
+                },
+                "end": {
+                  "line": 49,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "post",
+                "returns": "Product|http:BadRequest",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: ProductCreateRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "products/[string productId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 51,
+                  "character": 4
+                },
+                "end": {
+                  "line": 57,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Product|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "products",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 59,
+                  "character": 4
+                },
+                "end": {
+                  "line": 70,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Product[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "category: string? = ()"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "products/[string productId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 72,
+                  "character": 4
+                },
+                "end": {
+                  "line": 119,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "put",
+                "returns": "Product|http:NotFound|http:BadRequest",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: ProductUpdateRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "products/[string productId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 121,
+                  "character": 4
+                },
+                "end": {
+                  "line": 127,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "delete",
+                "returns": "http:NoContent|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "modules/product/types.bal": {
+      "artifacts": [
+        {
+          "name": "Product",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 12,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "productId: string",
+              "name: string",
+              "description: string",
+              "price: decimal",
+              "stockQuantity: int",
+              "category: string",
+              "status: product:ProductStatus",
+              "createdAt: string",
+              "updatedAt: string"
+            ],
+            "comment": "Product module type definitions",
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "ProductCreateRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 14,
+              "character": 0
+            },
+            "end": {
+              "line": 20,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "name: string",
+              "description: string",
+              "price: decimal",
+              "stockQuantity: int",
+              "category: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "ProductUpdateRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 22,
+              "character": 0
+            },
+            "end": {
+              "line": 29,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "name: string?",
+              "description: string?",
+              "price: decimal?",
+              "stockQuantity: int?",
+              "category: string?",
+              "status: product:ProductStatus?"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "ProductStatus",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 31,
+              "character": 0
+            },
+            "end": {
+              "line": 35,
+              "character": 1
+            }
+          },
+          "properties": {
+            "fields": [
+              "ACTIVE",
+              "INACTIVE",
+              "OUT_OF_STOCK"
+            ],
+            "typeDescriptor": "enum"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/product/utils.bal": {
+      "artifacts": [
+        {
+          "name": "validatePrice",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 1
+            }
+          },
+          "properties": {
+            "returns": "boolean",
+            "comment": "Product module utility functions",
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "price: decimal"
+            ]
+          },
+          "children": []
+        },
+        {
+          "name": "validateStock",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 0
+            },
+            "end": {
+              "line": 8,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "quantity: int"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        },
+        {
+          "name": "isProductAvailable",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 10,
+              "character": 0
+            },
+            "end": {
+              "line": 12,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "stockQuantity: int"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/order/constants.bal": {
+      "artifacts": [
+        {
+          "name": "ORDER_ID_PREFIX",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 44
+            }
+          },
+          "properties": {
+            "comment": "Order module constants",
+            "modifiers": [
+              "public"
+            ],
+            "value": "\"ORD\"",
+            "typeDescriptor": "string"
+          },
+          "children": []
+        },
+        {
+          "name": "MIN_ORDER_QUANTITY",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 40
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "1",
+            "typeDescriptor": "int"
+          },
+          "children": []
+        },
+        {
+          "name": "ZERO_AMOUNT",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 39
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "0.0",
+            "typeDescriptor": "decimal"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/order/service.bal": {
+      "artifacts": [
+        {
+          "name": "order_management_system.customer",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 40
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.customer",
+            "comment": "Order service implementation"
+          },
+          "children": []
+        },
+        {
+          "name": "order_management_system.product",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 39
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.product"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 0
+            },
+            "end": {
+              "line": 5,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/time",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 0
+            },
+            "end": {
+              "line": 6,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "time",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/uuid",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 7,
+              "character": 0
+            },
+            "end": {
+              "line": 7,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "uuid",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "orderStore",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 9,
+              "character": 0
+            },
+            "end": {
+              "line": 9,
+              "character": 33
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "final"
+            ],
+            "type": "map<order:Order>"
+          },
+          "children": []
+        },
+        {
+          "name": "OrderService",
+          "type": "CLASS",
+          "range": {
+            "start": {
+              "line": 11,
+              "character": 0
+            },
+            "end": {
+              "line": 143,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public",
+              "service"
+            ]
+          },
+          "children": [
+            {
+              "name": "customerService",
+              "type": "FIELD",
+              "range": {
+                "start": {
+                  "line": 14,
+                  "character": 4
+                },
+                "end": {
+                  "line": 14,
+                  "character": 59
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "private",
+                  "final"
+                ],
+                "type": "customer:CustomerService"
+              },
+              "children": []
+            },
+            {
+              "name": "productService",
+              "type": "FIELD",
+              "range": {
+                "start": {
+                  "line": 15,
+                  "character": 4
+                },
+                "end": {
+                  "line": 15,
+                  "character": 56
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "private",
+                  "final"
+                ],
+                "type": "product:ProductService"
+              },
+              "children": []
+            },
+            {
+              "name": "init",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 17,
+                  "character": 4
+                },
+                "end": {
+                  "line": 20,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "public"
+                ],
+                "parameters": [
+                  "customerService: customer:CustomerService",
+                  "productService: product:ProductService"
+                ],
+                "returns": "()"
+              },
+              "children": []
+            },
+            {
+              "name": "getOrder",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 22,
+                  "character": 4
+                },
+                "end": {
+                  "line": 28,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "public"
+                ],
+                "parameters": [
+                  "orderId: string"
+                ],
+                "returns": "Order|http:NotFound"
+              },
+              "children": []
+            },
+            {
+              "name": "orders",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 30,
+                  "character": 4
+                },
+                "end": {
+                  "line": 84,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "post",
+                "returns": "Order|http:BadRequest|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: OrderCreateRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "orders/[string orderId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 86,
+                  "character": 4
+                },
+                "end": {
+                  "line": 92,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Order|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "orders",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 94,
+                  "character": 4
+                },
+                "end": {
+                  "line": 112,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Order[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "customerId: string? = ()",
+                  "status: OrderStatus? = ()"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "orders/[string orderId]/status",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 114,
+                  "character": 4
+                },
+                "end": {
+                  "line": 130,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "put",
+                "returns": "Order|http:NotFound|http:BadRequest",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: OrderUpdateStatusRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "orders/[string orderId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 132,
+                  "character": 4
+                },
+                "end": {
+                  "line": 142,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "delete",
+                "returns": "http:NoContent|http:NotFound|http:BadRequest",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "modules/order/types.bal": {
+      "artifacts": [
+        {
+          "name": "Order",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 11,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "orderId: string",
+              "customerId: string",
+              "items: order:OrderItem[]",
+              "totalAmount: decimal",
+              "status: order:OrderStatus",
+              "shippingAddress: string",
+              "createdAt: string",
+              "updatedAt: string"
+            ],
+            "comment": "Order module type definitions",
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "OrderItem",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 13,
+              "character": 0
+            },
+            "end": {
+              "line": 19,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "productId: string",
+              "productName: string",
+              "quantity: int",
+              "unitPrice: decimal",
+              "subtotal: decimal"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "OrderCreateRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 21,
+              "character": 0
+            },
+            "end": {
+              "line": 25,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "customerId: string",
+              "items: order:OrderItemRequest[]",
+              "shippingAddress: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "OrderItemRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 27,
+              "character": 0
+            },
+            "end": {
+              "line": 30,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "productId: string",
+              "quantity: int"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "OrderUpdateStatusRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 32,
+              "character": 0
+            },
+            "end": {
+              "line": 34,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "status: order:OrderStatus"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "OrderStatus",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 36,
+              "character": 0
+            },
+            "end": {
+              "line": 43,
+              "character": 1
+            }
+          },
+          "properties": {
+            "fields": [
+              "PENDING",
+              "CONFIRMED",
+              "PROCESSING",
+              "SHIPPED",
+              "DELIVERED",
+              "CANCELLED"
+            ],
+            "typeDescriptor": "enum"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/order/utils.bal": {
+      "artifacts": [
+        {
+          "name": "calculateSubtotal",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 5,
+              "character": 1
+            }
+          },
+          "properties": {
+            "returns": "decimal",
+            "comment": "Order module utility functions",
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "quantity: int",
+              "unitPrice: decimal"
+            ]
+          },
+          "children": []
+        },
+        {
+          "name": "calculateTotalAmount",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 7,
+              "character": 0
+            },
+            "end": {
+              "line": 13,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "items: OrderItem[]"
+            ],
+            "returns": "decimal"
+          },
+          "children": []
+        },
+        {
+          "name": "validateOrderQuantity",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 15,
+              "character": 0
+            },
+            "end": {
+              "line": 17,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "quantity: int"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        },
+        {
+          "name": "canCancelOrder",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 19,
+              "character": 0
+            },
+            "end": {
+              "line": 21,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "status: OrderStatus"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/payment/constants.bal": {
+      "artifacts": [
+        {
+          "name": "PAYMENT_ID_PREFIX",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 46
+            }
+          },
+          "properties": {
+            "comment": "Payment module constants",
+            "modifiers": [
+              "public"
+            ],
+            "value": "\"PAY\"",
+            "typeDescriptor": "string"
+          },
+          "children": []
+        },
+        {
+          "name": "TRANSACTION_ID_PREFIX",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 50
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "\"TXN\"",
+            "typeDescriptor": "string"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/payment/service.bal": {
+      "artifacts": [
+        {
+          "name": "order_management_system.'order",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 38
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.'order",
+            "comment": "Payment service implementation"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/time",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 0
+            },
+            "end": {
+              "line": 5,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "time",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/uuid",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 0
+            },
+            "end": {
+              "line": 6,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "uuid",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "paymentStore",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 8,
+              "character": 0
+            },
+            "end": {
+              "line": 8,
+              "character": 37
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "final"
+            ],
+            "type": "map<payment:Payment>"
+          },
+          "children": []
+        },
+        {
+          "name": "PaymentService",
+          "type": "CLASS",
+          "range": {
+            "start": {
+              "line": 10,
+              "character": 0
+            },
+            "end": {
+              "line": 115,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public",
+              "service"
+            ]
+          },
+          "children": [
+            {
+              "name": "orderService",
+              "type": "FIELD",
+              "range": {
+                "start": {
+                  "line": 13,
+                  "character": 4
+                },
+                "end": {
+                  "line": 13,
+                  "character": 51
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "private",
+                  "final"
+                ],
+                "type": "'order:OrderService"
+              },
+              "children": []
+            },
+            {
+              "name": "init",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 15,
+                  "character": 4
+                },
+                "end": {
+                  "line": 17,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "public"
+                ],
+                "parameters": [
+                  "orderService: 'order:OrderService"
+                ],
+                "returns": "()"
+              },
+              "children": []
+            },
+            {
+              "name": "payments",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 19,
+                  "character": 4
+                },
+                "end": {
+                  "line": 58,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "post",
+                "returns": "Payment|http:BadRequest|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: PaymentCreateRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "payments/[string paymentId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 60,
+                  "character": 4
+                },
+                "end": {
+                  "line": 68,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Payment|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "payments",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 70,
+                  "character": 4
+                },
+                "end": {
+                  "line": 90,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Payment[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "orderId: string? = ()",
+                  "customerId: string? = ()"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "payments/[string paymentId]/refund",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 92,
+                  "character": 4
+                },
+                "end": {
+                  "line": 114,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "post",
+                "returns": "Payment|http:NotFound|http:BadRequest",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "modules/payment/types.bal": {
+      "artifacts": [
+        {
+          "name": "Payment",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 12,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "paymentId: string",
+              "orderId: string",
+              "customerId: string",
+              "amount: decimal",
+              "paymentMethod: payment:PaymentMethod",
+              "status: payment:PaymentStatus",
+              "transactionId: string?",
+              "createdAt: string",
+              "updatedAt: string"
+            ],
+            "comment": "Payment module type definitions",
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "PaymentCreateRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 14,
+              "character": 0
+            },
+            "end": {
+              "line": 18,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "orderId: string",
+              "paymentMethod: payment:PaymentMethod",
+              "paymentDetails: payment:PaymentDetails"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "PaymentDetails",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 20,
+              "character": 0
+            },
+            "end": {
+              "line": 25,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "cardNumber: string?",
+              "cardHolderName: string?",
+              "expiryDate: string?",
+              "cvv: string?"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "PaymentMethod",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 27,
+              "character": 0
+            },
+            "end": {
+              "line": 33,
+              "character": 1
+            }
+          },
+          "properties": {
+            "fields": [
+              "CREDIT_CARD",
+              "DEBIT_CARD",
+              "PAYPAL",
+              "BANK_TRANSFER",
+              "CASH_ON_DELIVERY"
+            ],
+            "typeDescriptor": "enum"
+          },
+          "children": []
+        },
+        {
+          "name": "PaymentStatus",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 35,
+              "character": 0
+            },
+            "end": {
+              "line": 41,
+              "character": 1
+            }
+          },
+          "properties": {
+            "fields": [
+              "PENDING",
+              "PROCESSING",
+              "COMPLETED",
+              "FAILED",
+              "REFUNDED"
+            ],
+            "typeDescriptor": "enum"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/payment/utils.bal": {
+      "artifacts": [
+        {
+          "name": "ballerina/uuid",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "uuid",
+            "comment": "Payment module utility functions",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "generateTransactionId",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 6,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [],
+            "returns": "string"
+          },
+          "children": []
+        },
+        {
+          "name": "processPayment",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 8,
+              "character": 0
+            },
+            "end": {
+              "line": 24,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "paymentMethod: PaymentMethod",
+              "paymentDetails: PaymentDetails"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        },
+        {
+          "name": "canRefundPayment",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 26,
+              "character": 0
+            },
+            "end": {
+              "line": 28,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "status: PaymentStatus"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/customer/constants.bal": {
+      "artifacts": [
+        {
+          "name": "CUSTOMER_ID_PREFIX",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 48
+            }
+          },
+          "properties": {
+            "comment": "Customer module constants",
+            "modifiers": [
+              "public"
+            ],
+            "value": "\"CUST\"",
+            "typeDescriptor": "string"
+          },
+          "children": []
+        },
+        {
+          "name": "MIN_NAME_LENGTH",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 37
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "2",
+            "typeDescriptor": "int"
+          },
+          "children": []
+        },
+        {
+          "name": "MAX_NAME_LENGTH",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 38
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "value": "50",
+            "typeDescriptor": "int"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/customer/service.bal": {
+      "artifacts": [
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "comment": "Customer service implementation",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/time",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "time",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/uuid",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "uuid",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "customerStore",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 0
+            },
+            "end": {
+              "line": 6,
+              "character": 39
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "final"
+            ],
+            "type": "map<customer:Customer>"
+          },
+          "children": []
+        },
+        {
+          "name": "CustomerService",
+          "type": "CLASS",
+          "range": {
+            "start": {
+              "line": 8,
+              "character": 0
+            },
+            "end": {
+              "line": 120,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public",
+              "service"
+            ]
+          },
+          "children": [
+            {
+              "name": "getCustomer",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 11,
+                  "character": 4
+                },
+                "end": {
+                  "line": 17,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "modifiers": [
+                  "public"
+                ],
+                "parameters": [
+                  "customerId: string"
+                ],
+                "returns": "Customer|http:NotFound"
+              },
+              "children": []
+            },
+            {
+              "name": "customers",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 19,
+                  "character": 4
+                },
+                "end": {
+                  "line": 49,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "post",
+                "returns": "Customer|http:BadRequest|http:InternalServerError",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: CustomerCreateRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "customers/[string customerId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 51,
+                  "character": 4
+                },
+                "end": {
+                  "line": 57,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Customer|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "customers",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 59,
+                  "character": 4
+                },
+                "end": {
+                  "line": 61,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "get",
+                "returns": "Customer[]",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            },
+            {
+              "name": "customers/[string customerId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 63,
+                  "character": 4
+                },
+                "end": {
+                  "line": 111,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "put",
+                "returns": "Customer|http:NotFound|http:BadRequest",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": [
+                  "request: CustomerUpdateRequest"
+                ]
+              },
+              "children": []
+            },
+            {
+              "name": "customers/[string customerId]",
+              "type": "FUNCTION",
+              "range": {
+                "start": {
+                  "line": 113,
+                  "character": 4
+                },
+                "end": {
+                  "line": 119,
+                  "character": 5
+                }
+              },
+              "properties": {
+                "accessor": "delete",
+                "returns": "http:NoContent|http:NotFound",
+                "modifiers": [
+                  "resource"
+                ],
+                "parameters": []
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "modules/customer/types.bal": {
+      "artifacts": [
+        {
+          "name": "Customer",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 11,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "customerId: string",
+              "firstName: string",
+              "lastName: string",
+              "email: string",
+              "phone: string",
+              "address: customer:Address",
+              "createdAt: string",
+              "updatedAt: string"
+            ],
+            "comment": "Customer module type definitions",
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "Address",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 13,
+              "character": 0
+            },
+            "end": {
+              "line": 19,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "street: string",
+              "city: string",
+              "state: string",
+              "zipCode: string",
+              "country: string"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "CustomerCreateRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 21,
+              "character": 0
+            },
+            "end": {
+              "line": 27,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "firstName: string",
+              "lastName: string",
+              "email: string",
+              "phone: string",
+              "address: customer:Address"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        },
+        {
+          "name": "CustomerUpdateRequest",
+          "type": "TYPE",
+          "range": {
+            "start": {
+              "line": 29,
+              "character": 0
+            },
+            "end": {
+              "line": 35,
+              "character": 3
+            }
+          },
+          "properties": {
+            "fields": [
+              "firstName: string?",
+              "lastName: string?",
+              "email: string?",
+              "phone: string?",
+              "address: customer:Address?"
+            ],
+            "typeDescriptor": "record"
+          },
+          "children": []
+        }
+      ]
+    },
+    "modules/customer/utils.bal": {
+      "artifacts": [
+        {
+          "name": "validateEmail",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 5,
+              "character": 1
+            }
+          },
+          "properties": {
+            "returns": "boolean",
+            "comment": "Customer module utility functions",
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "email: string"
+            ]
+          },
+          "children": []
+        },
+        {
+          "name": "validatePhone",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 7,
+              "character": 0
+            },
+            "end": {
+              "line": 10,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "phone: string"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        },
+        {
+          "name": "validateName",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 12,
+              "character": 0
+            },
+            "end": {
+              "line": 15,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [
+              "name: string"
+            ],
+            "returns": "boolean"
+          },
+          "children": []
+        }
+      ]
+    },
+    "main.bal": {
+      "artifacts": [
+        {
+          "name": "order_management_system.'order",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 2,
+              "character": 0
+            },
+            "end": {
+              "line": 2,
+              "character": 38
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.'order",
+            "comment": "Main entry point for Order Management System"
+          },
+          "children": []
+        },
+        {
+          "name": "order_management_system.customer",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 0
+            },
+            "end": {
+              "line": 3,
+              "character": 40
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.customer"
+          },
+          "children": []
+        },
+        {
+          "name": "order_management_system.payment",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 0
+            },
+            "end": {
+              "line": 4,
+              "character": 39
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.payment"
+          },
+          "children": []
+        },
+        {
+          "name": "order_management_system.product",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 0
+            },
+            "end": {
+              "line": 5,
+              "character": 39
+            }
+          },
+          "properties": {
+            "moduleName": "order_management_system.product"
+          },
+          "children": []
+        },
+        {
+          "name": "ballerina/http",
+          "type": "IMPORT",
+          "range": {
+            "start": {
+              "line": 7,
+              "character": 0
+            },
+            "end": {
+              "line": 7,
+              "character": 22
+            }
+          },
+          "properties": {
+            "moduleName": "http",
+            "orgName": "ballerina"
+          },
+          "children": []
+        },
+        {
+          "name": "port",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 9,
+              "character": 0
+            },
+            "end": {
+              "line": 9,
+              "character": 29
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "configurable"
+            ],
+            "type": "int"
+          },
+          "children": []
+        },
+        {
+          "name": "main",
+          "type": "FUNCTION",
+          "range": {
+            "start": {
+              "line": 11,
+              "character": 0
+            },
+            "end": {
+              "line": 25,
+              "character": 1
+            }
+          },
+          "properties": {
+            "modifiers": [
+              "public"
+            ],
+            "parameters": [],
+            "returns": "error?"
+          },
+          "children": []
+        }
+      ]
+    }
+  }
+}

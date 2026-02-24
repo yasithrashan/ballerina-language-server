@@ -1,0 +1,26 @@
+{
+  "description": "Ballerina error test",
+  "source": "error.bal",
+  "output": {
+    "error.bal": {
+      "artifacts": [
+        {
+          "name": "MISSING[]",
+          "type": "VARIABLE",
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 2
+            }
+          },
+          "properties": {},
+          "children": []
+        }
+      ]
+    }
+  }
+}
