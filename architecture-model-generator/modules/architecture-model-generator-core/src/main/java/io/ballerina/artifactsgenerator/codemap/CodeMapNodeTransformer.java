@@ -367,7 +367,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                         .addProperty(PROP_TYPE, connection.get().signature());
                 if (isPersistClient(connection.get(), semanticModel)) {
                     variableBuilder.addProperty(CONNECTOR_TYPE, PERSIST);
-                    getPersistModelFilePath(projectPath)
+                    getPersistModelFilePath(projectPath, connection.get())
                             .ifPresent(modelFile -> variableBuilder.addProperty(PERSIST_MODEL_FILE, modelFile));
                 }
             }
