@@ -20,6 +20,7 @@ package io.ballerina.designmodelgenerator.extension;
 
 import io.ballerina.artifactsgenerator.ArtifactsCache;
 import io.ballerina.artifactsgenerator.ArtifactsGenerator;
+import io.ballerina.artifactsgenerator.balmd.CodeMapMarkdownGenerator;
 import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
@@ -27,10 +28,12 @@ import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
 import io.ballerina.designmodelgenerator.extension.request.GetDesignModelRequest;
+import io.ballerina.designmodelgenerator.extension.request.MarkdownRequest;
 import io.ballerina.designmodelgenerator.extension.request.ProjectInfoRequest;
 import io.ballerina.designmodelgenerator.extension.response.ArtifactResponse;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
+import io.ballerina.designmodelgenerator.extension.response.MarkdownResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
@@ -145,6 +148,28 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 Project project = workspaceManager.loadProject(projectPath);
                 ProjectInfoBuilder visitor = new ProjectInfoBuilder(response, project, true);
                 visitor.populate();
+            } catch (Throwable e) {
+                response.setError(e);
+            }
+            return response;
+        });
+    }
+
+    @JsonRequest
+    public CompletableFuture<MarkdownResponse> markdown(MarkdownRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            MarkdownResponse response = new MarkdownResponse();
+            try {
+                Path projectPath = Path.of(request.projectPath());
+                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
+                Project project = workspaceManager.loadProject(projectPath);
+
+                // Generate CodeMap first
+                var codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
+
+                // Generate Markdown from CodeMap
+                String markdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
+                response.setMarkdown(markdown);
             } catch (Throwable e) {
                 response.setError(e);
             }
