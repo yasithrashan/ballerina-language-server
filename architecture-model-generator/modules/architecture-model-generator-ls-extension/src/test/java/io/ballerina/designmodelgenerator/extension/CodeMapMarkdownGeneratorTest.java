@@ -19,7 +19,7 @@
 package io.ballerina.designmodelgenerator.extension;
 
 import com.google.gson.JsonObject;
-import io.ballerina.designmodelgenerator.extension.request.CodeMapMarkdownRequest;
+import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
 import io.ballerina.modelgenerator.commons.AbstractLSTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,11 +40,11 @@ public class CodeMapMarkdownGeneratorTest extends AbstractLSTest {
     public void test(Path config) throws IOException {
         Path configJsonPath = configDir.resolve(config);
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
-        CodeMapMarkdownRequest request = new CodeMapMarkdownRequest(getSourcePath(testConfig.source()));
+        CodeMapRequest request = new CodeMapRequest(getSourcePath(testConfig.source()), false, false);
         JsonObject markdownResponse = getResponseAndCloseFile(request, testConfig.source());
 
         // Get the generated markdown
-        String actualMarkdown = markdownResponse.get("codeMapMarkdown").getAsString();
+        String actualMarkdown = markdownResponse.get("markdown").getAsString();
 
         // Save the generated markdown as .md file in the config directory
         Path markdownOutputPath = configDir.resolve(config.getFileName().toString().replace(".json", ".md"));
@@ -80,7 +80,7 @@ public class CodeMapMarkdownGeneratorTest extends AbstractLSTest {
 
     @Override
     protected String getApiName() {
-        return "codeMapMarkdown";
+        return "codemap";
     }
 
     public record TestConfig(String description, String source, String expectedMarkdown) {
