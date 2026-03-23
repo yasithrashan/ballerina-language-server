@@ -26,14 +26,14 @@ import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
+import io.ballerina.designmodelgenerator.extension.request.CodeMapMarkdownRequest;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
 import io.ballerina.designmodelgenerator.extension.request.GetDesignModelRequest;
-import io.ballerina.designmodelgenerator.extension.request.MarkdownRequest;
 import io.ballerina.designmodelgenerator.extension.request.ProjectInfoRequest;
 import io.ballerina.designmodelgenerator.extension.response.ArtifactResponse;
+import io.ballerina.designmodelgenerator.extension.response.CodeMapMarkdownResponse;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
-import io.ballerina.designmodelgenerator.extension.response.MarkdownResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
@@ -156,9 +156,9 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
     }
 
     @JsonRequest
-    public CompletableFuture<MarkdownResponse> codeMapMarkdown(MarkdownRequest request) {
+    public CompletableFuture<CodeMapMarkdownResponse> codeMapMarkdown(CodeMapMarkdownRequest request) {
         return CompletableFuture.supplyAsync(() -> {
-            MarkdownResponse response = new MarkdownResponse();
+            CodeMapMarkdownResponse response = new CodeMapMarkdownResponse();
             try {
                 Path projectPath = Path.of(request.projectPath());
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
@@ -169,7 +169,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 // Generate Markdown from CodeMap
                 String markdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
-                response.setMarkdown(markdown);
+                response.setCodeMapMarkdown(markdown);
             } catch (Throwable e) {
                 response.setError(e);
             }

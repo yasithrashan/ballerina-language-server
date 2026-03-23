@@ -16,22 +16,13 @@
  *  under the License.
  */
 
-package io.ballerina.designmodelgenerator.extension.response;
+package io.ballerina.designmodelgenerator.extension.request;
 
 /**
- * Represents the response for markdown generation operations.
+ * Record representing a request for markdown generation from code map.
  *
+ * @param projectPath The path to the project for which markdown is requested
  * @since 1.6.0
  */
-public class MarkdownResponse extends AbstractResponse {
-
-    private String markdown;
-
-    public String getMarkdown() {
-        return markdown;
-    }
-
-    public void setMarkdown(String markdown) {
-        this.markdown = markdown;
-    }
+public record CodeMapMarkdownRequest(String projectPath) {
 }

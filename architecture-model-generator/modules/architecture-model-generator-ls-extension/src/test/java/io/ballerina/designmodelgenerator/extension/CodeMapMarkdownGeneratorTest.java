@@ -19,7 +19,7 @@
 package io.ballerina.designmodelgenerator.extension;
 
 import com.google.gson.JsonObject;
-import io.ballerina.designmodelgenerator.extension.request.MarkdownRequest;
+import io.ballerina.designmodelgenerator.extension.request.CodeMapMarkdownRequest;
 import io.ballerina.modelgenerator.commons.AbstractLSTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,11 +40,11 @@ public class CodeMapMarkdownGeneratorTest extends AbstractLSTest {
     public void test(Path config) throws IOException {
         Path configJsonPath = configDir.resolve(config);
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
-        MarkdownRequest request = new MarkdownRequest(getSourcePath(testConfig.source()));
+        CodeMapMarkdownRequest request = new CodeMapMarkdownRequest(getSourcePath(testConfig.source()));
         JsonObject markdownResponse = getResponseAndCloseFile(request, testConfig.source());
 
         // Get the generated markdown
-        String actualMarkdown = markdownResponse.get("markdown").getAsString();
+        String actualMarkdown = markdownResponse.get("codeMapMarkdown").getAsString();
 
         // Save the generated markdown as .md file in the config directory
         Path markdownOutputPath = configDir.resolve(config.getFileName().toString().replace(".json", ".md"));
@@ -59,10 +59,8 @@ public class CodeMapMarkdownGeneratorTest extends AbstractLSTest {
     }
 
     private void compareJsonElements(String actual, String expected) {
-        System.out.println("Expected markdown:");
-        System.out.println(expected);
-        System.out.println("\nActual markdown:");
-        System.out.println(actual);
+        log.debug("Expected markdown: {}", expected);
+        log.debug("Actual markdown: {}", actual);
     }
 
     @Override
