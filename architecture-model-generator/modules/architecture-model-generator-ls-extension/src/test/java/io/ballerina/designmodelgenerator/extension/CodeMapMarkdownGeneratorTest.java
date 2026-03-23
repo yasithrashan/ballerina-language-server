@@ -33,7 +33,7 @@ import java.nio.file.Path;
  *
  * @since 1.6.0
  */
-public class BalmdGeneratorTest extends AbstractLSTest {
+public class CodeMapMarkdownGeneratorTest extends AbstractLSTest {
 
     @Override
     @Test(dataProvider = "data-provider")
@@ -72,7 +72,7 @@ public class BalmdGeneratorTest extends AbstractLSTest {
 
     @Override
     protected Class<? extends AbstractLSTest> clazz() {
-        return BalmdGeneratorTest.class;
+        return CodeMapMarkdownGeneratorTest.class;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class BalmdGeneratorTest extends AbstractLSTest {
 
     @Override
     protected String getApiName() {
-        return "markdown";
+        return "codeMapMarkdown";
     }
 
     public record TestConfig(String description, String source, String expectedMarkdown) {

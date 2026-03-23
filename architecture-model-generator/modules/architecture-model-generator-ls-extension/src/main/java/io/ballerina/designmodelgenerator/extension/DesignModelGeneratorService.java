@@ -156,7 +156,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
     }
 
     @JsonRequest
-    public CompletableFuture<MarkdownResponse> markdown(MarkdownRequest request) {
+    public CompletableFuture<MarkdownResponse> codeMapMarkdown(MarkdownRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             MarkdownResponse response = new MarkdownResponse();
             try {
