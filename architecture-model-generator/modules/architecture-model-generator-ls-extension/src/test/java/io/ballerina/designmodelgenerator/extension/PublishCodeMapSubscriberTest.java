@@ -89,7 +89,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
         // Call the codeMap API with changesOnly=true and verify response
         Path projectPath = workspaceManager.projectRoot(filePath);
-        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true);
+        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true, true);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 
@@ -110,7 +110,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Call codeMap with changesOnly=true without tracking any files - should return empty
-        CodeMapRequest request = new CodeMapRequest(sourcePath, true);
+        CodeMapRequest request = new CodeMapRequest(sourcePath, true, true);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 
@@ -392,7 +392,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, context, languageServer.getServerContext());
 
         // Call codeMap API with changesOnly=true (this should consume the tracked changes)
-        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true);
+        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true, true);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
         Assert.assertFalse(files.entrySet().isEmpty(), "First call should return tracked changes");

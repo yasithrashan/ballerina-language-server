@@ -30,6 +30,7 @@ import java.util.Map;
 public class CodeMapResponse extends AbstractResponse {
 
     private Map<String, CodeMapFile> files;
+    private String markdown;
 
     public Map<String, CodeMapFile> getFiles() {
         return files;
@@ -37,5 +38,13 @@ public class CodeMapResponse extends AbstractResponse {
 
     public void setFiles(Map<String, CodeMapFile> files) {
         this.files = files;
+    }
+
+    public String getMarkdown() {
+        return markdown;
+    }
+
+    public void setMarkdown(String markdown) {
+        this.markdown = markdown;
     }
 }

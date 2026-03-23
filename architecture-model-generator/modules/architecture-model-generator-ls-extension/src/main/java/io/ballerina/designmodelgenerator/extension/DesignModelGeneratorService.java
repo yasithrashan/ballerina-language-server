@@ -21,17 +21,16 @@ package io.ballerina.designmodelgenerator.extension;
 import io.ballerina.artifactsgenerator.ArtifactsCache;
 import io.ballerina.artifactsgenerator.ArtifactsGenerator;
 import io.ballerina.artifactsgenerator.balmd.CodeMapMarkdownGenerator;
+import io.ballerina.artifactsgenerator.codemap.CodeMapFile;
 import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
-import io.ballerina.designmodelgenerator.extension.request.CodeMapMarkdownRequest;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
 import io.ballerina.designmodelgenerator.extension.request.GetDesignModelRequest;
 import io.ballerina.designmodelgenerator.extension.request.ProjectInfoRequest;
 import io.ballerina.designmodelgenerator.extension.response.ArtifactResponse;
-import io.ballerina.designmodelgenerator.extension.response.CodeMapMarkdownResponse;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
@@ -48,6 +47,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @JavaSPIService("org.ballerinalang.langserver.commons.service.spi.ExtendedLanguageServerService")
@@ -117,19 +117,27 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
 
+                Map<String, CodeMapFile> codeMapFiles;
                 if (request.changesOnly()) {
                     String projectKey = projectPath.toUri().toString();
                     List<String> modifiedFiles = CodeMapFilesTracker.getInstance()
                             .getModifiedFiles(projectKey);
 
                     if (modifiedFiles.isEmpty()) {
-                        response.setFiles(java.util.Collections.emptyMap());
+                        codeMapFiles = java.util.Collections.emptyMap();
                     } else {
-                        response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager, modifiedFiles));
+                        codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager, modifiedFiles);
                         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
                     }
                 } else {
-                    response.setFiles(CodeMapGenerator.generateCodeMap(project, workspaceManager));
+                    codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
+                }
+
+                if (request.isJSON()) {
+                    response.setFiles(codeMapFiles);
+                } else {
+                    String markdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
+                    response.setMarkdown(markdown);
                 }
             } catch (Throwable e) {
                 response.setError(e);
@@ -155,25 +163,4 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
         });
     }
 
-    @JsonRequest
-    public CompletableFuture<CodeMapMarkdownResponse> codeMapMarkdown(CodeMapMarkdownRequest request) {
-        return CompletableFuture.supplyAsync(() -> {
-            CodeMapMarkdownResponse response = new CodeMapMarkdownResponse();
-            try {
-                Path projectPath = Path.of(request.projectPath());
-                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
-                Project project = workspaceManager.loadProject(projectPath);
-
-                // Generate CodeMap first
-                var codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
-
-                // Generate Markdown from CodeMap
-                String markdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
-                response.setCodeMapMarkdown(markdown);
-            } catch (Throwable e) {
-                response.setError(e);
-            }
-            return response;
-        });
-    }
 }
