@@ -20,10 +20,10 @@ package io.ballerina.designmodelgenerator.extension;
 
 import io.ballerina.artifactsgenerator.ArtifactsCache;
 import io.ballerina.artifactsgenerator.ArtifactsGenerator;
-import io.ballerina.artifactsgenerator.codemapmarkdown.CodeMapMarkdownGenerator;
 import io.ballerina.artifactsgenerator.codemap.CodeMapFile;
 import io.ballerina.artifactsgenerator.codemap.CodeMapFilesTracker;
 import io.ballerina.artifactsgenerator.codemap.CodeMapGenerator;
+import io.ballerina.artifactsgenerator.codemapmarkdown.CodeMapMarkdownGenerator;
 import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
