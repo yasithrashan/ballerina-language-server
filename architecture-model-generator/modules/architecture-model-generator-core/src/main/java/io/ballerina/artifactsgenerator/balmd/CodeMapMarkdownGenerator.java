@@ -37,6 +37,41 @@ import java.util.stream.Collectors;
 public class CodeMapMarkdownGenerator {
 
     /**
+     * Generates markdown for a single file.
+     *
+     * @param filePath the file path
+     * @param codeMapFile the code map file data
+     * @return the generated markdown string for the single file
+     */
+    public static String generateFileMarkdown(String filePath, CodeMapFile codeMapFile) {
+        if (codeMapFile == null || codeMapFile.artifacts().isEmpty()) {
+            return "";
+        }
+
+        List<String> lines = new ArrayList<>();
+        lines.add("### " + filePath);
+
+        // Group artifacts by type
+        ArtifactGroups groups = new ArtifactGroups();
+        categorizeArtifacts(codeMapFile.artifacts(), groups);
+
+        // Render sections in order (only non-empty)
+        renderImports(lines, groups.imports);
+        renderConfigurables(lines, groups.configurables);
+        renderVariables(lines, groups.variables);
+        renderTypes(lines, groups.types);
+        renderFunctions(lines, groups.functions);
+        renderAutomations(lines, groups.automations);
+        renderListeners(lines, groups.listeners);
+        renderConnections(lines, groups.connections);
+        renderServices(lines, groups.services);
+        renderClasses(lines, groups.classes);
+        renderDataMappers(lines, groups.dataMappers);
+
+        return String.join("\n", lines);
+    }
+
+    /**
      * Generates markdown from a code map response.
      *
      * @param files the code map files organized by file path

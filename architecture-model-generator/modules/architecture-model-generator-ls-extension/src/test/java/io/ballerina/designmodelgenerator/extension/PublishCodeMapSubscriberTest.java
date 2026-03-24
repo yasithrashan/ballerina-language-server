@@ -89,13 +89,13 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
         // Call the codeMap API with changesOnly=true and verify response
         Path projectPath = workspaceManager.projectRoot(filePath);
-        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true, true);
+        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true, false);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
-//            updateConfig(configJsonPath, updatedConfig);
+            updateConfig(configJsonPath, updatedConfig);
             compareJsonElements(files, testConfig.output());
             Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
         }
