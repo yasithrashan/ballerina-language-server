@@ -18,10 +18,6 @@
 
 package io.ballerina.designmodelgenerator.extension.response;
 
-import io.ballerina.artifactsgenerator.codemap.CodeMapFile;
-
-import java.util.Map;
-
 /**
  * Represents the response for code map related operations.
  *
@@ -29,14 +25,14 @@ import java.util.Map;
  */
 public class CodeMapResponse extends AbstractResponse {
 
-    private Map<String, CodeMapFile> files;
+    private Object files;
     private String markdown;
 
-    public Map<String, CodeMapFile> getFiles() {
+    public Object getFiles() {
         return files;
     }
 
-    public void setFiles(Map<String, CodeMapFile> files) {
+    public void setFiles(Object files) {
         this.files = files;
     }
 

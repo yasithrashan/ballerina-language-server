@@ -95,7 +95,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
-            updateConfig(configJsonPath, updatedConfig);
+//            updateConfig(configJsonPath, updatedConfig);
             compareJsonElements(files, testConfig.output());
             Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
         }
@@ -110,7 +110,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Call codeMap with changesOnly=true without tracking any files - should return empty
-        CodeMapRequest request = new CodeMapRequest(sourcePath, true, true);
+        CodeMapRequest request = new CodeMapRequest(sourcePath, true, false);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
         JsonObject files = codeMapResponse.getAsJsonObject("files");
 

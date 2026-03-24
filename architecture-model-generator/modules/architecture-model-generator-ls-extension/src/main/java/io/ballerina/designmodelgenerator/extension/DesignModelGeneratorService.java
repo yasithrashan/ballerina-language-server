@@ -133,20 +133,42 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                     codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
                 }
 
-                if (request.isJSON()) {
-                    // For JSON requests, provide artifacts only
-                    response.setFiles(codeMapFiles);
-                } else {
-                    // For non-JSON requests, provide per-file markdown only
-                    Map<String, CodeMapFile> filesWithMarkdown = new java.util.HashMap<>();
-                    for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
-                        String filePath = entry.getKey();
-                        CodeMapFile originalFile = entry.getValue();
-                        String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, originalFile);
-                        CodeMapFile fileWithMarkdown = new CodeMapFile(null, fileMarkdown);
-                        filesWithMarkdown.put(filePath, fileWithMarkdown);
+                if (request.changesOnly()) {
+                    // For changesOnly=true, use optimized response structure
+                    if (request.isJSON()) {
+                        // For JSON requests, provide artifacts only (without markdown field)
+                        Map<String, Map<String, Object>> optimizedFiles = new java.util.HashMap<>();
+                        for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
+                            String filePath = entry.getKey();
+                            CodeMapFile originalFile = entry.getValue();
+                            Map<String, Object> fileData = new java.util.HashMap<>();
+                            fileData.put("artifacts", originalFile.artifacts());
+                            optimizedFiles.put(filePath, fileData);
+                        }
+                        response.setFiles(optimizedFiles);
+                    } else {
+                        // For non-JSON requests, provide markdown only (without artifacts field)
+                        Map<String, Map<String, Object>> optimizedFiles = new java.util.HashMap<>();
+                        for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
+                            String filePath = entry.getKey();
+                            CodeMapFile originalFile = entry.getValue();
+                            String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, originalFile);
+                            Map<String, Object> fileData = new java.util.HashMap<>();
+                            fileData.put("markdown", fileMarkdown);
+                            optimizedFiles.put(filePath, fileData);
+                        }
+                        response.setFiles(optimizedFiles);
                     }
-                    response.setFiles(filesWithMarkdown);
+                } else {
+                    // For changesOnly=false, use original behavior
+                    if (request.isJSON()) {
+                        // For JSON requests, provide artifacts only
+                        response.setFiles(codeMapFiles);
+                    } else {
+                        // For non-JSON requests, generate consolidated project markdown
+                        String projectMarkdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
+                        response.setMarkdown(projectMarkdown);
+                    }
                 }
             } catch (Throwable e) {
                 response.setError(e);
