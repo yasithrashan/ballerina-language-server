@@ -16,7 +16,7 @@
  *  under the License.
  */
 
-package io.ballerina.artifactsgenerator.balmd;
+package io.ballerina.artifactsgenerator.codemapmarkdown;
 
 import io.ballerina.artifactsgenerator.codemap.CodeMapArtifact;
 import io.ballerina.artifactsgenerator.codemap.CodeMapFile;
