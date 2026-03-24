@@ -135,7 +135,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 if (request.changesOnly()) {
                     // For changesOnly=true, use optimized response structure
-                    if (request.isJSON()) {
+                    if (request.artifacts()) {
                         // For JSON requests, provide artifacts only (without markdown field)
                         Map<String, Map<String, Object>> optimizedFiles = new java.util.HashMap<>();
                         for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
@@ -161,7 +161,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                     }
                 } else {
                     // For changesOnly=false, use original behavior
-                    if (request.isJSON()) {
+                    if (request.artifacts()) {
                         // For JSON requests, provide artifacts only
                         response.setFiles(codeMapFiles);
                     } else {
