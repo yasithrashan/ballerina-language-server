@@ -25,11 +25,21 @@ import java.util.List;
  * Represents a Ballerina source file with its extracted code map artifacts.
  *
  * @param artifacts the list of code map artifacts extracted from this file
+ * @param markdown the markdown representation of this file's artifacts
  * @since 1.6.0
  */
-public record CodeMapFile(List<CodeMapArtifact> artifacts) {
+public record CodeMapFile(List<CodeMapArtifact> artifacts, String markdown) {
 
     public CodeMapFile {
         artifacts = artifacts == null ? Collections.emptyList() : Collections.unmodifiableList(artifacts);
+    }
+
+    /**
+     * Creates a CodeMapFile with artifacts only (no markdown).
+     *
+     * @param artifacts the list of code map artifacts
+     */
+    public CodeMapFile(List<CodeMapArtifact> artifacts) {
+        this(artifacts, null);
     }
 }

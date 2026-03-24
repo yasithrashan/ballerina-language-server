@@ -134,10 +134,19 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 }
 
                 if (request.isJSON()) {
+                    // For JSON requests, provide artifacts only
                     response.setFiles(codeMapFiles);
                 } else {
-                    String markdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
-                    response.setMarkdown(markdown);
+                    // For non-JSON requests, provide per-file markdown only
+                    Map<String, CodeMapFile> filesWithMarkdown = new java.util.HashMap<>();
+                    for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
+                        String filePath = entry.getKey();
+                        CodeMapFile originalFile = entry.getValue();
+                        String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, originalFile);
+                        CodeMapFile fileWithMarkdown = new CodeMapFile(null, fileMarkdown);
+                        filesWithMarkdown.put(filePath, fileWithMarkdown);
+                    }
+                    response.setFiles(filesWithMarkdown);
                 }
             } catch (Throwable e) {
                 response.setError(e);

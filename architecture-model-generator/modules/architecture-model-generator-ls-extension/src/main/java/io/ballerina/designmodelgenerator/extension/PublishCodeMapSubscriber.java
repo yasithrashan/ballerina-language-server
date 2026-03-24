@@ -42,6 +42,8 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
     private static final String FILE_URI = "file";
     private static final String DID_CHANGE = "text/didChange";
     private static final String DID_OPEN = "text/didOpen";
+    // TODO: Add support for tracking file delete events.
+    // Currently, there is no Language Server (LS) API/event available to capture file deletions directly.
 
     @Override
     public EventKind eventKind() {
