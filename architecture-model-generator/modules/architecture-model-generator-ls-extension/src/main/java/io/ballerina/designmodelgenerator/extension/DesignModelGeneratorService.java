@@ -117,6 +117,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
 
+                // Always generate code map artifacts first
                 Map<String, CodeMapFile> codeMapFiles;
                 if (request.changesOnly()) {
                     String projectKey = projectPath.toUri().toString();
@@ -133,11 +134,12 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                     codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
                 }
 
-                if (request.changesOnly()) {
-                    // For changesOnly=true, use optimized response structure
-                    if (request.artifacts()) {
-                        // For JSON requests, provide artifacts only (without markdown field)
-                        Map<String, Map<String, Object>> optimizedFiles = new java.util.HashMap<>();
+                // Process response based on artifacts parameter
+                if (request.artifacts()) {
+                    // Return artifacts only
+                    if (request.changesOnly()) {
+                        // For changesOnly=true, use optimized response structure
+                        Map<String, Map<String, Object>> optimizedFiles = new java.util.LinkedHashMap<>();
                         for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
                             String filePath = entry.getKey();
                             CodeMapFile originalFile = entry.getValue();
@@ -147,8 +149,14 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                         }
                         response.setFiles(optimizedFiles);
                     } else {
-                        // For non-JSON requests, provide markdown only (without artifacts field)
-                        Map<String, Map<String, Object>> optimizedFiles = new java.util.HashMap<>();
+                        // For changesOnly=false, return raw CodeMapFiles
+                        response.setFiles(codeMapFiles);
+                    }
+                } else {
+                    // Generate markdown from artifacts
+                    if (request.changesOnly()) {
+                        // For changesOnly=true, provide individual file markdown
+                        Map<String, Map<String, Object>> optimizedFiles = new java.util.LinkedHashMap<>();
                         for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
                             String filePath = entry.getKey();
                             CodeMapFile originalFile = entry.getValue();
@@ -158,14 +166,8 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                             optimizedFiles.put(filePath, fileData);
                         }
                         response.setFiles(optimizedFiles);
-                    }
-                } else {
-                    // For changesOnly=false, use original behavior
-                    if (request.artifacts()) {
-                        // For JSON requests, provide artifacts only
-                        response.setFiles(codeMapFiles);
                     } else {
-                        // For non-JSON requests, generate consolidated project markdown
+                        // For changesOnly=false, generate consolidated project markdown
                         String projectMarkdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
                         response.setMarkdown(projectMarkdown);
                     }
@@ -176,6 +178,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
             return response;
         });
     }
+
 
     @JsonRequest
     public CompletableFuture<ProjectInfoResponse> projectInfo(ProjectInfoRequest request) {
