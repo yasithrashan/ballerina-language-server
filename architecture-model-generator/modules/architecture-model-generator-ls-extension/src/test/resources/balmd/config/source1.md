@@ -85,3 +85,21 @@ Each artifact is listed with its sub-properties on separate indented lines.
     - **Parameters**: none
     - **Returns**: [string]
     - **Line Range**: (67:4-69:5)
+
+---
+
+## File Path : simple.bal
+
+### Imports
+
+
+- ballerina/io
+  - **Line Range**: (0:0-0:20)
+
+### Automations (Entry Points)
+
+
+- public function main
+  - **Parameters**: none
+  - **Returns**: ()
+  - **Line Range**: (2:0-4:1)
