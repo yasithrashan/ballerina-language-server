@@ -117,7 +117,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
 
-                // Always generate code map artifacts first
+                // Always generate code map isJson first
                 Map<String, CodeMapFile> codeMapFiles;
                 if (request.changesOnly()) {
                     String projectKey = projectPath.toUri().toString();
@@ -134,9 +134,9 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                     codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
                 }
 
-                // Process response based on artifacts parameter
-                if (request.artifacts()) {
-                    // Return artifacts only
+                // Process response based on isJson parameter
+                if (request.isJson()) {
+                    // Return isJson only
                     if (request.changesOnly()) {
                         // For changesOnly=true, use optimized response structure
                         Map<String, Map<String, Object>> optimizedFiles = new java.util.LinkedHashMap<>();
@@ -144,7 +144,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                             String filePath = entry.getKey();
                             CodeMapFile originalFile = entry.getValue();
                             Map<String, Object> fileData = new java.util.HashMap<>();
-                            fileData.put("artifacts", originalFile.artifacts());
+                            fileData.put("isJson", originalFile.artifacts());
                             optimizedFiles.put(filePath, fileData);
                         }
                         response.setFiles(optimizedFiles);
@@ -153,7 +153,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                         response.setFiles(codeMapFiles);
                     }
                 } else {
-                    // Generate markdown from artifacts
+                    // Generate markdown from isJson
                     if (request.changesOnly()) {
                         // For changesOnly=true, provide individual file markdown
                         Map<String, Map<String, Object>> optimizedFiles = new java.util.LinkedHashMap<>();

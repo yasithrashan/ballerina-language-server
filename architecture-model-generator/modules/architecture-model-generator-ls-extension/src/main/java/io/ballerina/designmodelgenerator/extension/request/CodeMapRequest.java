@@ -23,8 +23,8 @@ package io.ballerina.designmodelgenerator.extension.request;
  *
  * @param projectPath The path to the project for which code map is requested
  * @param changesOnly If true, returns code map only for changed files since last request
- * @param artifacts If true, returns JSON response; if false, returns markdown content
+ * @param isJson If true, returns JSON response; if false, returns markdown content
  * @since 1.6.0
  */
-public record CodeMapRequest(String projectPath, boolean changesOnly, boolean artifacts) {
+public record CodeMapRequest(String projectPath, boolean changesOnly, boolean isJson) {
 }
