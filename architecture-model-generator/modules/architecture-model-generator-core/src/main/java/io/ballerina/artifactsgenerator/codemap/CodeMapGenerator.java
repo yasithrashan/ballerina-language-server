@@ -32,12 +32,14 @@ import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Generates code map from Ballerina projects by extracting artifacts from source files.
@@ -73,11 +75,26 @@ public class CodeMapGenerator {
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
         Set<String> targetFiles = fileNames != null ? new HashSet<>(fileNames) : null;
 
-        for (var moduleId : currentPackage.moduleIds()) {
+        // Sort modules alphabetically for consistent order
+        var sortedModules = currentPackage.moduleIds()
+                .stream()
+                .sorted(Comparator.comparing(moduleId -> {
+                    Module m = currentPackage.module(moduleId);
+                    return m.isDefaultModule() ? "" : m.moduleName().moduleNamePart();
+                }))
+                .collect(Collectors.toList());
+
+        for (var moduleId : sortedModules) {
             Module module = currentPackage.module(moduleId);
             ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
 
-            for (var documentId : module.documentIds()) {
+            // Sort documents alphabetically for consistent order
+            var sortedDocs = module.documentIds()
+                    .stream()
+                    .sorted(Comparator.comparing(docId -> module.document(docId).name()))
+                    .collect(Collectors.toList());
+
+            for (var documentId : sortedDocs) {
                 Document document = module.document(documentId);
                 String fileName = document.name();
                 String relativeFilePath = getRelativeFilePath(module, fileName);
