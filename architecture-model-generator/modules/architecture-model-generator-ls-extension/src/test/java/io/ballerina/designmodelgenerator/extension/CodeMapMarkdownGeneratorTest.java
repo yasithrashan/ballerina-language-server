@@ -65,7 +65,7 @@ public class CodeMapMarkdownGeneratorTest extends AbstractLSTest {
 
     @Override
     protected String getResourceDir() {
-        return "balmd";
+        return "codemap_markdown";
     }
 
     @Override
