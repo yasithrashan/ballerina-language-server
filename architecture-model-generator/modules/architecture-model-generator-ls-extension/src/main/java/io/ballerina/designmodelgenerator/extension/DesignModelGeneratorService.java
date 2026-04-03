@@ -119,17 +119,23 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 // Always generate code map isJson first
                 Map<String, CodeMapFile> codeMapFiles;
+                List<String> deletedFiles = java.util.Collections.emptyList();
+
                 if (request.changesOnly()) {
                     String projectKey = projectPath.toUri().toString();
                     List<String> modifiedFiles = CodeMapFilesTracker.getInstance()
                             .getModifiedFiles(projectKey);
+                    deletedFiles = CodeMapFilesTracker.getInstance()
+                            .getDeletedFiles(projectKey);
 
                     if (modifiedFiles.isEmpty()) {
                         codeMapFiles = java.util.Collections.emptyMap();
                     } else {
                         codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager, modifiedFiles);
-                        CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
                     }
+
+                    // Clear tracked files after processing
+                    CodeMapFilesTracker.getInstance().clearAllFiles(projectKey);
                 } else {
                     codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
                 }
@@ -138,16 +144,20 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 if (request.isJson()) {
                     // Return isJson only
                     if (request.changesOnly()) {
-                        // For changesOnly=true, use optimized response structure
-                        Map<String, Map<String, Object>> optimizedFiles = new java.util.LinkedHashMap<>();
+                        // For changesOnly=true, use new response structure with modifiedFiles and deletedFiles
+                        Map<String, Map<String, Object>> modifiedFilesData = new java.util.LinkedHashMap<>();
                         for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
                             String filePath = entry.getKey();
                             CodeMapFile originalFile = entry.getValue();
                             Map<String, Object> fileData = new java.util.HashMap<>();
-                            fileData.put("isJson", originalFile.artifacts());
-                            optimizedFiles.put(filePath, fileData);
+                            fileData.put("artifacts", originalFile.artifacts());
+                            modifiedFilesData.put(filePath, fileData);
                         }
-                        response.setFiles(optimizedFiles);
+
+                        Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
+                        changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
+                        changesOnlyResponse.put("deletedFiles", deletedFiles);
+                        response.setFiles(changesOnlyResponse);
                     } else {
                         // For changesOnly=false, return raw CodeMapFiles
                         response.setFiles(codeMapFiles);
@@ -155,17 +165,21 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 } else {
                     // Generate markdown from isJson
                     if (request.changesOnly()) {
-                        // For changesOnly=true, provide individual file markdown
-                        Map<String, Map<String, Object>> optimizedFiles = new java.util.LinkedHashMap<>();
+                        // For changesOnly=true, provide new response structure with modifiedFiles and deletedFiles
+                        Map<String, Map<String, Object>> modifiedFilesData = new java.util.LinkedHashMap<>();
                         for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
                             String filePath = entry.getKey();
                             CodeMapFile originalFile = entry.getValue();
                             String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, originalFile);
                             Map<String, Object> fileData = new java.util.HashMap<>();
                             fileData.put("markdown", fileMarkdown);
-                            optimizedFiles.put(filePath, fileData);
+                            modifiedFilesData.put(filePath, fileData);
                         }
-                        response.setFiles(optimizedFiles);
+
+                        Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
+                        changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
+                        changesOnlyResponse.put("deletedFiles", deletedFiles);
+                        response.setFiles(changesOnlyResponse);
                     } else {
                         // For changesOnly=false, generate consolidated project markdown
                         String projectMarkdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);

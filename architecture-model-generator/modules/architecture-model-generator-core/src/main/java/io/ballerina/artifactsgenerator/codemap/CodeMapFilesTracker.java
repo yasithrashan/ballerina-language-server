@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Tracks modified (changed or added) files per project for incremental code map generation.
- * This singleton maintains a thread-safe record of file modifications between API calls.
+ * Tracks modified (changed or added) and deleted files per project for incremental code map generation.
+ * This singleton maintains a thread-safe record of file modifications and deletions between API calls.
  *
  * @since 1.6.0
  */
@@ -36,8 +36,12 @@ public class CodeMapFilesTracker {
     // Map: projectKey (URI) -> Set of modified (changed or added) file relative paths
     private final Map<String, Set<String>> modifiedFilesMap;
 
+    // Map: projectKey (URI) -> Set of deleted file relative paths
+    private final Map<String, Set<String>> deletedFilesMap;
+
     private CodeMapFilesTracker() {
         this.modifiedFilesMap = new ConcurrentHashMap<>();
+        this.deletedFilesMap = new ConcurrentHashMap<>();
     }
 
     private static class Holder {
@@ -66,6 +70,18 @@ public class CodeMapFilesTracker {
     }
 
     /**
+     * Track a deleted file for a given project.
+     *
+     * @param projectKey   the project identifier
+     * @param relativePath the relative path of the deleted file from project root
+     */
+    public void trackDeletedFile(String projectKey, String relativePath) {
+        deletedFilesMap
+                .computeIfAbsent(projectKey, k -> ConcurrentHashMap.newKeySet())
+                .add(relativePath);
+    }
+
+    /**
      * Retrieves all tracked modified files for the given project.
      *
      * @param projectKey the project URI key
@@ -80,12 +96,45 @@ public class CodeMapFilesTracker {
     }
 
     /**
+     * Retrieves all tracked deleted files for the given project.
+     *
+     * @param projectKey the project URI key
+     * @return list of deleted file relative paths, or empty list if none tracked
+     */
+    public List<String> getDeletedFiles(String projectKey) {
+        Set<String> files = deletedFilesMap.get(projectKey);
+        if (files == null || files.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(files);
+    }
+
+    /**
      * Clears all tracked modified files for the given project.
      *
      * @param projectKey the project URI key
      */
     public void clearModifiedFiles(String projectKey) {
         modifiedFilesMap.remove(projectKey);
+    }
+
+    /**
+     * Clears all tracked deleted files for the given project.
+     *
+     * @param projectKey the project URI key
+     */
+    public void clearDeletedFiles(String projectKey) {
+        deletedFilesMap.remove(projectKey);
+    }
+
+    /**
+     * Clears all tracked files (both modified and deleted) for the given project.
+     *
+     * @param projectKey the project URI key
+     */
+    public void clearAllFiles(String projectKey) {
+        modifiedFilesMap.remove(projectKey);
+        deletedFilesMap.remove(projectKey);
     }
 
 }
