@@ -40,15 +40,15 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
     public void test(Path config) throws IOException {
         Path configJsonPath = configDir.resolve(config);
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
-        CodeMapRequest request = new CodeMapRequest(getSourcePath(testConfig.source()), false, true);
+        CodeMapRequest request = new CodeMapRequest(getSourcePath(testConfig.source()), false);
         JsonObject codeMapResponse = getResponseAndCloseFile(request, testConfig.source());
-        JsonObject files = codeMapResponse.getAsJsonObject("files");
+        String actualContent = codeMapResponse.get("content").getAsString();
 
-        if (!files.equals(testConfig.output())) {
-            TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
+        if (!actualContent.equals(testConfig.output())) {
+            TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), actualContent);
 //            updateConfig(configJsonPath, updatedConfig);
-            compareJsonElements(files, testConfig.output());
-            Assert.fail(String.format("Failed test: '%s' (%s)", testConfig.description(), configJsonPath));
+            Assert.fail(String.format("Failed test: '%s' (%s)\nExpected: %s\nActual: %s",
+                testConfig.description(), configJsonPath, testConfig.output(), actualContent));
         }
     }
 
@@ -73,7 +73,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
     }
 
 
-    public record TestConfig(String description, String source, JsonObject output) {
+    public record TestConfig(String description, String source, String output) {
 
         public String description() {
             return description == null ? "" : description;

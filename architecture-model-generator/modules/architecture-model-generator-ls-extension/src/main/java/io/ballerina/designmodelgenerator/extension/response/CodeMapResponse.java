@@ -25,22 +25,13 @@ package io.ballerina.designmodelgenerator.extension.response;
  */
 public class CodeMapResponse extends AbstractResponse {
 
-    private Object files;
-    private String markdown;
+    private Object content;
 
-    public Object getFiles() {
-        return files;
+    public Object getContent() {
+        return content;
     }
 
-    public void setFiles(Object files) {
-        this.files = files;
-    }
-
-    public String getMarkdown() {
-        return markdown;
-    }
-
-    public void setMarkdown(String markdown) {
-        this.markdown = markdown;
+    public void setContent(Object content) {
+        this.content = content;
     }
 }

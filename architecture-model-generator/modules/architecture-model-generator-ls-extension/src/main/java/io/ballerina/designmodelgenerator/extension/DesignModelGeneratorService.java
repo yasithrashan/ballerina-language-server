@@ -117,7 +117,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
 
-                // Always generate code map isJson first
+                // Generate code map files
                 Map<String, CodeMapFile> codeMapFiles;
                 List<String> deletedFiles = java.util.Collections.emptyList();
 
@@ -138,61 +138,32 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                     codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
                 }
 
-                // Process response based on isJson parameter
-                if (request.isJson()) {
-                    // Return isJson only
-                    if (request.changesOnly()) {
-                        // For changesOnly=true, use new response structure with modifiedFiles and deletedFiles
-                        Map<String, Map<String, Object>> modifiedFilesData = new java.util.LinkedHashMap<>();
-                        for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
-                            String filePath = entry.getKey();
-                            CodeMapFile originalFile = entry.getValue();
-                            Map<String, Object> fileData = new java.util.HashMap<>();
-                            fileData.put("artifacts", originalFile.artifacts());
-                            modifiedFilesData.put(filePath, fileData);
-                        }
+                // Process response based on changesOnly parameter
+                if (request.changesOnly()) {
+                    // For changesOnly=true, provide structure with modifiedFiles and deletedFiles
+                    Map<String, Map<String, Object>> modifiedFilesData = new java.util.LinkedHashMap<>();
+                    for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
+                        String filePath = entry.getKey();
+                        CodeMapFile originalFile = entry.getValue();
+                        String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, originalFile);
+                        Map<String, Object> fileData = new java.util.HashMap<>();
+                        fileData.put("markdown", fileMarkdown);
+                        modifiedFilesData.put(filePath, fileData);
+                    }
 
-                        // Check if we have no changes to return empty response
-                        if (modifiedFilesData.isEmpty() && deletedFiles.isEmpty()) {
-                            response.setFiles(java.util.Collections.emptyMap());
-                        } else {
-                            Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
-                            changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
-                            changesOnlyResponse.put("deletedFiles", deletedFiles);
-                            response.setFiles(changesOnlyResponse);
-                        }
+                    // Check if we have no changes to return empty response
+                    if (modifiedFilesData.isEmpty() && deletedFiles.isEmpty()) {
+                        response.setContent(java.util.Collections.emptyMap());
                     } else {
-                        // For changesOnly=false, return raw CodeMapFiles
-                        response.setFiles(codeMapFiles);
+                        Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
+                        changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
+                        changesOnlyResponse.put("deletedFiles", deletedFiles);
+                        response.setContent(changesOnlyResponse);
                     }
                 } else {
-                    // Generate markdown from isJson
-                    if (request.changesOnly()) {
-                        // For changesOnly=true, provide new response structure with modifiedFiles and deletedFiles
-                        Map<String, Map<String, Object>> modifiedFilesData = new java.util.LinkedHashMap<>();
-                        for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
-                            String filePath = entry.getKey();
-                            CodeMapFile originalFile = entry.getValue();
-                            String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, originalFile);
-                            Map<String, Object> fileData = new java.util.HashMap<>();
-                            fileData.put("markdown", fileMarkdown);
-                            modifiedFilesData.put(filePath, fileData);
-                        }
-
-                        // Check if we have no changes to return empty response
-                        if (modifiedFilesData.isEmpty() && deletedFiles.isEmpty()) {
-                            response.setFiles(java.util.Collections.emptyMap());
-                        } else {
-                            Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
-                            changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
-                            changesOnlyResponse.put("deletedFiles", deletedFiles);
-                            response.setFiles(changesOnlyResponse);
-                        }
-                    } else {
-                        // For changesOnly=false, generate consolidated project markdown
-                        String projectMarkdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
-                        response.setMarkdown(projectMarkdown);
-                    }
+                    // For changesOnly=false, generate consolidated project markdown
+                    String projectMarkdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
+                    response.setContent(projectMarkdown);
                 }
 
                 // Clear tracked files after processing response for changesOnly requests
