@@ -44,6 +44,10 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
     private static final String DID_OPEN = "text/didOpen";
     // TODO: Add support for tracking file delete events.
     // Currently, there is no Language Server (LS) API/event available to capture file deletions directly.
+    // text/didDelete is a placeholder for the delete event name, which should be updated once the LS
+    // provides an appropriate API/event for file deletions.
+    private static final String DID_DELETE = "text/didDelete";
+
 
     @Override
     public EventKind eventKind() {
@@ -53,9 +57,9 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
     @Override
     public void onEvent(ExtendedLanguageClient client, DocumentServiceContext context,
                         LanguageServerContext serverContext) {
-        // Only track files on didChange and didOpen events
+        // Only track files on didChange, didOpen, and didDelete events
         String operationName = context.operation().getName();
-        if (!DID_CHANGE.equals(operationName) && !DID_OPEN.equals(operationName)) {
+        if (!DID_CHANGE.equals(operationName) && !DID_OPEN.equals(operationName) && !DID_DELETE.equals(operationName)) {
             return;
         }
 
@@ -72,8 +76,13 @@ public class PublishCodeMapSubscriber implements EventSubscriber {
         String projectKey = projectPath.toUri().toString();
         String relativePath = projectPath.relativize(context.filePath()).toString();
 
-        // Track the changed file
-        CodeMapFilesTracker.getInstance().trackFile(projectKey, relativePath);
+        // Track the file based on operation type
+        if (DID_DELETE.equals(operationName)) {
+            CodeMapFilesTracker.getInstance().trackDeletedFile(projectKey, relativePath);
+        } else {
+            // For didChange and didOpen events, track as modified file
+            CodeMapFilesTracker.getInstance().trackFile(projectKey, relativePath);
+        }
     }
 
     @Override
