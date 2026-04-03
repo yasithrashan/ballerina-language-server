@@ -44,6 +44,9 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
         JsonObject codeMapResponse = getResponseAndCloseFile(request, testConfig.source());
         String actualContent = codeMapResponse.get("content").getAsString();
 
+        // Save debugging files
+        saveDebuggingFiles(testConfig.source(), codeMapResponse);
+
         if (!actualContent.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), actualContent);
 //            updateConfig(configJsonPath, updatedConfig);
@@ -74,6 +77,21 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
     protected String getProjectPath(String source) {
         return sourceDir.resolve(source).toAbsolutePath().toString();
+    }
+
+    private void saveDebuggingFiles(String projectName, JsonObject response) {
+        try {
+            Path outputDir = configDir.resolve("output");
+            Files.createDirectories(outputDir);
+
+            // Save the markdown content
+            String markdownContent = response.get("content").getAsString();
+            Path markdownFile = outputDir.resolve(projectName + ".md");
+            Files.writeString(markdownFile, markdownContent);
+        } catch (IOException e) {
+            // Log but don't fail the test for debugging file issues
+            log.warn("Failed to save debugging files for project: " + projectName, e);
+        }
     }
 
 
