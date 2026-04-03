@@ -38,14 +38,14 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 /**
- * Publishes the isJson to the client.
+ * Publishes the artifacts to the client.
  *
  * @since 1.0.0
  */
 @JavaSPIService("org.ballerinalang.langserver.commons.eventsync.spi.EventSubscriber")
 public class PublishArtifactsSubscriber implements EventSubscriber {
 
-    public static final String NAME = "Publish isJson subscriber";
+    public static final String NAME = "Publish artifacts subscriber";
     private static final String EXPR_URI = "expr";
     private static final String AI_URI = "ai";
     private static final String LOAD_PROJECT = "loadProject";
