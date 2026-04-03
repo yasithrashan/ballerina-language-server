@@ -18,7 +18,6 @@
 
 package io.ballerina.artifactsgenerator.codemap;
 
-import io.ballerina.artifactsgenerator.codemapmarkdown.CodeMapMarkdownGenerator;
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
