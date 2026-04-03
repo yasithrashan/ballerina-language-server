@@ -1,5 +1,0 @@
-{
-  "description": "Ballerina error test",
-  "source": "error.bal",
-  "output": "# Project CodeMap\n\n## CodeMap Structure\n\nThis document provides a structured overview of the project codebase.\nIt is organized by file path and summarizes the following elements for each file.\nEach artifact is listed with its sub-properties on separate indented lines.\n\n\n---\n\n## File Path : error.bal\n\n### Variables\n\n\n- MISSING[]\n  - **Line Range**: (0:0-0:2)\n"
-}

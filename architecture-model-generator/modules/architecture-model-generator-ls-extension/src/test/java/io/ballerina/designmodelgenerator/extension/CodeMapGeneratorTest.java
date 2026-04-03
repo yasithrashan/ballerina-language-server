@@ -40,7 +40,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
     public void test(Path config) throws IOException {
         Path configJsonPath = configDir.resolve(config);
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
-        CodeMapRequest request = new CodeMapRequest(getSourcePath(testConfig.source()), false);
+        CodeMapRequest request = new CodeMapRequest(getProjectPath(testConfig.source()), false);
         JsonObject codeMapResponse = getResponseAndCloseFile(request, testConfig.source());
         String actualContent = codeMapResponse.get("content").getAsString();
 
@@ -70,6 +70,10 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
     @Override
     protected String getApiName() {
         return "codemap";
+    }
+
+    protected String getProjectPath(String source) {
+        return sourceDir.resolve(source).toAbsolutePath().toString();
     }
 
 
