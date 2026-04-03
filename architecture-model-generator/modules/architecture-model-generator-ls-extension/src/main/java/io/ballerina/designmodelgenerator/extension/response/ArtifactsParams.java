@@ -23,7 +23,7 @@ import io.ballerina.artifactsgenerator.Artifact;
 import java.util.Map;
 
 /**
- * Represents parameters for publishing isJson notification.
+ * Represents parameters for publishing artifacts notification.
  *
  * @since 1.0.0
  */
