@@ -27,6 +27,7 @@ module io.ballerina.architecturemodelgenerator {
     requires io.ballerina.runtime;
     requires io.ballerina.toml;
     requires io.ballerina.flow.model.generator;
+    requires org.eclipse.lsp4j;
 
     exports io.ballerina.architecturemodelgenerator.core;
     exports io.ballerina.architecturemodelgenerator.core.diagnostics;

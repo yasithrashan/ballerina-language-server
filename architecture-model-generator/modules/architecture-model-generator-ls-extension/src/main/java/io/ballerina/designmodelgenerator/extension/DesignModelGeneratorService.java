@@ -121,21 +121,19 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 Map<String, CodeMapFile> codeMapFiles;
                 List<String> deletedFiles = java.util.Collections.emptyList();
 
+                String projectKey = null;
                 if (request.changesOnly()) {
-                    String projectKey = projectPath.toUri().toString();
+                    projectKey = projectPath.toUri().toString();
                     List<String> modifiedFiles = CodeMapFilesTracker.getInstance()
                             .getModifiedFiles(projectKey);
                     deletedFiles = CodeMapFilesTracker.getInstance()
                             .getDeletedFiles(projectKey);
 
-                    if (modifiedFiles.isEmpty()) {
+                    if (modifiedFiles.isEmpty() && deletedFiles.isEmpty()) {
                         codeMapFiles = java.util.Collections.emptyMap();
                     } else {
                         codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager, modifiedFiles);
                     }
-
-                    // Clear tracked files after processing
-                    CodeMapFilesTracker.getInstance().clearAllFiles(projectKey);
                 } else {
                     codeMapFiles = CodeMapGenerator.generateCodeMap(project, workspaceManager);
                 }
@@ -154,10 +152,15 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                             modifiedFilesData.put(filePath, fileData);
                         }
 
-                        Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
-                        changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
-                        changesOnlyResponse.put("deletedFiles", deletedFiles);
-                        response.setFiles(changesOnlyResponse);
+                        // Check if we have no changes to return empty response
+                        if (modifiedFilesData.isEmpty() && deletedFiles.isEmpty()) {
+                            response.setFiles(java.util.Collections.emptyMap());
+                        } else {
+                            Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
+                            changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
+                            changesOnlyResponse.put("deletedFiles", deletedFiles);
+                            response.setFiles(changesOnlyResponse);
+                        }
                     } else {
                         // For changesOnly=false, return raw CodeMapFiles
                         response.setFiles(codeMapFiles);
@@ -176,15 +179,25 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                             modifiedFilesData.put(filePath, fileData);
                         }
 
-                        Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
-                        changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
-                        changesOnlyResponse.put("deletedFiles", deletedFiles);
-                        response.setFiles(changesOnlyResponse);
+                        // Check if we have no changes to return empty response
+                        if (modifiedFilesData.isEmpty() && deletedFiles.isEmpty()) {
+                            response.setFiles(java.util.Collections.emptyMap());
+                        } else {
+                            Map<String, Object> changesOnlyResponse = new java.util.LinkedHashMap<>();
+                            changesOnlyResponse.put("modifiedFiles", modifiedFilesData);
+                            changesOnlyResponse.put("deletedFiles", deletedFiles);
+                            response.setFiles(changesOnlyResponse);
+                        }
                     } else {
                         // For changesOnly=false, generate consolidated project markdown
                         String projectMarkdown = CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
                         response.setMarkdown(projectMarkdown);
                     }
+                }
+
+                // Clear tracked files after processing response for changesOnly requests
+                if (request.changesOnly() && projectKey != null) {
+                    CodeMapFilesTracker.getInstance().clearAllFiles(projectKey);
                 }
             } catch (Throwable e) {
                 response.setError(e);
