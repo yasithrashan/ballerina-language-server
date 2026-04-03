@@ -18,6 +18,7 @@
 
 package io.ballerina.artifactsgenerator.codemap;
 
+import io.ballerina.artifactsgenerator.codemapmarkdown.CodeMapMarkdownGenerator;
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -166,5 +168,68 @@ public class CodeMapGenerator {
             return sourceRoot.resolve(fileName);
         }
         return sourceRoot.resolve("modules").resolve(module.moduleName().moduleNamePart()).resolve(fileName);
+    }
+
+    /**
+     * Processes incremental changes and returns a response map containing modified and deleted files.
+     *
+     * @param project the Ballerina project
+     * @param workspaceManager the workspace manager
+     * @param projectPath the project path
+     * @return response map with modifiedFiles and deletedFiles
+     */
+    public static Map<String, Object> processIncrementalChanges(Project project, WorkspaceManager workspaceManager,
+                                                                Path projectPath) {
+        String projectKey = projectPath.toUri().toString();
+        CodeMapFilesTracker tracker = CodeMapFilesTracker.getInstance();
+
+        // Get tracked changes
+        List<String> modifiedFiles = tracker.getModifiedFiles(projectKey);
+        List<String> deletedFiles = tracker.getDeletedFiles(projectKey);
+
+        // No changes detected
+        if (modifiedFiles.isEmpty() && deletedFiles.isEmpty()) {
+            return java.util.Collections.emptyMap();
+        }
+
+        // Generate codemap for modified files only
+        Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager, modifiedFiles);
+
+        // Build incremental response structure
+        Map<String, Map<String, Object>> modifiedFilesData = new LinkedHashMap<>();
+        for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
+            String filePath = entry.getKey();
+            CodeMapFile codeMapFile = entry.getValue();
+            String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, codeMapFile);
+
+            Map<String, Object> fileData = new HashMap<>();
+            fileData.put("markdown", fileMarkdown);
+            modifiedFilesData.put(filePath, fileData);
+        }
+
+        // Build response with changes structure
+        Map<String, Object> changesResponse = new LinkedHashMap<>();
+        changesResponse.put("modifiedFiles", modifiedFilesData);
+        changesResponse.put("deletedFiles", deletedFiles);
+
+        // Clear tracker after successful processing
+        tracker.clearAllFiles(projectKey);
+
+        return changesResponse;
+    }
+
+    /**
+     * Processes full project codemap and returns consolidated markdown content.
+     *
+     * @param project the Ballerina project
+     * @param workspaceManager the workspace manager
+     * @return consolidated project markdown content
+     */
+    public static String processFullProjectCodeMap(Project project, WorkspaceManager workspaceManager) {
+        // Generate full project codemap
+        Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager);
+
+        // Convert to consolidated markdown
+        return CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
     }
 }
