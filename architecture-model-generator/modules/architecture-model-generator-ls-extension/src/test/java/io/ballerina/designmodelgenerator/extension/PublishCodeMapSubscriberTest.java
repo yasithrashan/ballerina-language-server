@@ -89,9 +89,9 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
         // Call the codeMap API with changesOnly=true and verify response
         Path projectPath = workspaceManager.projectRoot(filePath);
-        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true, false);
+        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
-        JsonObject files = codeMapResponse.getAsJsonObject("files");
+        JsonObject files = codeMapResponse.getAsJsonObject("content");
 
         if (!files.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), files);
@@ -110,9 +110,9 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
 
         // Call codeMap with changesOnly=true without tracking any files - should return empty
-        CodeMapRequest request = new CodeMapRequest(sourcePath, true, false);
+        CodeMapRequest request = new CodeMapRequest(sourcePath, true);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
-        JsonObject files = codeMapResponse.getAsJsonObject("files");
+        JsonObject files = codeMapResponse.getAsJsonObject("content");
 
         Assert.assertTrue(files.entrySet().isEmpty(),
                 "Expected empty files response when no changes are tracked");
@@ -392,14 +392,14 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         publishCodeMapSubscriber.onEvent(null, context, languageServer.getServerContext());
 
         // Call codeMap API with changesOnly=true (this should consume the tracked changes)
-        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true, true);
+        CodeMapRequest request = new CodeMapRequest(projectPath.toString(), true);
         JsonObject codeMapResponse = getResponse(request, "designModelService/codemap");
-        JsonObject files = codeMapResponse.getAsJsonObject("files");
+        JsonObject files = codeMapResponse.getAsJsonObject("content");
         Assert.assertFalse(files.entrySet().isEmpty(), "First call should return tracked changes");
 
         // Call codeMap API again - should return empty since changes were consumed
         JsonObject secondResponse = getResponse(request, "designModelService/codemap");
-        JsonObject secondFiles = secondResponse.getAsJsonObject("files");
+        JsonObject secondFiles = secondResponse.getAsJsonObject("content");
         Assert.assertTrue(secondFiles.entrySet().isEmpty(),
                 "Second call should return empty as changes were consumed by first call");
     }
