@@ -16,10 +16,8 @@
  *  under the License.
  */
 
-package io.ballerina.artifactsgenerator.codemapmarkdown;
+package io.ballerina.artifactsgenerator.codemap;
 
-import io.ballerina.artifactsgenerator.codemap.CodeMapArtifact;
-import io.ballerina.artifactsgenerator.codemap.CodeMapFile;
 import org.eclipse.lsp4j.Range;
 
 import java.util.ArrayList;
