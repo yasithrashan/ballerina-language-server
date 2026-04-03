@@ -30,7 +30,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Tests for getting the isJson for a package.
+ * Tests for getting the artifacts for a package.
  *
  * @since 1.0.0
  */
@@ -64,7 +64,7 @@ public class ArtifactsTest extends AbstractLSTest {
                 "agent.json",
                 // TODO: Investigate why the following test fails intermittently in Windows
                 "graphql.json",
-                // TODO: Include this after discussing how to integrate submodules into the isJson tree
+                // TODO: Include this after discussing how to integrate submodules into the artifacts tree
                 "persist.json"
         };
     }
