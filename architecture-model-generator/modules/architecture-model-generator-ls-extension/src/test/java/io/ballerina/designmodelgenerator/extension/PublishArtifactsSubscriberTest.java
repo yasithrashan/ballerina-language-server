@@ -53,7 +53,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Test cases for publishing isJson.
+ * Test cases for publishing artifacts.
  *
  * @since 1.0.0
  */
@@ -66,7 +66,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
         // Load the original project
         String sourcePath = getSourcePath("old");
         ArtifactsRequest request = new ArtifactsRequest(sourcePath);
-        getResponse(request, "designModelService/isJson");
+        getResponse(request, "designModelService/artifacts");
 
         // Wait until the project cache is populated
         ArtifactsCache cache = ArtifactsCache.getInstance();
@@ -150,7 +150,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
                 documentServiceContext,
                 languageServer.getServerContext());
 
-        // Capture the isJson published to the client - they are Object[] arrays
+        // Capture the artifacts published to the client - they are Object[] arrays
         ArgumentCaptor<Object> artifactsCaptor = ArgumentCaptor.forClass(Object.class);
 
         // Add a wait loop to verify that all scheduled tasks have completed
@@ -185,7 +185,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
             Assert.fail("Error while checking debouncer state", e);
         }
 
-        // Verify the client was called with the expected isJson
+        // Verify the client was called with the expected artifacts
         Mockito.verify(mockClient).publishArtifacts(artifactsCaptor.capture());
         Object capturedValue = artifactsCaptor.getValue();
 
@@ -202,7 +202,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
             Assert.fail("Failed to capture the correct uri");
         }
 
-        // Assert the published isJson
+        // Assert the published artifacts
         assertArtifacts(artifactsParams, testConfig, configJsonPath);
     }
 
@@ -223,7 +223,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
 
     @Test(dependsOnMethods = "testReloadProjectWithPreExistingArtifacts")
     public void testReloadProjectWithoutPreExistingArtifacts() throws Exception {
-        // Setup: Clear cache to simulate no pre-existing isJson
+        // Setup: Clear cache to simulate no pre-existing artifacts
         clearProjectCache();
 
         // Create mock document service context for reload project operation
@@ -260,7 +260,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
         // Verify URI is project-level
         Assert.assertEquals(artifactsParams.uri(), projectKey);
 
-        // Verify delta changes contain only additions (no pre-existing isJson)
+        // Verify delta changes contain only additions (no pre-existing artifacts)
         Path resourcesDir = configDir.getParent().resolve("resources");
         Path configJsonPath = resourcesDir.resolve("no_preexisting_project.json");
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
@@ -269,7 +269,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
 
     @Test
     public void testMultipleDidChangeEventsOnDifferentFiles() throws Exception {
-        // Initialize project cache with isJson
+        // Initialize project cache with artifacts
         initializeProject();
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
 
@@ -329,9 +329,9 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
         ArgumentCaptor<ArtifactsParams> artifactsCaptor = ArgumentCaptor.forClass(ArtifactsParams.class);
         Mockito.verify(mockClient, Mockito.times(2)).publishArtifacts(artifactsCaptor.capture());
         List<ArtifactsParams> capturedValues = artifactsCaptor.getAllValues();
-        Assert.assertEquals(capturedValues.size(), 2, "Expected isJson to be published for both files");
+        Assert.assertEquals(capturedValues.size(), 2, "Expected artifacts to be published for both files");
 
-        // Verify isJson count - first should have 1 artifact, second should have 3 isJson
+        // Verify artifacts count - first should have 1 artifact, second should have 3 artifacts
         ArtifactsParams firstArtifacts = capturedValues.get(0);
         ArtifactsParams secondArtifacts = capturedValues.get(1);
         int firstArtifactCount = firstArtifacts.artifacts().size();
@@ -394,7 +394,7 @@ public class PublishArtifactsSubscriberTest extends AbstractLSTest {
         Mockito.verify(mockClient).publishArtifacts(artifactsCaptor.capture());
         ArtifactsParams artifactsParams = artifactsCaptor.getValue();
 
-        // Assert the published isJson
+        // Assert the published artifacts
         Path resourcesDir = configDir.getParent().resolve("resources");
         Path configJsonPath = resourcesDir.resolve("existing_project.json");
         TestConfig testConfig = gson.fromJson(Files.newBufferedReader(configJsonPath), TestConfig.class);
