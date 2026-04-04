@@ -42,12 +42,16 @@ public class CodeMapMarkdownGenerator {
      * @return the generated markdown string for the single file
      */
     public static String generateFileMarkdown(String filePath, CodeMapFile codeMapFile) {
-        if (codeMapFile == null || codeMapFile.artifacts().isEmpty()) {
+        if (codeMapFile == null) {
             return "";
         }
 
         List<String> lines = new ArrayList<>();
         lines.add("### " + filePath);
+
+        if (codeMapFile.artifacts().isEmpty()) {
+            return String.join("\n", lines);
+        }
 
         // Group artifacts by type
         ArtifactGroups groups = new ArtifactGroups();
@@ -95,14 +99,14 @@ public class CodeMapMarkdownGenerator {
             CodeMapFile fileData = entry.getValue();
             List<CodeMapArtifact> artifacts = fileData.artifacts();
 
-            if (artifacts.isEmpty()) {
-                continue;
-            }
-
             lines.add("");
             lines.add("---");
             lines.add("");
             lines.add("## File Path : " + filePath);
+
+            if (artifacts.isEmpty()) {
+                continue;
+            }
 
             // Group artifacts by type
             ArtifactGroups groups = new ArtifactGroups();
