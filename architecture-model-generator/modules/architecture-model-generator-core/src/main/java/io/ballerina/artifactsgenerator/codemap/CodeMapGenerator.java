@@ -27,6 +27,7 @@ import io.ballerina.projects.Module;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectKind;
+import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 
 import java.io.File;
@@ -230,5 +231,128 @@ public class CodeMapGenerator {
 
         // Convert to consolidated markdown
         return CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
+    }
+
+    /**
+     * Generates a code map for all packages in a workspace.
+     *
+     * @param project the Ballerina workspace project
+     * @param workspaceManager the workspace manager to obtain semantic models
+     * @return a map of package names to their code map files
+     */
+    public static Map<String, Map<String, CodeMapFile>> generateWorkspaceCodeMap(Project project,
+                                                                                  WorkspaceManager workspaceManager) {
+        return generateWorkspaceCodeMap(project, workspaceManager, null);
+    }
+
+    /**
+     * Generates a code map for specific files in all packages of a workspace.
+     *
+     * @param project the Ballerina workspace project
+     * @param workspaceManager the workspace manager to obtain semantic models
+     * @param fileNames the list of file names to process, or {@code null} to process all files
+     * @return a map of package names to their code map files
+     */
+    public static Map<String, Map<String, CodeMapFile>> generateWorkspaceCodeMap(Project project,
+                                                                                  WorkspaceManager workspaceManager,
+                                                                                  List<String> fileNames) {
+        Map<String, Map<String, CodeMapFile>> workspaceCodeMap = new LinkedHashMap<>();
+        BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
+
+        // Check if this is a workspace project
+        if (!compilerApi.isWorkspaceProject(project)) {
+            // If not a workspace, just include the current package
+            String packageName = project.currentPackage().packageName().value();
+            workspaceCodeMap.put(packageName, generateCodeMap(project, workspaceManager, fileNames));
+            return workspaceCodeMap;
+        }
+
+        // Get all workspace packages in topological order
+        List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
+
+        for (Project packageProject : workspaceProjects) {
+            String packageName = packageProject.currentPackage().packageName().value();
+            Map<String, CodeMapFile> packageCodeMap = generateCodeMap(packageProject, workspaceManager, fileNames);
+            workspaceCodeMap.put(packageName, packageCodeMap);
+        }
+
+        return workspaceCodeMap;
+    }
+
+    /**
+     * Processes incremental changes for workspace and returns a response map containing modified and deleted files
+     * for all packages.
+     *
+     * @param project the Ballerina workspace project
+     * @param workspaceManager the workspace manager
+     * @param projectPath the project path
+     * @return response map with modifiedFiles and deletedFiles for all packages
+     */
+    public static Map<String, Object> processWorkspaceIncrementalChanges(Project project,
+                                                                         WorkspaceManager workspaceManager,
+                                                                         Path projectPath) {
+        BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
+
+        // Check if this is a workspace project
+        if (!compilerApi.isWorkspaceProject(project)) {
+            // If not a workspace, use single package incremental processing
+            return processIncrementalChanges(project, workspaceManager, projectPath);
+        }
+
+        Map<String, Object> workspaceChangesResponse = new LinkedHashMap<>();
+        Map<String, Map<String, Map<String, Object>>> workspaceModifiedFiles = new LinkedHashMap<>();
+        Map<String, List<String>> workspaceDeletedFiles = new LinkedHashMap<>();
+
+        // Get all workspace packages
+        List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
+
+        for (Project packageProject : workspaceProjects) {
+            String packageName = packageProject.currentPackage().packageName().value();
+            Path packagePath = packageProject.sourceRoot();
+
+            // Process incremental changes for this package
+            Map<String, Object> packageChanges = processIncrementalChanges(packageProject, workspaceManager,
+                    packagePath);
+
+            if (!packageChanges.isEmpty()) {
+                @SuppressWarnings("unchecked")
+                Map<String, Map<String, Object>> modifiedFiles =
+                    (Map<String, Map<String, Object>>) packageChanges.get("modifiedFiles");
+                @SuppressWarnings("unchecked")
+                List<String> deletedFiles = (List<String>) packageChanges.get("deletedFiles");
+
+                if (modifiedFiles != null && !modifiedFiles.isEmpty()) {
+                    workspaceModifiedFiles.put(packageName, modifiedFiles);
+                }
+                if (deletedFiles != null && !deletedFiles.isEmpty()) {
+                    workspaceDeletedFiles.put(packageName, deletedFiles);
+                }
+            }
+        }
+
+        // Only add to response if there are changes
+        if (!workspaceModifiedFiles.isEmpty()) {
+            workspaceChangesResponse.put("modifiedFiles", workspaceModifiedFiles);
+        }
+        if (!workspaceDeletedFiles.isEmpty()) {
+            workspaceChangesResponse.put("deletedFiles", workspaceDeletedFiles);
+        }
+
+        return workspaceChangesResponse;
+    }
+
+    /**
+     * Processes full workspace codemap and returns consolidated markdown content for all packages.
+     *
+     * @param project the Ballerina workspace project
+     * @param workspaceManager the workspace manager
+     * @return consolidated workspace markdown content
+     */
+    public static String processFullWorkspaceCodeMap(Project project, WorkspaceManager workspaceManager) {
+        // Generate full workspace codemap
+        Map<String, Map<String, CodeMapFile>> workspaceCodeMap = generateWorkspaceCodeMap(project, workspaceManager);
+
+        // Convert to consolidated workspace markdown
+        return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap);
     }
 }

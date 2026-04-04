@@ -594,6 +594,57 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
+     * Generates consolidated markdown for all packages in a workspace.
+     *
+     * @param workspaceCodeMap a map of package names to their code map files
+     * @return the generated consolidated markdown string for the workspace
+     */
+    public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap) {
+        if (workspaceCodeMap == null || workspaceCodeMap.isEmpty()) {
+            return "# Workspace Code Map\n\nNo packages found in workspace.";
+        }
+
+        List<String> lines = new ArrayList<>();
+        lines.add("# Workspace Code Map");
+        lines.add("");
+        lines.add("This document contains the code map for all packages in the Ballerina workspace.");
+
+        // Process each package in the workspace
+        for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
+            String packageName = packageEntry.getKey();
+            Map<String, CodeMapFile> packageFiles = packageEntry.getValue();
+
+            if (packageFiles.isEmpty()) {
+                continue;
+            }
+
+            // Add package header
+            lines.add("");
+            lines.add("---");
+            lines.add("");
+            lines.add("# Package: " + packageName);
+            lines.add("");
+
+            // Generate markdown for this package using existing method
+            String packageMarkdown = generateMarkdown(packageFiles);
+
+            // Remove the first line ("# Code Map") from package markdown to avoid duplicate headers
+            String[] packageLines = packageMarkdown.split("\n");
+            boolean skipFirstHeader = false;
+            for (String line : packageLines) {
+                if (!skipFirstHeader && line.trim().equals("# Code Map")) {
+                    skipFirstHeader = true;
+                    continue;
+                }
+                lines.add(line);
+            }
+        }
+
+        lines.add("");
+        return String.join("\n", lines);
+    }
+
+    /**
      * Helper class to group artifacts by type.
      */
     private static class ArtifactGroups {
