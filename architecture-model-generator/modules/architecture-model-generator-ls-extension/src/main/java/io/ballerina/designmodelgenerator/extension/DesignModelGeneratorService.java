@@ -33,8 +33,8 @@ import io.ballerina.designmodelgenerator.extension.response.GetDesignModelRespon
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
-import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.common.utils.PathUtil;
+import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.LanguageServerContext;
 import org.ballerinalang.langserver.commons.service.spi.ExtendedLanguageServerService;
 import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
@@ -152,7 +152,6 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
             return response;
         });
     }
-
 
     @JsonRequest
     public CompletableFuture<ProjectInfoResponse> projectInfo(ProjectInfoRequest request) {
