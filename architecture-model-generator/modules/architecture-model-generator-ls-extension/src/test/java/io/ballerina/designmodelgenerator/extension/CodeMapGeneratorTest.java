@@ -73,10 +73,6 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
         // Save debugging files for workspace test
         saveDebuggingFiles(workspaceSource, workspaceResponse);
-
-        // Test with a single package project (if available) - would need a non-workspace test source
-        // For now, we can verify that workspace detection works correctly
-        System.out.println("Workspace detection test completed successfully");
     }
 
     @Override
@@ -114,7 +110,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
             Files.writeString(markdownFile, markdownContent);
         } catch (IOException e) {
             // Log but don't fail the test for debugging file issues
-            log.warn("Failed to save debugging files for project: " + projectName, e);
+            log.warn("Failed to save debugging files for project: {}", projectName, e);
         }
     }
 
