@@ -18,30 +18,21 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Imports
 
 
-- ballerina/log
-  - **Line Range**: (0:0-0:21)
+- ballerina/log [L:1 - L:1]
 
-- ballerinax/googleapis.sheets as sheets
-  - **Line Range**: (1:0-1:46)
+- ballerinax/googleapis.sheets as sheets [L:2 - L:2]
 
 ### Variables
 
 
-- columns
-  - **Type**: SheetRow
-  - **Line Range**: (4:0-4:119)
+- columns [L:5 - L:5]
 
-- currentTimeStamp
-  - **Type**: string
-  - **Line Range**: (5:0-5:63)
+- currentTimeStamp [L:6 - L:6]
 
 ### Automations (Entry Points)
 
 
-- public function main
-  - **Parameters**: none
-  - **Returns**: [error?]
-  - **Line Range**: (7:0-74:1)
+- public function main() returns error? [L:8 - L:75]
 
 ---
 
@@ -50,33 +41,20 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Configurables
 
 
-- configurable salesforceConfig
-  - **Type**: record {|string refreshToken; string clientId; string clientSecret; string refreshUrl; string baseUrl; anydata...;|} & readonly
-  - **Line Range**: (0:0-6:23)
+- configurable salesforceConfig [L:1 - L:7]
 
-- configurable googleConfig
-  - **Type**: record {|string refreshToken; string clientId; string clientSecret; anydata...;|} & readonly
-  - **Line Range**: (8:0-12:19)
+- configurable googleConfig [L:9 - L:13]
 
-- configurable timezone
-  - **Type**: string
-  - **Line Range**: (14:0-14:46)
+- configurable timezone [L:15 - L:15]
 
-- configurable spreadsheetId
-  - **Type**: string? & readonly
-  - **Line Range**: (15:0-15:40)
+- configurable spreadsheetId [L:16 - L:16]
 
-- configurable timeFrame
-  - **Type**: TimeFrame & readonly
-  - **Line Range**: (25:0-25:41)
+- configurable timeFrame [L:26 - L:26]
 
 ### Types
 
 
-- type TimeFrame
-  - **Type Descriptor**: enum
-  - **Fields**: [YESTERDAY, LAST_WEEK, LAST_MONTH, LAST_QUARTER, ALL]
-  - **Line Range**: (17:0-23:2)
+- type TimeFrame enum [L:18 - L:24]
 
 ---
 
@@ -85,22 +63,16 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Imports
 
 
-- ballerinax/salesforce
-  - **Line Range**: (0:0-0:29)
+- ballerinax/salesforce [L:1 - L:1]
 
-- ballerinax/googleapis.sheets as sheets
-  - **Line Range**: (1:0-1:46)
+- ballerinax/googleapis.sheets as sheets [L:2 - L:2]
 
 ### Variables
 
 
-- final salesforceClient
-  - **Type**: salesforce:Client
-  - **Line Range**: (3:0-11:3)
+- final salesforceClient [L:4 - L:12]
 
-- final sheetsClient
-  - **Type**: sheets:Client
-  - **Line Range**: (13:0-20:3)
+- final sheetsClient [L:14 - L:21]
 
 ---
 
@@ -109,10 +81,7 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Functions
 
 
-- function mapOpportunityToRow
-  - **Parameters**: [account: Opportunity]
-  - **Returns**: [SheetRow]
-  - **Line Range**: (1:0-12:2)
+- function mapOpportunityToRow(account: Opportunity) returns SheetRow [L:2 - L:13]
 
 ---
 
@@ -121,16 +90,12 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Imports
 
 
-- ballerina/time
-  - **Line Range**: (0:0-0:22)
+- ballerina/time [L:1 - L:1]
 
 ### Functions
 
 
-- function getFormattedCurrentTimeStamp
-  - **Parameters**: none
-  - **Returns**: [string|error]
-  - **Line Range**: (2:0-10:1)
+- function getFormattedCurrentTimeStamp() returns string|error [L:3 - L:11]
 
 ---
 
@@ -143,16 +108,8 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Types
 
 
-- type Attributes
-  - **Type Descriptor**: record
-  - **Fields**: ['type: string?, url: string?]
-  - **Line Range**: (1:0-4:3)
+- type Attributes record [L:2 - L:5]
 
-- type Opportunity
-  - **Type Descriptor**: record
-  - **Fields**: [attributes: Attributes, Id: string?, AccountId: string?, OwnerId: string?, Name: string?, StageName: string?, Amount: decimal?, Probability: decimal?, ExpectedRevenue: decimal?, CloseDate: string?, Type: string?, LeadSource: string?, Description: string?, ContactId: string?, CampaignId: string?, Pricebook2Id: string?, NextStep: string?, TotalOpportunityQuantity: decimal?, IsClosed: boolean?, IsWon: boolean?, IsDeleted: boolean?, IsPrivate: boolean?, ForecastCategory: string?, ForecastCategoryName: string?, HasOpportunityLineItem: boolean?, HasOpenActivity: boolean?, HasOverdueTask: boolean?, PushCount: int?, FiscalYear: int?, FiscalQuarter: int?, Fiscal: string?, LastStageChangeDate: string?, LastActivityDate: string?, LastAmountChangedHistoryId: string?, LastCloseDateChangedHistoryId: string?, CreatedDate: string?, CreatedById: string?, LastModifiedDate: string?, LastModifiedById: string?, LastViewedDate: string?, LastReferencedDate: string?]
-  - **Line Range**: (6:0-48:2)
+- type Opportunity record [L:7 - L:49]
 
-- type SheetRow
-  - **Type Descriptor**: (int|string|decimal|boolean|float)[]
-  - **Line Range**: (50:0-50:51)
+- type SheetRow (int|string|decimal|boolean|float)[] [L:51 - L:51]

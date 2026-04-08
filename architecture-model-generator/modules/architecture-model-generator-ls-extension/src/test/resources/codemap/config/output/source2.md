@@ -22,10 +22,7 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Functions
 
 
-- public function hello
-  - **Parameters**: [name: string?]
-  - **Returns**: [string]
-  - **Line Range**: (0:0-5:1)
+- public function hello(name: string?) returns string [L:1 - L:6]
 
 ---
 
@@ -47,16 +44,11 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ### Imports
 
 
-- ballerina/io
-  - **Line Range**: (0:0-0:20)
+- ballerina/io [L:1 - L:1]
 
-- wso2/utils
-  - **Line Range**: (1:0-1:18)
+- wso2/utils [L:2 - L:2]
 
 ### Automations (Entry Points)
 
 
-- public function main
-  - **Parameters**: none
-  - **Returns**: ()
-  - **Line Range**: (3:0-6:1)
+- public function main() [L:4 - L:7]
