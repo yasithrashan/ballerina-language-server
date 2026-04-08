@@ -531,11 +531,12 @@ public class CodeMapMarkdownGenerator {
         // Build function signature
         StringBuilder signature = new StringBuilder(indent).append("- ");
         if (isResource) {
+            signature.append("resource function ");
             String accessor = getPropertyAsString(artifact, "accessor", "");
             if (!accessor.isEmpty()) {
                 signature.append(accessor).append(" ");
             }
-            signature.append("resource function ").append(artifact.name());
+            signature.append(artifact.name());
         } else {
             signature.append(modifiersPrefix(artifact)).append("function ").append(artifact.name());
         }
