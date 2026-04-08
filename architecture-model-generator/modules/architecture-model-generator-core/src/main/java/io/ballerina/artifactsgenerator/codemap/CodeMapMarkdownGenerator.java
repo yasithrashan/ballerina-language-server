@@ -199,8 +199,8 @@ public class CodeMapMarkdownGenerator {
             if (alias != null) {
                 entry.append(" as ").append(alias);
             }
+            entry.append(getInlineRange(artifact));
             lines.add(entry.toString());
-            pushLineRange(lines, "  ", artifact);
         }
     }
 
@@ -215,10 +215,11 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- configurable " + artifact.name());
-            pushSubItem(lines, "  ", "Type", getPropertyAsString(artifact, "type", ""));
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            lines.add("- configurable " + artifact.name() + getInlineRange(artifact));
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
         }
     }
 
@@ -233,10 +234,12 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- " + modifiersPrefix(artifact) + artifact.name());
-            pushSubItem(lines, "  ", "Type", getPropertyAsString(artifact, "type", ""));
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
+
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
         }
     }
 
@@ -251,16 +254,19 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- type " + artifact.name());
-            pushSubItem(lines, "  ", "Type Descriptor", getPropertyAsString(artifact, "typeDescriptor", ""));
-
-            List<String> fields = getPropertyAsStringList(artifact, "fields");
-            if (!fields.isEmpty()) {
-                pushSubItemBracket(lines, "  ", "Fields", String.join(", ", fields));
+            String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
+            StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact))
+                .append("type ").append(artifact.name());
+            if (!typeDescriptor.isEmpty()) {
+                typeLine.append(" ").append(typeDescriptor);
             }
 
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            lines.add("- " + typeLine + getInlineRange(artifact));
+
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
         }
     }
 
@@ -274,7 +280,29 @@ public class CodeMapMarkdownGenerator {
         lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            renderSingleFunction(lines, artifact, "", false);
+            lines.add("");
+            StringBuilder signature = new StringBuilder(modifiersPrefix(artifact))
+                .append("function ").append(artifact.name());
+            String params = parametersInline(artifact);
+            String returns = getPropertyAsString(artifact, "returns", "()");
+
+            // Always add parentheses, no space before opening parenthesis
+            signature.append("(");
+            if (!params.isEmpty()) {
+                signature.append(params);
+            }
+            signature.append(")");
+
+            if (!"()".equals(returns)) {
+                signature.append(" returns ").append(returns);
+            }
+
+            lines.add("- " + signature + getInlineRange(artifact));
+
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
         }
     }
 
@@ -303,16 +331,17 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- listener " + artifact.name());
-            pushSubItem(lines, "  ", "Type", getPropertyAsString(artifact, "type", ""));
-
-            List<String> args = getPropertyAsStringList(artifact, "arguments");
-            if (!args.isEmpty()) {
-                pushSubItemBracket(lines, "  ", "Arguments", String.join(", ", args));
+            StringBuilder listenerLine = new StringBuilder("- listener ").append(artifact.name());
+            String type = getPropertyAsString(artifact, "type", "");
+            if (!type.isEmpty()) {
+                listenerLine.append(" : ").append(type);
             }
+            lines.add(listenerLine + getInlineRange(artifact));
 
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
         }
     }
 
@@ -327,10 +356,12 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- " + modifiersPrefix(artifact) + artifact.name());
-            pushSubItem(lines, "  ", "Type", getPropertyAsString(artifact, "type", ""));
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
+
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
         }
     }
 
@@ -345,12 +376,20 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- " + modifiersPrefix(artifact) + "service " + artifact.name());
-            pushSubItem(lines, "  ", "Base Path", getPropertyAsString(artifact, "basePath", ""));
-            pushSubItem(lines, "  ", "Listener Type", getPropertyAsString(artifact, "listenerType", ""));
-            pushSubItem(lines, "  ", "Port", getPropertyAsString(artifact, "port", ""));
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            StringBuilder serviceLine = new StringBuilder("- ")
+                .append(modifiersPrefix(artifact))
+                .append("service ")
+                .append(artifact.name());
+            String basePath = getPropertyAsString(artifact, "basePath", "");
+            if (!basePath.isEmpty()) {
+                serviceLine.append(" on ").append(basePath);
+            }
+            lines.add(serviceLine + getInlineRange(artifact));
+
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
 
             if (!artifact.children().isEmpty()) {
                 renderServiceChildren(lines, artifact.children());
@@ -379,9 +418,14 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact field : fields) {
             lines.add("");
-            lines.add("  - " + modifiersPrefix(field) + field.name());
-            pushSubItem(lines, "    ", "Type", getPropertyAsString(field, "type", ""));
-            pushLineRange(lines, "    ", field);
+            StringBuilder fieldLine = new StringBuilder("  - ")
+                .append(modifiersPrefix(field))
+                .append(field.name());
+            String type = getPropertyAsString(field, "type", "");
+            if (!type.isEmpty()) {
+                fieldLine.append(" : ").append(type);
+            }
+            lines.add(fieldLine + getInlineRange(field));
         }
 
         for (CodeMapArtifact fn : resourceFns) {
@@ -404,9 +448,12 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact artifact : artifacts) {
             lines.add("");
-            lines.add("- " + modifiersPrefix(artifact) + "class " + artifact.name());
-            pushSubItem(lines, "  ", "Description", getPropertyAsString(artifact, "documentation", ""));
-            pushLineRange(lines, "  ", artifact);
+            lines.add("- " + modifiersPrefix(artifact) + "class " + artifact.name() + getInlineRange(artifact));
+
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("    - documentation: " + doc);
+            }
 
             if (!artifact.children().isEmpty()) {
                 renderClassChildren(lines, artifact.children());
@@ -440,9 +487,14 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact field : fields) {
             lines.add("");
-            lines.add("  - " + modifiersPrefix(field) + field.name());
-            pushSubItem(lines, "    ", "Type", getPropertyAsString(field, "type", ""));
-            pushLineRange(lines, "    ", field);
+            StringBuilder fieldLine = new StringBuilder("  - ")
+                .append(modifiersPrefix(field))
+                .append(field.name());
+            String type = getPropertyAsString(field, "type", "");
+            if (!type.isEmpty()) {
+                fieldLine.append(" : ").append(type);
+            }
+            lines.add(fieldLine + getInlineRange(field));
         }
 
         for (CodeMapArtifact fn : regularFns) {
@@ -474,41 +526,43 @@ public class CodeMapMarkdownGenerator {
 
     private static void renderSingleFunction(List<String> lines, CodeMapArtifact artifact,
                                               String indent, boolean isResource) {
-        String subIndent = indent + "  ";
-
         lines.add("");
 
-        // Title line
+        // Build function signature
+        StringBuilder signature = new StringBuilder(indent).append("- ");
         if (isResource) {
             String accessor = getPropertyAsString(artifact, "accessor", "");
-            String accessorPrefix = accessor.isEmpty() ? "" : accessor + " ";
-            String title = indent + "- " + accessorPrefix + "resource function " + artifact.name();
-            lines.add(title);
+            if (!accessor.isEmpty()) {
+                signature.append(accessor).append(" ");
+            }
+            signature.append("resource function ").append(artifact.name());
         } else {
-            lines.add(indent + "- " + modifiersPrefix(artifact) + "function " + artifact.name());
+            signature.append(modifiersPrefix(artifact)).append("function ").append(artifact.name());
         }
 
-        // Parameters
+        // Add parameters - always add parentheses, no space before opening parenthesis
         String params = parametersInline(artifact);
-        if (params.isEmpty()) {
-            lines.add(subIndent + "- **Parameters**: none");
-        } else {
-            lines.add(subIndent + "- **Parameters**: [" + params + "]");
+        signature.append("(");
+        if (!params.isEmpty()) {
+            signature.append(params);
+        }
+        signature.append(")");
+
+        // Add returns
+        String returns = getPropertyAsString(artifact, "returns", "()");
+        if (!"()".equals(returns)) {
+            signature.append(" returns ").append(returns);
         }
 
-        // Returns
-        String returns = getPropertyAsString(artifact, "returns", "()");
-        if ("()".equals(returns)) {
-            lines.add(subIndent + "- **Returns**: ()");
-        } else {
-            lines.add(subIndent + "- **Returns**: [" + returns + "]");
-        }
+        // Add line range
+        signature.append(getInlineRange(artifact));
+        lines.add(signature.toString());
 
         // Documentation (optional)
-        pushSubItem(lines, subIndent, "Description", getPropertyAsString(artifact, "documentation", ""));
-
-        // Line Range
-        pushLineRange(lines, subIndent, artifact);
+        String doc = getPropertyAsString(artifact, "documentation", "");
+        if (!doc.isEmpty()) {
+            lines.add(indent + "    - documentation: " + doc);
+        }
     }
 
     // Helper methods
@@ -517,7 +571,6 @@ public class CodeMapMarkdownGenerator {
         return value != null ? value.toString() : fallback;
     }
 
-    @SuppressWarnings("unchecked")
     private static List<String> getPropertyAsStringList(CodeMapArtifact artifact, String key) {
         Object value = artifact.properties().get(key);
         if (value instanceof List) {
@@ -569,28 +622,15 @@ public class CodeMapMarkdownGenerator {
         if (range == null) {
             return "";
         }
-        return String.format("(%d:%d-%d:%d)",
-            range.getStart().getLine(), range.getStart().getCharacter(),
-            range.getEnd().getLine(), range.getEnd().getCharacter());
+        return String.format("[L:%d - L:%d]",
+            range.getStart().getLine() + 1,
+            range.getEnd().getLine() + 1);
     }
 
-    private static void pushSubItem(List<String> lines, String indent, String label, String value) {
-        if (value != null && !value.isEmpty()) {
-            lines.add(indent + "- **" + label + "**: " + value);
-        }
-    }
 
-    private static void pushSubItemBracket(List<String> lines, String indent, String label, String value) {
-        if (value != null && !value.isEmpty()) {
-            lines.add(indent + "- **" + label + "**: [" + value + "]");
-        }
-    }
-
-    private static void pushLineRange(List<String> lines, String indent, CodeMapArtifact artifact) {
+    private static String getInlineRange(CodeMapArtifact artifact) {
         String range = formatRange(artifact);
-        if (!range.isEmpty()) {
-            lines.add(indent + "- **Line Range**: " + range);
-        }
+        return range.isEmpty() ? "" : " " + range;
     }
 
     /**
