@@ -133,7 +133,7 @@ public class CodeMapGenerator {
 
         // Handle syntax errors first
         if (syntaxTree.hasDiagnostics()) {
-            List<CodeMapArtifact> syntaxErrorArtifacts = createSyntaxErrorArtifacts(syntaxTree.diagnostics());
+            List<CodeMapArtifact> syntaxErrorArtifacts = createSyntaxErrorArtifacts(syntaxTree.diagnostics(), syntaxTree);
             artifacts.addAll(syntaxErrorArtifacts);
         }
 
@@ -169,25 +169,66 @@ public class CodeMapGenerator {
     }
 
     private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics) {
+        return createSyntaxErrorArtifacts(diagnostics, null);
+    }
+
+    private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics, SyntaxTree syntaxTree) {
         List<CodeMapArtifact> syntaxErrorArtifacts = new ArrayList<>();
 
         for (Diagnostic diagnostic : diagnostics) {
-            // Create a dummy node for the artifact builder since we don't have the actual problematic node
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("diagnosticMessage", diagnostic.message());
+            properties.put("severity", diagnostic.diagnosticInfo().severity().toString());
+            properties.put("code", diagnostic.diagnosticInfo().code());
+
+            // Extract raw source code for the error lines if syntax tree is available
+            if (syntaxTree != null) {
+                String rawCode = extractRawCodeFromDiagnostic(diagnostic, syntaxTree);
+                if (rawCode != null && !rawCode.trim().isEmpty()) {
+                    properties.put("rawCode", rawCode);
+                }
+            }
+
             CodeMapArtifact syntaxErrorArtifact = new CodeMapArtifact(
                 "Syntax Error",
                 "SYNTAX_ERROR",
                 CodeMapArtifact.toRange(diagnostic.location().lineRange()),
-                Map.of(
-                    "diagnosticMessage", diagnostic.message(),
-                    "severity", diagnostic.diagnosticInfo().severity().toString(),
-                    "code", diagnostic.diagnosticInfo().code()
-                ),
+                properties,
                 Collections.emptyList()
             );
             syntaxErrorArtifacts.add(syntaxErrorArtifact);
         }
 
         return syntaxErrorArtifacts;
+    }
+
+    private static String extractRawCodeFromDiagnostic(Diagnostic diagnostic, SyntaxTree syntaxTree) {
+        try {
+            String sourceText = syntaxTree.toSourceCode();
+            String[] lines = sourceText.split("\\r?\\n");
+
+            int startLine = diagnostic.location().lineRange().startLine().line();
+            int endLine = diagnostic.location().lineRange().endLine().line();
+
+            // Ensure line numbers are within bounds
+            if (startLine < 0 || startLine >= lines.length) {
+                return null;
+            }
+
+            // Extract the relevant lines (convert from 0-based to 1-based indexing)
+            StringBuilder codeBuilder = new StringBuilder();
+            for (int i = startLine; i <= Math.min(endLine, lines.length - 1); i++) {
+                if (i > startLine) {
+                    codeBuilder.append("\n");
+                }
+                codeBuilder.append(lines[i]);
+            }
+
+            return codeBuilder.toString().trim();
+        } catch (Exception e) {
+            // If extraction fails, return null
+            return null;
+        }
     }
 
     private static CodeMapArtifact createGeneralSyntaxErrorArtifact(String errorMessage) {

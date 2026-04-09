@@ -145,6 +145,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             String diagnosticMessage = getPropertyAsString(artifact, "diagnosticMessage", "");
             String errorMessage = getPropertyAsString(artifact, "errorMessage", "");
+            String rawCode = getPropertyAsString(artifact, "rawCode", "");
 
             StringBuilder issueDescription = new StringBuilder();
             issueDescription.append("- ");
@@ -162,6 +163,13 @@ public class CodeMapMarkdownGenerator {
             issueDescription.append(getInlineRange(artifact));
 
             lines.add(issueDescription.toString());
+
+            // Add raw code if available
+            if (!rawCode.isEmpty()) {
+                lines.add("  ```");
+                lines.add("  " + rawCode);
+                lines.add("  ```");
+            }
         }
     }
 
