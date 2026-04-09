@@ -15,18 +15,39 @@ Each artifact is listed with its sub-properties on separate indented lines.
 
 
 - missing returns keyword [L:4 - L:4]
+  ```
+  io:println("Hello, World!");
+  ```
 
 - missing open brace token [L:4 - L:4]
+  ```
+  io:println("Hello, World!");
+  ```
 
 - invalid expression statement [L:4 - L:4]
+  ```
+  io:println("Hello, World!");
+  ```
 
 - missing error keyword [L:9 - L:9]
+  ```
+  funnction  greetUser(){
+  ```
 
 - missing equal token [L:9 - L:9]
+  ```
+  funnction  greetUser(){
+  ```
 
 - missing close brace token [L:10 - L:10]
+  ```
+  io:println("Welcome to Ballerina!");
+  ```
 
 - invalid token '}' [L:11 - L:11]
+  ```
+  }
+  ```
 
 ### Imports
 
