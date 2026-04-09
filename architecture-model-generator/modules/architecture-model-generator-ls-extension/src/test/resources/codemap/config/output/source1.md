@@ -108,9 +108,9 @@ Each artifact is listed with its sub-properties on separate indented lines.
 
 - service /v1 on /v1 [L:20 - L:59]
 
-  - post resource function orders(payload: OrderCreatePayload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
+  - resource function post orders(payload: OrderCreatePayload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
 
-  - get resource function orders/[string orderId]() returns Order|http:NotFound|http:InternalServerError [L:49 - L:58]
+  - resource function get orders/[string orderId]() returns Order|http:NotFound|http:InternalServerError [L:49 - L:58]
 
 ---
 

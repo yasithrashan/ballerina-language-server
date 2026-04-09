@@ -218,7 +218,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("- configurable " + artifact.name() + getInlineRange(artifact));
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
         }
     }
@@ -238,7 +238,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
         }
     }
@@ -265,7 +265,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
         }
     }
@@ -301,7 +301,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
         }
     }
@@ -340,7 +340,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
         }
     }
@@ -360,7 +360,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
         }
     }
@@ -388,7 +388,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
 
             if (!artifact.children().isEmpty()) {
@@ -452,7 +452,7 @@ public class CodeMapMarkdownGenerator {
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - documentation: " + doc);
+                lines.add("    - description: " + doc);
             }
 
             if (!artifact.children().isEmpty()) {
@@ -562,7 +562,7 @@ public class CodeMapMarkdownGenerator {
         // Documentation (optional)
         String doc = getPropertyAsString(artifact, "documentation", "");
         if (!doc.isEmpty()) {
-            lines.add(indent + "    - documentation: " + doc);
+            lines.add(indent + "    - description: " + doc);
         }
     }
 
