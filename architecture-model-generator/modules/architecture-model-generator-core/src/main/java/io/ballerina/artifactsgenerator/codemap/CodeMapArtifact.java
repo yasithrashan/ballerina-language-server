@@ -47,6 +47,9 @@ public record CodeMapArtifact(String name, String type, Range range,
     private static final String MODIFIERS = "modifiers";
     private static final String DOCUMENTATION = "documentation";
     private static final String COMMENT = "comment";
+    private static final String HAS_ERROR = "hasError";
+    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String ORIGINAL_TEXT = "originalText";
 
 
     /**
@@ -126,6 +129,18 @@ public record CodeMapArtifact(String name, String type, Range range,
 
         public Builder comment(String comment) {
             return addProperty(COMMENT, comment);
+        }
+
+        public Builder hasError(boolean hasError) {
+            return addProperty(HAS_ERROR, hasError);
+        }
+
+        public Builder errorMessage(String errorMessage) {
+            return addProperty(ERROR_MESSAGE, errorMessage);
+        }
+
+        public Builder originalText(String originalText) {
+            return addProperty(ORIGINAL_TEXT, originalText);
         }
 
 

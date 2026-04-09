@@ -27,6 +27,7 @@ import io.ballerina.projects.Module;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectKind;
+import io.ballerina.tools.diagnostics.Diagnostic;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 
@@ -129,6 +130,13 @@ public class CodeMapGenerator {
                                                                         SemanticModel semanticModel,
                                                                         ModuleInfo moduleInfo) {
         List<CodeMapArtifact> artifacts = new ArrayList<>();
+
+        // Handle syntax errors first
+        if (syntaxTree.hasDiagnostics()) {
+            List<CodeMapArtifact> syntaxErrorArtifacts = createSyntaxErrorArtifacts(syntaxTree.diagnostics());
+            artifacts.addAll(syntaxErrorArtifacts);
+        }
+
         if (!syntaxTree.containsModulePart()) {
             return artifacts;
         }
@@ -137,19 +145,84 @@ public class CodeMapGenerator {
         CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer(projectPath, semanticModel,
                 moduleInfo);
 
-        // Process imports
-        rootNode.imports().stream()
-                .map(importNode -> importNode.apply(codeMapNodeTransformer))
-                .flatMap(Optional::stream)
-                .forEach(artifacts::add);
+        try {
+            // Process imports - filter out malformed ones
+            rootNode.imports().stream()
+                    .filter(importNode -> !hasErrorInNode(importNode))
+                    .map(importNode -> importNode.apply(codeMapNodeTransformer))
+                    .flatMap(Optional::stream)
+                    .forEach(artifacts::add);
 
-        // Process other members (functions, services, types, etc.)
-        rootNode.members().stream()
-                .map(member -> member.apply(codeMapNodeTransformer))
-                .flatMap(Optional::stream)
-                .forEach(artifacts::add);
+            // Process other members (functions, services, types, etc.) - filter out malformed ones
+            rootNode.members().stream()
+                    .filter(member -> !hasErrorInNode(member))
+                    .map(member -> member.apply(codeMapNodeTransformer))
+                    .flatMap(Optional::stream)
+                    .forEach(artifacts::add);
+        } catch (Exception e) {
+            // If processing fails due to severe syntax errors, create a general error artifact
+            CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact(e.getMessage());
+            artifacts.add(errorArtifact);
+        }
 
         return artifacts;
+    }
+
+    private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics) {
+        List<CodeMapArtifact> syntaxErrorArtifacts = new ArrayList<>();
+
+        for (Diagnostic diagnostic : diagnostics) {
+            // Create a dummy node for the artifact builder since we don't have the actual problematic node
+            CodeMapArtifact syntaxErrorArtifact = new CodeMapArtifact(
+                "Syntax Error",
+                "SYNTAX_ERROR",
+                CodeMapArtifact.toRange(diagnostic.location().lineRange()),
+                Map.of(
+                    "diagnosticMessage", diagnostic.message(),
+                    "severity", diagnostic.diagnosticInfo().severity().toString(),
+                    "code", diagnostic.diagnosticInfo().code()
+                ),
+                Collections.emptyList()
+            );
+            syntaxErrorArtifacts.add(syntaxErrorArtifact);
+        }
+
+        return syntaxErrorArtifacts;
+    }
+
+    private static CodeMapArtifact createGeneralSyntaxErrorArtifact(String errorMessage) {
+        return new CodeMapArtifact(
+            "Parsing Error",
+            "SYNTAX_ERROR",
+            null, // No specific range available
+            Map.of("errorMessage", "Failed to parse file: " + errorMessage),
+            Collections.emptyList()
+        );
+    }
+
+    private static boolean hasErrorInNode(io.ballerina.compiler.syntax.tree.Node node) {
+        if (node == null) {
+            return true;
+        }
+
+        // Check if the node has diagnostics
+        if (node.hasDiagnostics()) {
+            return true;
+        }
+
+        // Check if the node's text representation contains error markers
+        String nodeText = node.toString();
+        if (nodeText.contains("MISSING") || nodeText.contains("[error]")) {
+            return true;
+        }
+
+        // Try to get source code - if it fails, likely an error node
+        try {
+            String sourceText = node.toSourceCode();
+            return sourceText.contains("MISSING") || sourceText.contains("[error]");
+        } catch (RuntimeException e) {
+            return true; // If we can't get source code, assume there's an error
+        }
     }
 
     private static String getRelativeFilePath(Module module, String fileName) {
