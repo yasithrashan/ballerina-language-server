@@ -49,6 +49,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
 
     private final PublishCodeMapSubscriber publishCodeMapSubscriber = new PublishCodeMapSubscriber();
 
+    // Test subscriber tracks changes and codeMap API returns correct response with changesOnly=true
     @Override
     @Test(dataProvider = "data-provider")
     public void test(Path config) throws IOException {
@@ -101,6 +102,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         }
     }
 
+    // Test codeMap returns empty when no changes are tracked
     @Test
     public void testNoChangesTracked() throws IOException {
         // Clear any previously tracked files
@@ -118,6 +120,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 "Expected empty files response when no changes are tracked");
     }
 
+    // Test subscriber responds to PROJECT_UPDATE events
     @Test
     public void testSubscriberEventKind() {
         Assert.assertEquals(publishCodeMapSubscriber.eventKind(),
@@ -125,6 +128,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 "Subscriber should respond to PROJECT_UPDATE events");
     }
 
+    // Test subscriber name matches expected value
     @Test
     public void testSubscriberName() {
         Assert.assertEquals(publishCodeMapSubscriber.getName(),
@@ -132,6 +136,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 "Subscriber name should match");
     }
 
+    // Test AI URI files are not tracked
     @Test
     public void testSkipsAiUri() throws IOException {
         // Test that AI URI files are skipped
@@ -159,6 +164,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         Assert.assertTrue(trackedFiles.isEmpty(), "AI URI files should not be tracked");
     }
 
+    // Test expr URI files are not tracked
     @Test
     public void testSkipsExprUri() throws IOException {
         // Test that expr URI files are skipped
@@ -186,6 +192,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         Assert.assertTrue(trackedFiles.isEmpty(), "Expr URI files should not be tracked");
     }
 
+    // Test only didChange and didOpen operations are tracked
     @Test
     public void testSkipsNonTrackedOperations() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
@@ -214,6 +221,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         Assert.assertTrue(trackedFiles.isEmpty(), "Non-tracked operations should not track files");
     }
 
+    // Test didOpen events are tracked
     @Test
     public void testTracksDidOpenEvents() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
@@ -246,6 +254,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
+    // Test both didChange and didOpen events are tracked
     @Test
     public void testTracksBothDidChangeAndDidOpenEvents() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
@@ -283,6 +292,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
+    // Test multiple files are tracked in same project
     @Test
     public void testMultipleFileAccumulation() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
@@ -320,6 +330,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
+    // Test same file is tracked only once despite multiple events
     @Test
     public void testConsecutiveEventsForSameFile() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
@@ -349,6 +360,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
     }
 
+    // Test files with same name in different modules are tracked separately
     @Test
     public void testSameFileNameInDifferentModulesTrackedSeparately() {
         // Negative test: changing root types.bal should NOT track modules/mod1/types.bal
@@ -374,6 +386,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         tracker.clearModifiedFiles(projectKey);
     }
 
+    // Test tracked changes are cleared after codeMap API call
     @Test
     public void testStateClearingAfterRetrieval() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
@@ -404,6 +417,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
                 "Second call should return empty as changes were consumed by first call");
     }
 
+    // Test changes in one project don't leak into another
     @Test
     public void testProjectIsolation() {
         // Test that changes in one project do not leak into another project
