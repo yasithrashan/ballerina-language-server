@@ -33,6 +33,7 @@ import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -171,12 +172,12 @@ public class CodeMapGenerator {
     }
 
     /**
-     * Processes incremental changes and returns a response map containing modified and deleted files.
+     * Processes incremental changes and returns a response map containing modified files.
      *
      * @param project the Ballerina project
      * @param workspaceManager the workspace manager
      * @param projectPath the project path
-     * @return response map with modifiedFiles and deletedFiles
+     * @return response map with modifiedFiles
      */
     public static Map<String, Object> processIncrementalChanges(Project project, WorkspaceManager workspaceManager,
                                                                 Path projectPath) {
@@ -185,10 +186,9 @@ public class CodeMapGenerator {
 
         // Get tracked changes
         List<String> modifiedFiles = tracker.getModifiedFiles(projectKey);
-        List<String> deletedFiles = tracker.getDeletedFiles(projectKey);
 
         // No changes detected
-        if (modifiedFiles.isEmpty() && deletedFiles.isEmpty()) {
+        if (modifiedFiles.isEmpty()) {
             return java.util.Collections.emptyMap();
         }
 
@@ -210,7 +210,7 @@ public class CodeMapGenerator {
         // Build response with changes structure
         Map<String, Object> changesResponse = new LinkedHashMap<>();
         changesResponse.put("modifiedFiles", modifiedFilesData);
-        changesResponse.put("deletedFiles", deletedFiles);
+        changesResponse.put("deletedFiles", Collections.emptyList());
 
         // Clear tracker after successful processing
         tracker.clearAllFiles(projectKey);
@@ -280,13 +280,13 @@ public class CodeMapGenerator {
     }
 
     /**
-     * Processes incremental changes for workspace and returns a response map containing modified and deleted files
+     * Processes incremental changes for workspace and returns a response map containing modified files
      * for all packages.
      *
      * @param project the Ballerina workspace project
      * @param workspaceManager the workspace manager
      * @param projectPath the project path
-     * @return response map with modifiedFiles and deletedFiles for all packages
+     * @return response map with modifiedFiles for all packages
      */
     public static Map<String, Object> processWorkspaceIncrementalChanges(Project project,
                                                                          WorkspaceManager workspaceManager,
@@ -301,7 +301,6 @@ public class CodeMapGenerator {
 
         Map<String, Object> workspaceChangesResponse = new LinkedHashMap<>();
         Map<String, Map<String, Map<String, Object>>> workspaceModifiedFiles = new LinkedHashMap<>();
-        Map<String, List<String>> workspaceDeletedFiles = new LinkedHashMap<>();
 
         // Get all workspace packages
         List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
@@ -318,14 +317,9 @@ public class CodeMapGenerator {
                 @SuppressWarnings("unchecked")
                 Map<String, Map<String, Object>> modifiedFiles =
                     (Map<String, Map<String, Object>>) packageChanges.get("modifiedFiles");
-                @SuppressWarnings("unchecked")
-                List<String> deletedFiles = (List<String>) packageChanges.get("deletedFiles");
 
                 if (modifiedFiles != null && !modifiedFiles.isEmpty()) {
                     workspaceModifiedFiles.put(packageName, modifiedFiles);
-                }
-                if (deletedFiles != null && !deletedFiles.isEmpty()) {
-                    workspaceDeletedFiles.put(packageName, deletedFiles);
                 }
             }
         }
@@ -334,9 +328,7 @@ public class CodeMapGenerator {
         if (!workspaceModifiedFiles.isEmpty()) {
             workspaceChangesResponse.put("modifiedFiles", workspaceModifiedFiles);
         }
-        if (!workspaceDeletedFiles.isEmpty()) {
-            workspaceChangesResponse.put("deletedFiles", workspaceDeletedFiles);
-        }
+        workspaceChangesResponse.put("deletedFiles", Collections.emptyMap());
 
         return workspaceChangesResponse;
     }
