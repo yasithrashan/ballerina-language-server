@@ -106,6 +106,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String TYPE_TYPE = "TYPE";
     private static final String TYPE_CLASS = "CLASS";
     private static final String TYPE_FIELD = "FIELD";
+    private static final String TYPE_SYNTAX_ERROR = "SYNTAX_ERROR";
 
 
     // Property key constants
@@ -673,4 +674,5 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
         return Optional.of(String.join(System.lineSeparator(), comments));
     }
+
 }

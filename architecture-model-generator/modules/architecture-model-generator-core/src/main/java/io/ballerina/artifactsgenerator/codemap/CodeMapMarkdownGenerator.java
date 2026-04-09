@@ -58,6 +58,7 @@ public class CodeMapMarkdownGenerator {
         categorizeArtifacts(codeMapFile.artifacts(), groups);
 
         // Render sections in order (only non-empty)
+        renderCodeIssues(lines, groups.codeIssues);
         renderImports(lines, groups.imports);
         renderConfigurables(lines, groups.configurables);
         renderVariables(lines, groups.variables);
@@ -113,6 +114,7 @@ public class CodeMapMarkdownGenerator {
             categorizeArtifacts(artifacts, groups);
 
             // Render sections in order (only non-empty)
+            renderCodeIssues(lines, groups.codeIssues);
             renderImports(lines, groups.imports);
             renderConfigurables(lines, groups.configurables);
             renderVariables(lines, groups.variables);
@@ -130,9 +132,45 @@ public class CodeMapMarkdownGenerator {
         return String.join("\n", lines);
     }
 
+    private static void renderCodeIssues(List<String> lines, List<CodeMapArtifact> artifacts) {
+        if (artifacts.isEmpty()) {
+            return;
+        }
+
+        lines.add("");
+        lines.add("### Code Issues");
+        lines.add("");
+
+        for (CodeMapArtifact artifact : artifacts) {
+            lines.add("");
+            String diagnosticMessage = getPropertyAsString(artifact, "diagnosticMessage", "");
+            String errorMessage = getPropertyAsString(artifact, "errorMessage", "");
+
+            StringBuilder issueDescription = new StringBuilder();
+            issueDescription.append("- ");
+
+            // Format the issue description (without error codes)
+            if (!diagnosticMessage.isEmpty()) {
+                issueDescription.append(diagnosticMessage);
+            } else if (!errorMessage.isEmpty()) {
+                issueDescription.append(errorMessage);
+            } else {
+                issueDescription.append(artifact.name());
+            }
+
+            // Add line range
+            issueDescription.append(getInlineRange(artifact));
+
+            lines.add(issueDescription.toString());
+        }
+    }
+
     private static void categorizeArtifacts(List<CodeMapArtifact> artifacts, ArtifactGroups groups) {
         for (CodeMapArtifact artifact : artifacts) {
             switch (artifact.type()) {
+                case "SYNTAX_ERROR":
+                    groups.codeIssues.add(artifact);
+                    break;
                 case "IMPORT":
                     groups.imports.add(artifact);
                     break;
@@ -538,10 +576,11 @@ public class CodeMapMarkdownGenerator {
             }
             signature.append(artifact.name());
         } else {
-            signature.append(modifiersPrefix(artifact)).append("function ").append(artifact.name());
+            signature.append(modifiersPrefix(artifact)).append("function ");
+            signature.append(artifact.name());
         }
 
-        // Add parameters - always add parentheses, no space before opening parenthesis
+        // Add parameters
         String params = parametersInline(artifact);
         signature.append("(");
         if (!params.isEmpty()) {
@@ -571,6 +610,7 @@ public class CodeMapMarkdownGenerator {
         Object value = artifact.properties().get(key);
         return value != null ? value.toString() : fallback;
     }
+
 
     private static List<String> getPropertyAsStringList(CodeMapArtifact artifact, String key) {
         Object value = artifact.properties().get(key);
@@ -689,6 +729,7 @@ public class CodeMapMarkdownGenerator {
      * Helper class to group artifacts by type.
      */
     private static class ArtifactGroups {
+        final List<CodeMapArtifact> codeIssues = new ArrayList<>();
         final List<CodeMapArtifact> imports = new ArrayList<>();
         final List<CodeMapArtifact> configurables = new ArrayList<>();
         final List<CodeMapArtifact> connections = new ArrayList<>();
