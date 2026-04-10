@@ -271,7 +271,24 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Configurables");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("- configurable " + artifact.name() + getInlineRange(artifact));
+            StringBuilder configurableLine = new StringBuilder();
+            configurableLine.append("- configurable ");
+
+            String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
+            if (!typeDescriptor.isEmpty()) {
+                configurableLine.append(typeDescriptor).append(" ");
+            }
+
+            configurableLine.append(artifact.name());
+
+            String value = getPropertyAsString(artifact, "value", "");
+            if (!value.isEmpty()) {
+                configurableLine.append(" = ").append(value);
+            }
+
+            configurableLine.append(getInlineRange(artifact));
+            lines.add(configurableLine.toString());
+
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
                 lines.add("    - description: " + doc);
@@ -288,7 +305,30 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Variables");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
+            StringBuilder variableLine = new StringBuilder();
+            variableLine.append("- ").append(modifiersPrefix(artifact));
+
+            // Check if it's a constant (has both typeDescriptor and value properties)
+            String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
+            String value = getPropertyAsString(artifact, "value", "");
+            boolean isConstant = !typeDescriptor.isEmpty() && !value.isEmpty();
+
+            if (isConstant) {
+                // Render as: const type name = value
+                variableLine.append("const ").append(typeDescriptor).append(" ").append(artifact.name());
+                variableLine.append(" = ").append(value);
+            } else {
+                // Render regular variables with type
+                String type = getPropertyAsString(artifact, "type", "");
+                if (!type.isEmpty()) {
+                    variableLine.append(type).append(" ").append(artifact.name());
+                } else {
+                    variableLine.append(artifact.name());
+                }
+            }
+
+            variableLine.append(getInlineRange(artifact));
+            lines.add(variableLine.toString());
 
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
