@@ -12,15 +12,15 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ## File Path : main.bal
 
 ### Code Issues
-- missing returns keyword [L:4 - L:4]
+- [Parser Error] missing returns keyword [L:4 - L:4]
   ```
   io:println("Hello, World!");
   ```
-- missing open brace token [L:4 - L:4]
+- [Parser Error] missing open brace token [L:4 - L:4]
   ```
   io:println("Hello, World!");
   ```
-- invalid expression statement [L:4 - L:4]
+- [Parser Error] invalid expression statement [L:4 - L:4]
   ```
   io:println("Hello, World!");
   ```
