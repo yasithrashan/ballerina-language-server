@@ -33,11 +33,11 @@ Each artifact is listed with its sub-properties on separate indented lines.
 - ballerina/lang.value as value [L:20 - L:20]
 
 ### Functions
-- public function createNewOrder(payload: OrderCreatePayload) returns OrderCreationResponse|error [L:25 - L:66]
-- public function getOrderById(orderId: string) returns Order|OrderNotFoundError|error [L:69 - L:107]
-- function insertInitialOrder(orderId: string, payload: OrderCreatePayload, totalAmount: decimal) returns sql:ExecutionResult|sql:Error [L:111 - L:133]
-- function publishOrderEvent(eventPayload: OrderCreatedEvent) returns error? [L:137 - L:151]
-- function calculateTotal(lines: OrderLinePayload[]) returns decimal [L:155 - L:161]
+- public function createNewOrder(OrderCreatePayload : payload) returns OrderCreationResponse|error [L:25 - L:66]
+- public function getOrderById(string : orderId) returns Order|OrderNotFoundError|error [L:69 - L:107]
+- function insertInitialOrder(string : orderId, OrderCreatePayload : payload, decimal : totalAmount) returns sql:ExecutionResult|sql:Error [L:111 - L:133]
+- function publishOrderEvent(OrderCreatedEvent : eventPayload) returns error? [L:137 - L:151]
+- function calculateTotal(OrderLinePayload[] : lines) returns decimal [L:155 - L:161]
 
 ---
 
@@ -68,8 +68,8 @@ Each artifact is listed with its sub-properties on separate indented lines.
 - type OrderCreationResponse record [L:61 - L:65]
 
 ### Services (Entry Points)
-- service /v1 on /v1 [L:20 - L:59]
-  - resource function post orders(payload: OrderCreatePayload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
+- service /v1 on new http:Listener(SERVICE_PORT) [L:20 - L:59]
+  - resource function post orders(OrderCreatePayload : payload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
   - resource function get orders/[string orderId]() returns Order|http:NotFound|http:InternalServerError [L:49 - L:58]
 
 ---

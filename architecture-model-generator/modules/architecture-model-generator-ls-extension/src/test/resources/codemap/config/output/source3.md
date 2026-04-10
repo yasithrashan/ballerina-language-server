@@ -57,7 +57,7 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ## File Path : data_mappings.bal
 
 ### Functions
-- function mapOpportunityToRow(account: Opportunity) returns SheetRow [L:2 - L:13]
+- function mapOpportunityToRow(Opportunity : account) returns SheetRow [L:2 - L:13]
 
 ---
 

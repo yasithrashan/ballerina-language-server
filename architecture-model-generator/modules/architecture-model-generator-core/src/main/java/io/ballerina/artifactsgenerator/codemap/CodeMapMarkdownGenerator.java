@@ -461,11 +461,12 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact field : fields) {
             StringBuilder fieldLine = new StringBuilder("  - ")
-                .append(modifiersPrefix(field))
-                .append(field.name());
+                .append(modifiersPrefix(field));
             String type = getPropertyAsString(field, "type", "");
             if (!type.isEmpty()) {
-                fieldLine.append(" : ").append(type);
+                fieldLine.append(type).append(" ").append(field.name());
+            } else {
+                fieldLine.append(field.name());
             }
             lines.add(fieldLine + getInlineRange(field));
         }
@@ -527,11 +528,12 @@ public class CodeMapMarkdownGenerator {
 
         for (CodeMapArtifact field : fields) {
             StringBuilder fieldLine = new StringBuilder("  - ")
-                .append(modifiersPrefix(field))
-                .append(field.name());
+                .append(modifiersPrefix(field));
             String type = getPropertyAsString(field, "type", "");
             if (!type.isEmpty()) {
-                fieldLine.append(" : ").append(type);
+                fieldLine.append(type).append(" ").append(field.name());
+            } else {
+                fieldLine.append(field.name());
             }
             lines.add(fieldLine + getInlineRange(field));
         }
@@ -642,14 +644,23 @@ public class CodeMapMarkdownGenerator {
         return params.stream()
             .map(p -> {
                 if (p instanceof String) {
-                    return (String) p;
+                    String paramStr = (String) p;
+                    // Check if it's already in the correct format (type : name)
+                    if (paramStr.contains(": ")) {
+                        String[] parts = paramStr.split(": ", 2);
+                        if (parts.length == 2) {
+                            // Convert from "name: type" to "type : name"
+                            return parts[1] + " : " + parts[0];
+                        }
+                    }
+                    return paramStr;
                 } else if (p instanceof Map) {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> paramMap = (Map<String, Object>) p;
                     Object name = paramMap.get("name");
                     Object type = paramMap.get("type");
                     if (name != null && type != null) {
-                        return name + ": " + type;
+                        return type + " : " + name;
                     }
                 }
                 return p.toString();

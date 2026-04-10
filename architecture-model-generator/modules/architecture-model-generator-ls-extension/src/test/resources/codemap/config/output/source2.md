@@ -20,7 +20,7 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ## File Path : utils.bal
 
 ### Functions
-- public function hello(name: string?) returns string [L:1 - L:6]
+- public function hello(string? : name) returns string [L:1 - L:6]
 
 ---
 
