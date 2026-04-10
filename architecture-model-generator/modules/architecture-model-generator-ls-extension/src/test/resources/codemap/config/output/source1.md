@@ -50,8 +50,8 @@ Each artifact is listed with its sub-properties on separate indented lines.
 - ballerina/lang.runtime as runtime [L:19 - L:19]
 
 ### Variables
-- final dbClient [L:23 - L:29]
-- final kafkaProducer [L:32 - L:34]
+- final postgresql:Client dbClient [L:23 - L:29]
+- final kafka:Producer kafkaProducer [L:32 - L:34]
 
 ### Automations (Entry Points)
 - public function main() [L:36 - L:48]

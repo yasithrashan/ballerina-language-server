@@ -19,6 +19,10 @@ import ballerina/log;
 import ballerinax/jaeger as _;
 import wso2/client_stubs as stubs;
 
+string greeting = "Hello";
+final string appName = "MyApplication";
+const int MAX_CONNECTIONS = 100;
+
 configurable string datastore = "";
 configurable string redisHost = "";
 configurable string redisPassword = "";

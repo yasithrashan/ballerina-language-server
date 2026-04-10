@@ -20,8 +20,8 @@ Each artifact is listed with its sub-properties on separate indented lines.
 - ballerinax/googleapis.sheets as sheets [L:2 - L:2]
 
 ### Variables
-- columns [L:5 - L:5]
-- currentTimeStamp [L:6 - L:6]
+- SheetRow columns [L:5 - L:5]
+- string currentTimeStamp [L:6 - L:6]
 
 ### Automations (Entry Points)
 - public function main() returns error? [L:8 - L:75]
@@ -49,8 +49,8 @@ Each artifact is listed with its sub-properties on separate indented lines.
 - ballerinax/googleapis.sheets as sheets [L:2 - L:2]
 
 ### Variables
-- final salesforceClient [L:4 - L:12]
-- final sheetsClient [L:14 - L:21]
+- final salesforce:Client salesforceClient [L:4 - L:12]
+- final sheets:Client sheetsClient [L:14 - L:21]
 
 ---
 
