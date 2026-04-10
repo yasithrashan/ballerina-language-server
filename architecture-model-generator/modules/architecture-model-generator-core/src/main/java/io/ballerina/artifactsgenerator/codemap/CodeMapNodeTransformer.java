@@ -106,8 +106,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String TYPE_TYPE = "TYPE";
     private static final String TYPE_CLASS = "CLASS";
     private static final String TYPE_FIELD = "FIELD";
-    private static final String TYPE_SYNTAX_ERROR = "SYNTAX_ERROR";
-
 
     // Property key constants
     private static final String PROP_PARAMETERS = "parameters";
@@ -294,12 +292,24 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         SeparatedNodeList<FunctionArgumentNode> argList = getArgList(newExpressionNode);
 
         for (FunctionArgumentNode argNode : argList) {
-            if (argNode instanceof NamedArgumentNode namedArg) {
-                String argName = namedArg.argumentName().name().text();
-                String argValue = normalizeWhitespace(namedArg.expression().toSourceCode());
-                arguments.add(argName + " = " + argValue);
-            } else if (argNode instanceof PositionalArgumentNode positionalArg) {
-                arguments.add(normalizeWhitespace(positionalArg.expression().toSourceCode()));
+            if (argNode == null) {
+                continue; // Skip null argument nodes
+            }
+
+            try {
+                if (argNode instanceof NamedArgumentNode namedArg) {
+                    String argName = namedArg.argumentName().name().text();
+                    String argValue = safeExtractSourceCode(namedArg.expression());
+                    arguments.add(argName + " = " + argValue);
+                } else if (argNode instanceof PositionalArgumentNode positionalArg) {
+                    String argValue = safeExtractSourceCode(positionalArg.expression());
+                    if (!argValue.isEmpty()) {
+                        arguments.add(argValue);
+                    }
+                }
+            } catch (RuntimeException e) {
+                // Skip malformed argument nodes
+                continue;
             }
         }
         return arguments;
@@ -495,27 +505,64 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
     private List<String> extractParameters(FunctionSignatureNode functionSignature) {
         List<String> parameters = new ArrayList<>();
+        if (functionSignature == null) {
+            return parameters;
+        }
+
         SeparatedNodeList<ParameterNode> parameterNodes = functionSignature.parameters();
 
+        // Process each parameter node, handling different parameter types
         for (ParameterNode paramNode : parameterNodes) {
-            if (paramNode instanceof RequiredParameterNode requiredParam) {
-                String paramType = requiredParam.typeName().toSourceCode().strip();
-                String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
-                parameters.add(paramName + ": " + paramType);
-            } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
-                String paramType = defaultableParam.typeName().toSourceCode().strip();
-                String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
-                String defaultValue = defaultableParam.expression().toSourceCode().strip();
-                parameters.add(paramName + ": " + paramType + " = " + defaultValue);
-            } else if (paramNode instanceof RestParameterNode restParam) {
-                String paramType = restParam.typeName().toSourceCode().strip();
-                String paramName = restParam.paramName().map(name -> name.text()).orElse("");
-                parameters.add(paramName + ": " + paramType + "...");
-            } else {
-                parameters.add(paramNode.toSourceCode().strip());
+            if (paramNode == null) {
+                continue; // Skip null parameter nodes
+            }
+
+            try {
+                if (paramNode instanceof RequiredParameterNode requiredParam) {
+                    String paramType = safeExtractSourceCode(requiredParam.typeName());
+                    String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
+                    if (!paramType.isEmpty()) {
+                        parameters.add(paramName + ": " + paramType);
+                    }
+                } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
+                    String paramType = safeExtractSourceCode(defaultableParam.typeName());
+                    String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
+                    String defaultValue = safeExtractSourceCode(defaultableParam.expression());
+                    if (!paramType.isEmpty()) {
+                        parameters.add(paramName + ": " + paramType + " = " + defaultValue);
+                    }
+                } else if (paramNode instanceof RestParameterNode restParam) {
+                    // Handle varargs parameters
+                    String paramType = safeExtractSourceCode(restParam.typeName());
+                    String paramName = restParam.paramName().map(name -> name.text()).orElse("");
+                    if (!paramType.isEmpty()) {
+                        parameters.add(paramName + ": " + paramType + "...");
+                    }
+                } else {
+                    // Fallback for unknown parameter types
+                    String paramSource = safeExtractSourceCode(paramNode);
+                    if (!paramSource.isEmpty()) {
+                        parameters.add(paramSource);
+                    }
+                }
+            } catch (RuntimeException e) {
+                // Skip malformed parameter nodes
+                continue;
             }
         }
         return parameters;
+    }
+
+    private String safeExtractSourceCode(Node node) {
+        if (node == null) {
+            return "";
+        }
+        try {
+            String sourceCode = node.toSourceCode();
+            return normalizeWhitespace(sourceCode != null ? sourceCode : "");
+        } catch (RuntimeException e) {
+            return "";
+        }
     }
 
     private String extractReturnType(FunctionSignatureNode functionSignature) {
@@ -606,16 +653,37 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
     private Optional<ClassSymbol> getConnection(Node node) {
         try {
-            Symbol symbol = semanticModel.symbol(node).orElseThrow();
-            TypeReferenceTypeSymbol typeDescriptorSymbol =
-                    (TypeReferenceTypeSymbol) ((VariableSymbol) symbol).typeDescriptor();
-            ClassSymbol classSymbol = (ClassSymbol) typeDescriptorSymbol.typeDescriptor();
+            Optional<Symbol> symbolOpt = semanticModel.symbol(node);
+            if (symbolOpt.isEmpty()) {
+                return Optional.empty();
+            }
+
+            Symbol symbol = symbolOpt.get();
+            if (!(symbol instanceof VariableSymbol variableSymbol)) {
+                return Optional.empty();
+            }
+
+            TypeSymbol typeDescriptor = variableSymbol.typeDescriptor();
+            if (!(typeDescriptor instanceof TypeReferenceTypeSymbol typeRefSymbol)) {
+                return Optional.empty();
+            }
+
+            TypeSymbol actualType = typeRefSymbol.typeDescriptor();
+            if (!(actualType instanceof ClassSymbol classSymbol)) {
+                return Optional.empty();
+            }
+
+            // Check if this is a client connection or AI-related store
             if (classSymbol.qualifiers().contains(Qualifier.CLIENT) || isAiKnowledgeBase(classSymbol)
                     || isAiVectorStore(symbol) || isAiMemoryStore(symbol)) {
                 return Optional.of(classSymbol);
             }
-        } catch (Throwable e) {
-            // Ignore
+        } catch (ClassCastException e) {
+            // Handle type casting errors gracefully
+            return Optional.empty();
+        } catch (RuntimeException e) {
+            // Handle other runtime exceptions during symbol resolution
+            return Optional.empty();
         }
         return Optional.empty();
     }
@@ -659,14 +727,15 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             return Optional.empty();
         }
         List<String> comments = new ArrayList<>();
-        // Extract leading minutiae (comments before the node)
+        // Extract leading minutiae (comments that appear before the node)
         node.leadingMinutiae().forEach(minutiae -> {
             if (minutiae.kind() == SyntaxKind.COMMENT_MINUTIAE) {
                 String commentText = minutiae.text().strip();
-                // Remove the leading "//" and trim
+                // Handle single-line comments (// style)
                 if (commentText.startsWith("//")) {
                     comments.add(commentText.substring(2).strip());
                 }
+                // Note: Block comments (/* */) are handled differently by the compiler
             }
         });
         if (comments.isEmpty()) {

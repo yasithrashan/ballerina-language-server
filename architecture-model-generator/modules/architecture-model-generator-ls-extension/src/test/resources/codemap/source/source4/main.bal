@@ -6,6 +6,6 @@ public function main()
 }
 
 // new function
-funnction  greetUser(){
+function  greetUser(){
     io:println("Welcome to Ballerina!");
 }

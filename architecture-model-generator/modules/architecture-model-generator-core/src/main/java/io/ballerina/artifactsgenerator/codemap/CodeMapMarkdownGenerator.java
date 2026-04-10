@@ -139,10 +139,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Code Issues");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             String diagnosticMessage = getPropertyAsString(artifact, "diagnosticMessage", "");
             String errorMessage = getPropertyAsString(artifact, "errorMessage", "");
             String rawCode = getPropertyAsString(artifact, "rawCode", "");
@@ -233,14 +231,11 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Imports");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
             String org = getPropertyAsString(artifact, "orgName", "");
             String mod = getPropertyAsString(artifact, "moduleName", "");
             Object alias = artifact.properties().get("alias");
-
-            lines.add("");
             StringBuilder entry = new StringBuilder(org.isEmpty() ? "- " + mod : "- " + org + "/" + mod);
             if (alias != null) {
                 entry.append(" as ").append(alias);
@@ -257,10 +252,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Configurables");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             lines.add("- configurable " + artifact.name() + getInlineRange(artifact));
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
@@ -276,10 +269,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Variables");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
 
             String doc = getPropertyAsString(artifact, "documentation", "");
@@ -296,10 +287,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Types");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
             StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact))
                 .append("type ").append(artifact.name());
@@ -323,10 +312,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Functions");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             StringBuilder signature = new StringBuilder(modifiersPrefix(artifact))
                 .append("function ").append(artifact.name());
             String params = parametersInline(artifact);
@@ -359,7 +346,6 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Automations (Entry Points)");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
             renderSingleFunction(lines, artifact, "", false);
@@ -373,10 +359,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Listeners");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             StringBuilder listenerLine = new StringBuilder("- listener ").append(artifact.name());
             String type = getPropertyAsString(artifact, "type", "");
             if (!type.isEmpty()) {
@@ -398,10 +382,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Connections");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
 
             String doc = getPropertyAsString(artifact, "documentation", "");
@@ -418,10 +400,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Services (Entry Points)");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             StringBuilder serviceLine = new StringBuilder("- ")
                 .append(modifiersPrefix(artifact))
                 .append("service ")
@@ -463,7 +443,6 @@ public class CodeMapMarkdownGenerator {
         }
 
         for (CodeMapArtifact field : fields) {
-            lines.add("");
             StringBuilder fieldLine = new StringBuilder("  - ")
                 .append(modifiersPrefix(field))
                 .append(field.name());
@@ -490,10 +469,8 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Classes");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("");
             lines.add("- " + modifiersPrefix(artifact) + "class " + artifact.name() + getInlineRange(artifact));
 
             String doc = getPropertyAsString(artifact, "documentation", "");
@@ -532,7 +509,6 @@ public class CodeMapMarkdownGenerator {
         }
 
         for (CodeMapArtifact field : fields) {
-            lines.add("");
             StringBuilder fieldLine = new StringBuilder("  - ")
                 .append(modifiersPrefix(field))
                 .append(field.name());
@@ -563,7 +539,6 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         lines.add("### Data Mappers");
-        lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
             renderSingleFunction(lines, artifact, "", false);
@@ -572,7 +547,6 @@ public class CodeMapMarkdownGenerator {
 
     private static void renderSingleFunction(List<String> lines, CodeMapArtifact artifact,
                                               String indent, boolean isResource) {
-        lines.add("");
 
         // Build function signature
         StringBuilder signature = new StringBuilder(indent).append("- ");
