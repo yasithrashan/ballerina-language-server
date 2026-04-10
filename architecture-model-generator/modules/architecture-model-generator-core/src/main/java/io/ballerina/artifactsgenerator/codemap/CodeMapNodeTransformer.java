@@ -197,10 +197,37 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         Optional<TypeDescriptorNode> typeDescriptorNode = serviceDeclarationNode.typeDescriptor();
         NodeList<Node> resourcePaths = serviceDeclarationNode.absoluteResourcePath();
 
-        determineServiceName(serviceDeclarationNode, typeDescriptorNode, resourcePaths, firstExpression)
-                .ifPresent(serviceBuilder::name);
+        // For service declarations like: service "Name" on listener
+        // - typeDescriptorNode contains "Name" (the service name)
+        // - firstExpression contains the listener (what comes after "on")
+        // - resourcePaths contains the path (for path-based services)
 
-        String basePath = getPathString(resourcePaths);
+
+        Optional<String> serviceName = determineServiceName(serviceDeclarationNode, typeDescriptorNode,
+                resourcePaths, firstExpression);
+        serviceName.ifPresent(serviceBuilder::name);
+
+        // Determine basePath based on service type
+        String basePath = "";
+        if (!resourcePaths.isEmpty() && typeDescriptorNode.isEmpty()) {
+            // This case handles: service "Name" on listener where "Name" ends up in resourcePaths
+            // In this case, use the firstExpression (listener) for basePath, not resourcePaths (service name)
+            if (firstExpression != null) {
+                String expressionSource = safeExtractSourceCode(firstExpression);
+                if (!expressionSource.isEmpty()) {
+                    basePath = expressionSource;
+                }
+            }
+        } else if (!resourcePaths.isEmpty()) {
+            // REST-style services: service on listener {"/path": ...
+            basePath = getPathString(resourcePaths);
+        } else if (firstExpression != null) {
+            // Named services: service "Name" on listener - basePath should be the listener expression
+            String expressionSource = safeExtractSourceCode(firstExpression);
+            if (!expressionSource.isEmpty()) {
+                basePath = expressionSource;
+            }
+        }
         serviceBuilder.addProperty(PROP_BASE_PATH, basePath);
 
         if (firstExpression != null) {
