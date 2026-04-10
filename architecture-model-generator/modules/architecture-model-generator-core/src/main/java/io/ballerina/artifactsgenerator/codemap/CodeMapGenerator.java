@@ -131,9 +131,10 @@ public class CodeMapGenerator {
                                                                         ModuleInfo moduleInfo) {
         List<CodeMapArtifact> artifacts = new ArrayList<>();
 
-        // Handle syntax errors first
+        // Handle syntax errors first - create artifacts for each diagnostic
         if (syntaxTree.hasDiagnostics()) {
-            List<CodeMapArtifact> syntaxErrorArtifacts = createSyntaxErrorArtifacts(syntaxTree.diagnostics(), syntaxTree);
+            List<CodeMapArtifact> syntaxErrorArtifacts = createSyntaxErrorArtifacts(
+                    syntaxTree.diagnostics(), syntaxTree);
             artifacts.addAll(syntaxErrorArtifacts);
         }
 
@@ -146,7 +147,7 @@ public class CodeMapGenerator {
                 moduleInfo);
 
         try {
-            // Process imports - filter out malformed ones
+            // Process imports - filter out malformed ones to avoid transformation errors
             rootNode.imports().stream()
                     .filter(importNode -> !hasErrorInNode(importNode))
                     .map(importNode -> importNode.apply(codeMapNodeTransformer))
@@ -159,20 +160,22 @@ public class CodeMapGenerator {
                     .map(member -> member.apply(codeMapNodeTransformer))
                     .flatMap(Optional::stream)
                     .forEach(artifacts::add);
-        } catch (Exception e) {
-            // If processing fails due to severe syntax errors, create a general error artifact
+        } catch (RuntimeException e) {
+            // Fallback: if processing fails due to severe syntax errors, create a general error artifact
             CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact(e.getMessage());
+            artifacts.add(errorArtifact);
+        } catch (Exception e) {
+            // Handle unexpected checked exceptions
+            CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact("Unexpected error: " + e.getMessage());
             artifacts.add(errorArtifact);
         }
 
         return artifacts;
     }
 
-    private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics) {
-        return createSyntaxErrorArtifacts(diagnostics, null);
-    }
 
-    private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics, SyntaxTree syntaxTree) {
+    private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics,
+                                                                       SyntaxTree syntaxTree) {
         List<CodeMapArtifact> syntaxErrorArtifacts = new ArrayList<>();
 
         for (Diagnostic diagnostic : diagnostics) {
@@ -205,19 +208,26 @@ public class CodeMapGenerator {
     private static String extractRawCodeFromDiagnostic(Diagnostic diagnostic, SyntaxTree syntaxTree) {
         try {
             String sourceText = syntaxTree.toSourceCode();
+            if (sourceText == null || sourceText.isEmpty()) {
+                return null;
+            }
             String[] lines = sourceText.split("\\r?\\n");
 
+            // Get diagnostic line range (0-based indexing from compiler API)
             int startLine = diagnostic.location().lineRange().startLine().line();
             int endLine = diagnostic.location().lineRange().endLine().line();
 
-            // Ensure line numbers are within bounds
-            if (startLine < 0 || startLine >= lines.length) {
+            // Validate line bounds to prevent array access errors
+            if (startLine < 0 || startLine >= lines.length || endLine < startLine) {
                 return null;
             }
 
-            // Extract the relevant lines (convert from 0-based to 1-based indexing)
+            // Ensure end line is within bounds
+            int safeEndLine = Math.min(endLine, lines.length - 1);
+
+            // Extract the problematic code lines for error context
             StringBuilder codeBuilder = new StringBuilder();
-            for (int i = startLine; i <= Math.min(endLine, lines.length - 1); i++) {
+            for (int i = startLine; i <= safeEndLine; i++) {
                 if (i > startLine) {
                     codeBuilder.append("\n");
                 }
@@ -225,8 +235,11 @@ public class CodeMapGenerator {
             }
 
             return codeBuilder.toString().trim();
-        } catch (Exception e) {
-            // If extraction fails, return null
+        } catch (IndexOutOfBoundsException e) {
+            // Return null if line extraction fails due to invalid indices
+            return null;
+        } catch (RuntimeException e) {
+            // Handle other runtime issues during source code extraction
             return null;
         }
     }
@@ -246,23 +259,22 @@ public class CodeMapGenerator {
             return true;
         }
 
-        // Check if the node has diagnostics
+        // Primary check: node has compiler diagnostics indicating errors
         if (node.hasDiagnostics()) {
             return true;
         }
 
-        // Check if the node's text representation contains error markers
-        String nodeText = node.toString();
-        if (nodeText.contains("MISSING") || nodeText.contains("[error]")) {
-            return true;
-        }
-
-        // Try to get source code - if it fails, likely an error node
+        // Validate source code extraction - failure indicates malformed node
         try {
             String sourceText = node.toSourceCode();
+            if (sourceText == null || sourceText.trim().isEmpty()) {
+                return true;
+            }
+            // Check for error markers that indicate parsing issues
             return sourceText.contains("MISSING") || sourceText.contains("[error]");
         } catch (RuntimeException e) {
-            return true; // If we can't get source code, assume there's an error
+            // Source code extraction failed - treat as error node
+            return true;
         }
     }
 

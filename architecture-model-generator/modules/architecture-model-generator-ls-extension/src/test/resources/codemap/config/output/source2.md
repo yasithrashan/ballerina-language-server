@@ -20,8 +20,6 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ## File Path : utils.bal
 
 ### Functions
-
-
 - public function hello(name: string?) returns string [L:1 - L:6]
 
 ---
@@ -42,13 +40,8 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ## File Path : main.bal
 
 ### Imports
-
-
 - ballerina/io [L:1 - L:1]
-
 - wso2/utils [L:2 - L:2]
 
 ### Automations (Entry Points)
-
-
 - public function main() [L:4 - L:7]
