@@ -144,9 +144,26 @@ public class CodeMapMarkdownGenerator {
             String diagnosticMessage = getPropertyAsString(artifact, "diagnosticMessage", "");
             String errorMessage = getPropertyAsString(artifact, "errorMessage", "");
             String rawCode = getPropertyAsString(artifact, "rawCode", "");
+            String errorCode = getPropertyAsString(artifact, "code", "");
 
             StringBuilder issueDescription = new StringBuilder();
             issueDescription.append("- ");
+
+            // Add [Parser Error] prefix for error codes < 2000
+            if (!errorCode.isEmpty()) {
+                try {
+                    // Extract numeric part from error codes like "BCE1234"
+                    String numericPart = errorCode.replaceAll("[^0-9]", "");
+                    if (!numericPart.isEmpty()) {
+                        int code = Integer.parseInt(numericPart);
+                        if (code < 2000) {
+                            issueDescription.append("[Parser Error] ");
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    // If parsing fails, continue without prefix
+                }
+            }
 
             // Format the issue description (without error codes)
             if (!diagnosticMessage.isEmpty()) {
