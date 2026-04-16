@@ -49,30 +49,10 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
         if (!actualContent.equals(testConfig.output())) {
             TestConfig updatedConfig = new TestConfig(testConfig.description(), testConfig.source(), actualContent);
-            updateConfig(configJsonPath, updatedConfig);
+//            updateConfig(configJsonPath, updatedConfig);
             Assert.fail(String.format("Failed test: '%s' (%s)\nExpected: %s\nActual: %s",
                 testConfig.description(), configJsonPath, testConfig.output(), actualContent));
         }
-    }
-
-    @Test
-    public void testIntelligentWorkspaceDetection() throws IOException {
-        // Test workspace detection with source2 (which is a workspace)
-        String workspaceSource = "source2";
-        CodeMapRequest workspaceRequest = new CodeMapRequest(getProjectPath(workspaceSource), false);
-        JsonObject workspaceResponse = getResponseAndCloseFile(workspaceRequest, workspaceSource);
-        String workspaceContent = workspaceResponse.get("content").getAsString();
-
-        // Should detect workspace and include all packages
-        Assert.assertTrue(workspaceContent.contains("# Workspace Code Map"),
-                "Should detect workspace and show workspace header");
-        Assert.assertTrue(workspaceContent.contains("Package: hello_app"),
-                "Should include hello_app package in workspace");
-        Assert.assertTrue(workspaceContent.contains("Package: utils"),
-                "Should include utils package in workspace");
-
-        // Save debugging files for workspace test
-        saveDebuggingFiles(workspaceSource, workspaceResponse);
     }
 
     @Override

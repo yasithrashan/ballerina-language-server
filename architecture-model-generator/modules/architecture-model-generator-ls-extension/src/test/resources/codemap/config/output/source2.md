@@ -1,11 +1,8 @@
-# Workspace Codebase Summary
-
+# source2 Codebase Summary
 
 ---
 
-# Package: utils
-
-
+## Package: utils
 ---
 
 ## File Path : utils.bal
@@ -15,9 +12,7 @@
 
 ---
 
-# Package: hello_app
-
-
+## Package: hello_app
 ---
 
 ## File Path : main.bal

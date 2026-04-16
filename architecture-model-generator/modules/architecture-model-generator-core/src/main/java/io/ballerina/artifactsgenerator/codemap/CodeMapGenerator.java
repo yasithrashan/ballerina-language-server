@@ -355,8 +355,11 @@ public class CodeMapGenerator {
         // Generate full project codemap
         Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager);
 
+        // Extract project name
+        String projectName = project.currentPackage().packageName().value();
+
         // Convert to consolidated markdown
-        return CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles);
+        return CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles, projectName);
     }
 
     /**
@@ -470,7 +473,17 @@ public class CodeMapGenerator {
         // Generate full workspace codemap
         Map<String, Map<String, CodeMapFile>> workspaceCodeMap = generateWorkspaceCodeMap(project, workspaceManager);
 
+        // Extract workspace name
+        Path sourceRoot = project.sourceRoot();
+        String workspaceName = "Unknown Workspace";
+        if (sourceRoot != null) {
+            Path fileName = sourceRoot.getFileName();
+            if (fileName != null) {
+                workspaceName = fileName.toString();
+            }
+        }
+
         // Convert to consolidated workspace markdown
-        return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap);
+        return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap, workspaceName);
     }
 }
