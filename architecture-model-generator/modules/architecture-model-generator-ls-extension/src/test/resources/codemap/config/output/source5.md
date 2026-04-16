@@ -1,11 +1,4 @@
-# Project CodeMap
-
-## CodeMap Structure
-
-This document provides a structured overview of the project codebase.
-It is organized by file path and summarizes the following elements for each file.
-Each artifact is listed with its sub-properties on separate indented lines.
-
+# Project Codebase Summary
 
 ---
 
@@ -28,13 +21,17 @@ Each artifact is listed with its sub-properties on separate indented lines.
 - const int MAX_CONNECTIONS = 100 [L:24 - L:24]
 
 ### Services (Entry Points)
+// Stores the product items added to the cart and retrieves them.
 - service "CartService" on new grpc:Listener(9092) [L:30 - L:80]
-    - description: Stores the product items added to the cart and retrieves them.
-  - private final DataStore store [L:37 - L:37]
-  - function init() returns error? [L:39 - L:47]
-  - remote function AddItem(stubs:AddItemRequest : request) returns stubs:Empty|error [L:49 - L:58]
-      - description: Adds an item to the cart.
-  - remote function GetCart(stubs:GetCartRequest : request) returns stubs:Cart|error [L:60 - L:68]
-      - description: Provides the cart with items.
-  - remote function EmptyCart(stubs:EmptyCartRequest : request) returns stubs:Empty|error [L:70 - L:79]
-      - description: Clears the cart.
+
+    #### Variables
+    - private final DataStore store [L:37 - L:37]
+
+    #### Functions
+    - function init() returns error? [L:39 - L:47]
+    // Adds an item to the cart.
+    - remote function AddItem(stubs:AddItemRequest : request) returns stubs:Empty|error [L:49 - L:58]
+    // Provides the cart with items.
+    - remote function GetCart(stubs:GetCartRequest : request) returns stubs:Cart|error [L:60 - L:68]
+    // Clears the cart.
+    - remote function EmptyCart(stubs:EmptyCartRequest : request) returns stubs:Empty|error [L:70 - L:79]

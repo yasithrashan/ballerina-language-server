@@ -1,11 +1,4 @@
-# Project CodeMap
-
-## CodeMap Structure
-
-This document provides a structured overview of the project codebase.
-It is organized by file path and summarizes the following elements for each file.
-Each artifact is listed with its sub-properties on separate indented lines.
-
+# Project Codebase Summary
 
 ---
 

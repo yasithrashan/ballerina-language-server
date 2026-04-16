@@ -1,11 +1,4 @@
-# Project CodeMap
-
-## CodeMap Structure
-
-This document provides a structured overview of the project codebase.
-It is organized by file path and summarizes the following elements for each file.
-Each artifact is listed with its sub-properties on separate indented lines.
-
+# Project Codebase Summary
 
 ---
 
@@ -69,8 +62,10 @@ Each artifact is listed with its sub-properties on separate indented lines.
 
 ### Services (Entry Points)
 - service /v1 on new http:Listener(SERVICE_PORT) [L:20 - L:59]
-  - resource function post orders(OrderCreatePayload : payload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
-  - resource function get orders/[string orderId]() returns Order|http:NotFound|http:InternalServerError [L:49 - L:58]
+
+    #### Functions
+    - resource function post orders(OrderCreatePayload : payload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
+    - resource function get orders/[string orderId]() returns Order|http:NotFound|http:InternalServerError [L:49 - L:58]
 
 ---
 

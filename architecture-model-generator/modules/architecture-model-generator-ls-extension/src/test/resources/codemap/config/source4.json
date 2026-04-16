@@ -1,5 +1,5 @@
 {
   "description": "Ballerina source4 project test",
   "source": "source4",
-  "output": "# Project CodeMap\n\n## CodeMap Structure\n\nThis document provides a structured overview of the project codebase.\nIt is organized by file path and summarizes the following elements for each file.\nEach artifact is listed with its sub-properties on separate indented lines.\n\n\n---\n\n## File Path : main.bal\n\n### Code Issues\n- [Parser Error] missing returns keyword [L:4 - L:4]\n  ```\n  io:println(\"Hello, World!\");\n  ```\n- [Parser Error] missing open brace token [L:4 - L:4]\n  ```\n  io:println(\"Hello, World!\");\n  ```\n- [Parser Error] invalid expression statement [L:4 - L:4]\n  ```\n  io:println(\"Hello, World!\");\n  ```\n\n### Imports\n- ballerina/io [L:1 - L:1]\n\n### Functions\n- function greetUser() [L:9 - L:11]\n"
+  "output": "# Project Codebase Summary\n\n---\n\n## File Path : main.bal\n\n### Code Issues\n- [Parser Error] missing returns keyword [L:4 - L:4]\n  ```\n  io:println(\"Hello, World!\");\n  ```\n- [Parser Error] missing open brace token [L:4 - L:4]\n  ```\n  io:println(\"Hello, World!\");\n  ```\n- [Parser Error] invalid expression statement [L:4 - L:4]\n  ```\n  io:println(\"Hello, World!\");\n  ```\n\n### Imports\n- ballerina/io [L:1 - L:1]\n\n### Functions\n- function greetUser() [L:9 - L:11]\n"
 }
