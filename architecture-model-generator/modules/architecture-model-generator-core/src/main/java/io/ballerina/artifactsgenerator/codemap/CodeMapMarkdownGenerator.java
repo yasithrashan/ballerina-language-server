@@ -81,19 +81,23 @@ public class CodeMapMarkdownGenerator {
      * @return the generated markdown string
      */
     public static String generateMarkdown(Map<String, CodeMapFile> files) {
+        return generateMarkdown(files, "Project");
+    }
+
+    /**
+     * Generates markdown from a code map response with a custom project name.
+     *
+     * @param files the code map files organized by file path
+     * @param projectName the name of the project/package
+     * @return the generated markdown string
+     */
+    public static String generateMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
-            return "# Project CodeMap\n\n## CodeMap Structure\n\nNo files found.\n";
+            return "# " + projectName + " Codebase Summary\n\nNo files found.\n";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# Project CodeMap");
-        lines.add("");
-        lines.add("## CodeMap Structure");
-        lines.add("");
-        lines.add("This document provides a structured overview of the project codebase.");
-        lines.add("It is organized by file path and summarizes the following elements for each file.");
-        lines.add("Each artifact is listed with its sub-properties on separate indented lines.");
-        lines.add("");
+        lines.add("# " + projectName + " Codebase Summary");
 
         for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
             String filePath = entry.getKey();
@@ -459,6 +463,11 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Services (Entry Points)");
 
         for (CodeMapArtifact artifact : artifacts) {
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("// " + doc);
+            }
+
             StringBuilder serviceLine = new StringBuilder("- ")
                 .append(modifiersPrefix(artifact))
                 .append("service ")
@@ -468,11 +477,6 @@ public class CodeMapMarkdownGenerator {
                 serviceLine.append(" on ").append(basePath);
             }
             lines.add(serviceLine + getInlineRange(artifact));
-
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
-            }
 
             if (!artifact.children().isEmpty()) {
                 renderServiceChildren(lines, artifact.children());
@@ -499,24 +503,34 @@ public class CodeMapMarkdownGenerator {
             }
         }
 
-        for (CodeMapArtifact field : fields) {
-            StringBuilder fieldLine = new StringBuilder("  - ")
-                .append(modifiersPrefix(field));
-            String type = getPropertyAsString(field, "type", "");
-            if (!type.isEmpty()) {
-                fieldLine.append(type).append(" ").append(field.name());
-            } else {
-                fieldLine.append(field.name());
+        // Add Variables subsection if there are any fields
+        if (!fields.isEmpty()) {
+            lines.add("");
+            lines.add("    #### Variables");
+            for (CodeMapArtifact field : fields) {
+                StringBuilder fieldLine = new StringBuilder("    - ")
+                    .append(modifiersPrefix(field));
+                String type = getPropertyAsString(field, "type", "");
+                if (!type.isEmpty()) {
+                    fieldLine.append(type).append(" ").append(field.name());
+                } else {
+                    fieldLine.append(field.name());
+                }
+                lines.add(fieldLine + getInlineRange(field));
             }
-            lines.add(fieldLine + getInlineRange(field));
         }
 
-        for (CodeMapArtifact fn : resourceFns) {
-            renderSingleFunction(lines, fn, "  ", true);
-        }
+        // Add Functions subsection if there are any functions
+        if (!resourceFns.isEmpty() || !serviceFns.isEmpty()) {
+            lines.add("");
+            lines.add("    #### Functions");
+            for (CodeMapArtifact fn : resourceFns) {
+                renderSingleFunction(lines, fn, "    ", true);
+            }
 
-        for (CodeMapArtifact fn : serviceFns) {
-            renderSingleFunction(lines, fn, "  ", false);
+            for (CodeMapArtifact fn : serviceFns) {
+                renderSingleFunction(lines, fn, "    ", false);
+            }
         }
     }
 
@@ -607,6 +621,12 @@ public class CodeMapMarkdownGenerator {
     private static void renderSingleFunction(List<String> lines, CodeMapArtifact artifact,
                                               String indent, boolean isResource) {
 
+        // Documentation (optional) - add as comment above function
+        String doc = getPropertyAsString(artifact, "documentation", "");
+        if (!doc.isEmpty()) {
+            lines.add(indent + "// " + doc);
+        }
+
         // Build function signature
         StringBuilder signature = new StringBuilder(indent).append("- ");
         if (isResource) {
@@ -638,12 +658,6 @@ public class CodeMapMarkdownGenerator {
         // Add line range
         signature.append(getInlineRange(artifact));
         lines.add(signature.toString());
-
-        // Documentation (optional)
-        String doc = getPropertyAsString(artifact, "documentation", "");
-        if (!doc.isEmpty()) {
-            lines.add(indent + "    - description: " + doc);
-        }
     }
 
     // Helper methods
@@ -732,13 +746,12 @@ public class CodeMapMarkdownGenerator {
      */
     public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap) {
         if (workspaceCodeMap == null || workspaceCodeMap.isEmpty()) {
-            return "# Workspace Code Map\n\nNo packages found in workspace.";
+            return "# Workspace Codebase Summary\n\nNo packages found in workspace.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# Workspace Code Map");
+        lines.add("# Workspace Codebase Summary");
         lines.add("");
-        lines.add("This document contains the code map for all packages in the Ballerina workspace.");
 
         // Process each package in the workspace
         for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
@@ -756,14 +769,14 @@ public class CodeMapMarkdownGenerator {
             lines.add("# Package: " + packageName);
             lines.add("");
 
-            // Generate markdown for this package using existing method
-            String packageMarkdown = generateMarkdown(packageFiles);
+            // Generate markdown for this package using existing method with package name
+            String packageMarkdown = generateMarkdown(packageFiles, packageName);
 
-            // Remove the first line ("# Code Map") from package markdown to avoid duplicate headers
+            // Remove the first line (package header) from package markdown to avoid duplicate headers
             String[] packageLines = packageMarkdown.split("\n");
             boolean skipFirstHeader = false;
             for (String line : packageLines) {
-                if (!skipFirstHeader && line.trim().equals("# Code Map")) {
+                if (!skipFirstHeader && line.trim().startsWith("# " + packageName + " Codebase Summary")) {
                     skipFirstHeader = true;
                     continue;
                 }

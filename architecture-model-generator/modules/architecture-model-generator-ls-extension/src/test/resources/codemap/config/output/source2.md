@@ -1,18 +1,9 @@
-# Workspace Code Map
+# Workspace Codebase Summary
 
-This document contains the code map for all packages in the Ballerina workspace.
 
 ---
 
 # Package: utils
-
-# Project CodeMap
-
-## CodeMap Structure
-
-This document provides a structured overview of the project codebase.
-It is organized by file path and summarizes the following elements for each file.
-Each artifact is listed with its sub-properties on separate indented lines.
 
 
 ---
@@ -25,14 +16,6 @@ Each artifact is listed with its sub-properties on separate indented lines.
 ---
 
 # Package: hello_app
-
-# Project CodeMap
-
-## CodeMap Structure
-
-This document provides a structured overview of the project codebase.
-It is organized by file path and summarizes the following elements for each file.
-Each artifact is listed with its sub-properties on separate indented lines.
 
 
 ---
