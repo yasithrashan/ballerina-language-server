@@ -1,5 +1,5 @@
 {
   "description": "Ballerina source2 workspace project test",
   "source": "source2",
-  "output": "# Workspace Codebase Summary\n\n\n---\n\n# Package: utils\n\n\n---\n\n## File Path : utils.bal\n\n### Functions\n- public function hello(string? : name) returns string [L:1 - L:6]\n\n---\n\n# Package: hello_app\n\n\n---\n\n## File Path : main.bal\n\n### Imports\n- ballerina/io [L:1 - L:1]\n- wso2/utils [L:2 - L:2]\n\n### Automations (Entry Points)\n- public function main() [L:4 - L:7]\n"
+  "output": "# source2 Codebase Summary\n\n---\n\n## Package: utils\n---\n\n## File Path : utils.bal\n\n### Functions\n- public function hello(string? : name) returns string [L:1 - L:6]\n\n---\n\n## Package: hello_app\n---\n\n## File Path : main.bal\n\n### Imports\n- ballerina/io [L:1 - L:1]\n- wso2/utils [L:2 - L:2]\n\n### Automations (Entry Points)\n- public function main() [L:4 - L:7]\n"
 }

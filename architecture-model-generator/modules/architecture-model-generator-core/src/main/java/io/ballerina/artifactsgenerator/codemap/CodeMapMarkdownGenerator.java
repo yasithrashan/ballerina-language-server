@@ -93,7 +93,7 @@ public class CodeMapMarkdownGenerator {
      */
     public static String generateMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
-            return "# " + projectName + " Codebase Summary\n\nNo files found.\n";
+            return "# " + projectName + " Codebase Summary\n\nNo files found.";
         }
 
         List<String> lines = new ArrayList<>();
@@ -745,13 +745,24 @@ public class CodeMapMarkdownGenerator {
      * @return the generated consolidated markdown string for the workspace
      */
     public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap) {
+        return generateWorkspaceMarkdown(workspaceCodeMap, "Workspace");
+    }
+
+    /**
+     * Generates consolidated markdown for all packages in a workspace with a custom workspace name.
+     *
+     * @param workspaceCodeMap a map of package names to their code map files
+     * @param workspaceName the name of the workspace
+     * @return the generated consolidated markdown string for the workspace
+     */
+    public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap,
+                                                   String workspaceName) {
         if (workspaceCodeMap == null || workspaceCodeMap.isEmpty()) {
-            return "# Workspace Codebase Summary\n\nNo packages found in workspace.";
+            return "# " + workspaceName + " Codebase Summary\n\nNo packages found in workspace.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# Workspace Codebase Summary");
-        lines.add("");
+        lines.add("# " + workspaceName + " Codebase Summary");
 
         // Process each package in the workspace
         for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
@@ -766,8 +777,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("---");
             lines.add("");
-            lines.add("# Package: " + packageName);
-            lines.add("");
+            lines.add("## Package: " + packageName);
 
             // Generate markdown for this package using existing method with package name
             String packageMarkdown = generateMarkdown(packageFiles, packageName);
@@ -775,10 +785,18 @@ public class CodeMapMarkdownGenerator {
             // Remove the first line (package header) from package markdown to avoid duplicate headers
             String[] packageLines = packageMarkdown.split("\n");
             boolean skipFirstHeader = false;
+            boolean skipInitialEmptyLines = false;
             for (String line : packageLines) {
                 if (!skipFirstHeader && line.trim().startsWith("# " + packageName + " Codebase Summary")) {
                     skipFirstHeader = true;
+                    skipInitialEmptyLines = true;
                     continue;
+                }
+                // Skip empty lines immediately after the header
+                if (skipInitialEmptyLines && line.trim().isEmpty()) {
+                    continue;
+                } else {
+                    skipInitialEmptyLines = false;
                 }
                 lines.add(line);
             }
