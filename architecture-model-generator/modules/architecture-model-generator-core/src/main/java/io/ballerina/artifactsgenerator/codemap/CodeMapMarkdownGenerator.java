@@ -275,6 +275,12 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Configurables");
 
         for (CodeMapArtifact artifact : artifacts) {
+            // Documentation (optional) - add as comment above configurable
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("// " + doc);
+            }
+
             StringBuilder configurableLine = new StringBuilder();
             configurableLine.append("- configurable ");
 
@@ -292,11 +298,6 @@ public class CodeMapMarkdownGenerator {
 
             configurableLine.append(getInlineRange(artifact));
             lines.add(configurableLine.toString());
-
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
-            }
         }
     }
 
@@ -309,6 +310,12 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Variables");
 
         for (CodeMapArtifact artifact : artifacts) {
+            // Documentation (optional) - add as comment above variable
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("// " + doc);
+            }
+
             StringBuilder variableLine = new StringBuilder();
             variableLine.append("- ").append(modifiersPrefix(artifact));
 
@@ -333,11 +340,6 @@ public class CodeMapMarkdownGenerator {
 
             variableLine.append(getInlineRange(artifact));
             lines.add(variableLine.toString());
-
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
-            }
         }
     }
 
@@ -350,6 +352,12 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Types");
 
         for (CodeMapArtifact artifact : artifacts) {
+            // Documentation (optional) - add as comment above type
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("// " + doc);
+            }
+
             String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
             StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact))
                 .append("type ").append(artifact.name());
@@ -358,11 +366,6 @@ public class CodeMapMarkdownGenerator {
             }
 
             lines.add("- " + typeLine + getInlineRange(artifact));
-
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
-            }
         }
     }
 
@@ -375,6 +378,12 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Functions");
 
         for (CodeMapArtifact artifact : artifacts) {
+            // Documentation (optional) - add as comment above function
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("// " + doc);
+            }
+
             StringBuilder signature = new StringBuilder(modifiersPrefix(artifact))
                 .append("function ").append(artifact.name());
             String params = parametersInline(artifact);
@@ -392,11 +401,6 @@ public class CodeMapMarkdownGenerator {
             }
 
             lines.add("- " + signature + getInlineRange(artifact));
-
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
-            }
         }
     }
 
@@ -422,17 +426,18 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Listeners");
 
         for (CodeMapArtifact artifact : artifacts) {
+            // Documentation (optional) - add as comment above listener
+            String doc = getPropertyAsString(artifact, "documentation", "");
+            if (!doc.isEmpty()) {
+                lines.add("// " + doc);
+            }
+
             StringBuilder listenerLine = new StringBuilder("- listener ").append(artifact.name());
             String type = getPropertyAsString(artifact, "type", "");
             if (!type.isEmpty()) {
                 listenerLine.append(" : ").append(type);
             }
             lines.add(listenerLine + getInlineRange(artifact));
-
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
-            }
         }
     }
 
@@ -445,12 +450,13 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Connections");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
-
+            // Documentation (optional) - add as comment above connection
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
+                lines.add("// " + doc);
             }
+
+            lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
         }
     }
 
@@ -543,12 +549,13 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Classes");
 
         for (CodeMapArtifact artifact : artifacts) {
-            lines.add("- " + modifiersPrefix(artifact) + "class " + artifact.name() + getInlineRange(artifact));
-
+            // Documentation (optional) - add as comment above class
             String doc = getPropertyAsString(artifact, "documentation", "");
             if (!doc.isEmpty()) {
-                lines.add("    - description: " + doc);
+                lines.add("// " + doc);
             }
+
+            lines.add("- " + modifiersPrefix(artifact) + "class " + artifact.name() + getInlineRange(artifact));
 
             if (!artifact.children().isEmpty()) {
                 renderClassChildren(lines, artifact.children());
