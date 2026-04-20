@@ -106,7 +106,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     @Test
     public void testNoChangesTracked() throws IOException {
         // Clear any previously tracked files
-        String sourcePath = getSourcePath("project");
+        String sourcePath = getSourcePath("source1");
         Path projectPath = Path.of(sourcePath);
         String projectKey = projectPath.toUri().toString();
         CodeMapFilesTracker.getInstance().clearModifiedFiles(projectKey);
@@ -141,7 +141,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     public void testSkipsAiUri() throws IOException {
         // Test that AI URI files are skipped
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
-        String sourcePath = getSourcePath("project/main.bal");
+        String sourcePath = getSourcePath("source1/main.bal");
         Path filePath = Path.of(sourcePath);
 
         // Clear tracker first
@@ -169,7 +169,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     public void testSkipsExprUri() throws IOException {
         // Test that expr URI files are skipped
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
-        String sourcePath = getSourcePath("project/main.bal");
+        String sourcePath = getSourcePath("source1/main.bal");
         Path filePath = Path.of(sourcePath);
 
         // Clear tracker first
@@ -196,7 +196,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     @Test
     public void testSkipsNonTrackedOperations() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
-        String sourcePath = getSourcePath("project/main.bal");
+        String sourcePath = getSourcePath("source1/main.bal");
         Path filePath = Path.of(sourcePath);
         String fileUri = filePath.toAbsolutePath().normalize().toUri().toString();
 
@@ -225,7 +225,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     @Test
     public void testTracksDidOpenEvents() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
-        String sourcePath = getSourcePath("project/main.bal");
+        String sourcePath = getSourcePath("source1/main.bal");
         Path filePath = Path.of(sourcePath);
         String fileUri = filePath.toAbsolutePath().normalize().toUri().toString();
 
@@ -260,8 +260,8 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
 
         // Get paths for two different files in the same project
-        String sourcePath1 = getSourcePath("project/main.bal");
-        String sourcePath2 = getSourcePath("project/service.bal");
+        String sourcePath1 = getSourcePath("source1/main.bal");
+        String sourcePath2 = getSourcePath("source1/service.bal");
         Path filePath1 = Path.of(sourcePath1);
         Path filePath2 = Path.of(sourcePath2);
 
@@ -298,8 +298,8 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
 
         // Get paths for two different files in the same project
-        String sourcePath1 = getSourcePath("project/main.bal");
-        String sourcePath2 = getSourcePath("project/service.bal");
+        String sourcePath1 = getSourcePath("source1/main.bal");
+        String sourcePath2 = getSourcePath("source1/service.bal");
         Path filePath1 = Path.of(sourcePath1);
         Path filePath2 = Path.of(sourcePath2);
 
@@ -334,7 +334,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     @Test
     public void testConsecutiveEventsForSameFile() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
-        String sourcePath = getSourcePath("project/main.bal");
+        String sourcePath = getSourcePath("source1/main.bal");
         Path filePath = Path.of(sourcePath);
         String fileUri = filePath.toAbsolutePath().normalize().toUri().toString();
 
@@ -364,7 +364,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     @Test
     public void testSameFileNameInDifferentModulesTrackedSeparately() {
         // Negative test: changing root types.bal should NOT track modules/mod1/types.bal
-        String projectKey = "file:///test/project/";
+        String projectKey = "file:///test/source1/";
         CodeMapFilesTracker tracker = CodeMapFilesTracker.getInstance();
 
         // Clear tracker first
@@ -390,7 +390,7 @@ public class PublishCodeMapSubscriberTest extends AbstractLSTest {
     @Test
     public void testStateClearingAfterRetrieval() throws IOException {
         WorkspaceManager workspaceManager = languageServer.getWorkspaceManager();
-        String sourcePath = getSourcePath("project/main.bal");
+        String sourcePath = getSourcePath("source1/main.bal");
         Path filePath = Path.of(sourcePath);
         String fileUri = filePath.toAbsolutePath().normalize().toUri().toString();
 
