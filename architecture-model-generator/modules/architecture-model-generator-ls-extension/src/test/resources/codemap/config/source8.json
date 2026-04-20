@@ -1,0 +1,5 @@
+{
+  "description": "Ballerina source8 project test (workspace with multiple packages and modules)",
+  "source": "source8",
+  "output": "# source8 Codebase Summary\n\n---\n\n## Package: utils\n---\n\n## File Path : utils/utils.bal\n\n```ballerina\npublic function hello(string? : name) returns string [L:1 - L:6]\n```\n\n---\n\n## Package: hello_app\n---\n\n## File Path : hello_app/main.bal\n\n```ballerina\nimport ballerina/io [L:1 - L:1]\nimport wso2/utils [L:2 - L:2]\n```\n\n```ballerina\npublic function main() [L:4 - L:7]\n```\n\n---\n\n## File Path : hello_app/modules/authentication/main.bal\n\n```ballerina\nimport ballerina/io [L:1 - L:1]\n```\n\n```ballerina\npublic function main() [L:3 - L:5]\n```\n"
+}
