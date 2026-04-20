@@ -105,8 +105,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("---");
             lines.add("");
-            String fileName = filePath.contains("/") ? filePath.substring(filePath.lastIndexOf("/") + 1) : filePath;
-            lines.add("## File Path : " + fileName);
+            lines.add("## File Path : " + filePath);
 
             if (artifacts.isEmpty()) {
                 continue;
@@ -762,8 +761,8 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("---");
             lines.add("");
-            String fileName = filePath.contains("/") ? filePath.substring(filePath.lastIndexOf("/") + 1) : filePath;
-            lines.add("## File Path : " + packagePrefix + "/" + fileName);
+            String fullPath = packagePrefix + "/" + filePath;
+            lines.add("## File Path : " + fullPath);
 
             if (artifacts.isEmpty()) {
                 continue;
