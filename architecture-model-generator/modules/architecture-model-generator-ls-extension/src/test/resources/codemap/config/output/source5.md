@@ -24,30 +24,27 @@ const int MAX_CONNECTIONS = 100 [L:24 - L:24]
 ```
 
 ```ballerina
-// Stores the product items added to the cart and retrieves them.
+# Stores the product items added to the cart and retrieves them.
 service "CartService" on new grpc:Listener(9092) { [L:30 - L:80]
     private final DataStore store [L:37 - L:37]
     function init() returns error? [L:39 - L:47]
-    // Adds an item to the cart.
-    //
-    //
-    // # + request - `AddItemRequest` containing the user id and the `CartItem`
-    //
-    // # + return - an `Empty` value or an error
+    # Adds an item to the cart.
+    #
+    # + request - `AddItemRequest` containing the user id and the `CartItem`
+    #
+    # + return - an `Empty` value or an error
     remote function AddItem(stubs:AddItemRequest : request) returns stubs:Empty|error [L:49 - L:58]
-    // Provides the cart with items.
-    //
-    //
-    // # + request - `GetCartRequest` containing the user id
-    //
-    // # + return - `Cart` containing the items or an error
+    # Provides the cart with items.
+    #
+    # + request - `GetCartRequest` containing the user id
+    #
+    # + return - `Cart` containing the items or an error
     remote function GetCart(stubs:GetCartRequest : request) returns stubs:Cart|error [L:60 - L:68]
-    // Clears the cart.
-    //
-    //
-    // # + request - `EmptyCartRequest` containing the user id
-    //
-    // # + return - `Empty` value or an error
+    # Clears the cart.
+    #
+    # + request - `EmptyCartRequest` containing the user id
+    #
+    # + return - `Empty` value or an error
     remote function EmptyCart(stubs:EmptyCartRequest : request) returns stubs:Empty|error [L:70 - L:79]
 }
 ```

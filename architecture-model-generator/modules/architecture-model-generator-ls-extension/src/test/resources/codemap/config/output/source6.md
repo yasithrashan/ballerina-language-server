@@ -13,19 +13,18 @@ import ballerina/constraint [L:4 - L:4]
 
 ```ballerina
 type People record [L:62 - L:62]
-// Represents a user.
+# Represents a user.
 type User record [L:69 - L:77]
-// Represents a user with metadata.
+# Represents a user with metadata.
 type UserWithMetadata record [L:80 - L:101]
 ```
 
 ```ballerina
-// Description.
-//
-//
-// # + value - Parameter description
-//
-// # + return - Return value description
+# Description.
+#
+# + value - Parameter description
+#
+# + return - Return value description
 function getValue(int : value) returns int [L:8 - L:14]
 function testFunction() [L:17 - L:24]
 function emptyAnnotationExample() [L:27 - L:30]
@@ -39,14 +38,13 @@ function afterFunc() [L:127 - L:129]
 ```
 
 ```ballerina
-// Description.
+# Description.
 service / on new http:Listener(8080) { [L:104 - L:120]
-    // Description.
-    //
-    //
-    // # + caller - Parameter description.
-    //
-    // # + request - Parameter description.
+    # Description.
+    #
+    # + caller - Parameter description.
+    #
+    # + request - Parameter description.
     resource function get greeting(http:Caller : caller, http:Request : request) [L:107 - L:119]
 }
 ```
