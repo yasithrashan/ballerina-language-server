@@ -7,8 +7,9 @@
 
 ## File Path : utils/utils.bal
 
-### Functions
-- public function hello(string? : name) returns string [L:1 - L:6]
+```ballerina
+public function hello(string? : name) returns string [L:1 - L:6]
+```
 
 ---
 
@@ -17,9 +18,11 @@
 
 ## File Path : hello_app/main.bal
 
-### Imports
-- ballerina/io [L:1 - L:1]
-- wso2/utils [L:2 - L:2]
+```ballerina
+import ballerina/io [L:1 - L:1]
+import wso2/utils [L:2 - L:2]
+```
 
-### Automations (Entry Points)
-- public function main() [L:4 - L:7]
+```ballerina
+public function main() [L:4 - L:7]
+```

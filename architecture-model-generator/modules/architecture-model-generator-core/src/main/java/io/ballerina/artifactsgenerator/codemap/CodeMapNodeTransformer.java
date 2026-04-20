@@ -753,7 +753,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                             // Handle different types of documentation lines
                             StringBuilder lineContent = new StringBuilder();
                             if (documentationLine instanceof MarkdownDocumentationLineNode) {
-                                NodeList<Node> elements = ((MarkdownDocumentationLineNode) documentationLine).documentElements();
+                                NodeList<Node> elements = ((MarkdownDocumentationLineNode) documentationLine)
+                                        .documentElements();
                                 elements.forEach(element -> lineContent.append(element.toSourceCode()));
                             } else {
                                 // For parameter and return documentation lines, use toSourceCode directly
