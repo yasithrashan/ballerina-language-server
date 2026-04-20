@@ -19,6 +19,11 @@
 
 ### Functions
 // Description.
+//
+//
+// # + value - Parameter description
+//
+// # + return - Return value description
 - function getValue(int : value) returns int [L:8 - L:14]
 - function testFunction() [L:17 - L:24]
 - function emptyAnnotationExample() [L:27 - L:30]
@@ -36,4 +41,9 @@
 
     #### Functions
     // Description.
+    //
+    //
+    // # + caller - Parameter description.
+    //
+    // # + request - Parameter description.
     - resource function get greeting(http:Caller : caller, http:Request : request) [L:107 - L:119]

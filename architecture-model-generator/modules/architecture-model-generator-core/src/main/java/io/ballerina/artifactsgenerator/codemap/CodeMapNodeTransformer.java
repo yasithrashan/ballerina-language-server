@@ -734,14 +734,34 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .map(node -> {
                     MarkdownDocumentationNode docNode = (MarkdownDocumentationNode) node;
                     StringBuilder description = new StringBuilder();
+                    boolean firstLine = true;
+
                     for (Node documentationLine : docNode.documentationLines()) {
                         SyntaxKind lineKind = documentationLine.kind();
+
                         if (lineKind == SyntaxKind.MARKDOWN_DOCUMENTATION_LINE ||
                                 lineKind == SyntaxKind.MARKDOWN_REFERENCE_DOCUMENTATION_LINE ||
-                                lineKind == SyntaxKind.MARKDOWN_DEPRECATION_DOCUMENTATION_LINE) {
-                            NodeList<Node> elements =
-                                    ((MarkdownDocumentationLineNode) documentationLine).documentElements();
-                            elements.forEach(element -> description.append(element.toSourceCode()));
+                                lineKind == SyntaxKind.MARKDOWN_DEPRECATION_DOCUMENTATION_LINE ||
+                                lineKind == SyntaxKind.MARKDOWN_PARAMETER_DOCUMENTATION_LINE ||
+                                lineKind == SyntaxKind.MARKDOWN_RETURN_PARAMETER_DOCUMENTATION_LINE) {
+
+                            if (!firstLine) {
+                                description.append('\n');
+                            }
+                            firstLine = false;
+
+                            // Handle different types of documentation lines
+                            StringBuilder lineContent = new StringBuilder();
+                            if (documentationLine instanceof MarkdownDocumentationLineNode) {
+                                NodeList<Node> elements = ((MarkdownDocumentationLineNode) documentationLine).documentElements();
+                                elements.forEach(element -> lineContent.append(element.toSourceCode()));
+                            } else {
+                                // For parameter and return documentation lines, use toSourceCode directly
+                                lineContent.append(documentationLine.toSourceCode());
+                            }
+                            String line = lineContent.toString();
+                            // Add the line content (may be empty for blank doc lines)
+                            description.append(line);
                         }
                     }
                     return description.toString().strip();

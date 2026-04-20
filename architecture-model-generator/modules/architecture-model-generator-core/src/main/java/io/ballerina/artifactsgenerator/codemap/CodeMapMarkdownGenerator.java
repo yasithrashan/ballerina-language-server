@@ -277,11 +277,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Configurables");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above configurable
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above configurable
+            renderMultiLineDocumentation(lines, artifact, "");
 
             StringBuilder configurableLine = new StringBuilder();
             configurableLine.append("- configurable ");
@@ -312,11 +309,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Variables");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above variable
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above variable
+            renderMultiLineDocumentation(lines, artifact, "");
 
             StringBuilder variableLine = new StringBuilder();
             variableLine.append("- ").append(modifiersPrefix(artifact));
@@ -354,11 +348,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Types");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above type
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above type
+            renderMultiLineDocumentation(lines, artifact, "");
 
             String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
             StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact))
@@ -380,11 +371,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Functions");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above function
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above function
+            renderMultiLineDocumentation(lines, artifact, "");
 
             StringBuilder signature = new StringBuilder(modifiersPrefix(artifact))
                 .append("function ").append(artifact.name());
@@ -428,11 +416,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Listeners");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above listener
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above listener
+            renderMultiLineDocumentation(lines, artifact, "");
 
             StringBuilder listenerLine = new StringBuilder("- listener ").append(artifact.name());
             String type = getPropertyAsString(artifact, "type", "");
@@ -452,11 +437,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Connections");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above connection
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above connection
+            renderMultiLineDocumentation(lines, artifact, "");
 
             lines.add("- " + modifiersPrefix(artifact) + artifact.name() + getInlineRange(artifact));
         }
@@ -471,10 +453,7 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Services (Entry Points)");
 
         for (CodeMapArtifact artifact : artifacts) {
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            renderMultiLineDocumentation(lines, artifact, "");
 
             StringBuilder serviceLine = new StringBuilder("- ")
                 .append(modifiersPrefix(artifact))
@@ -551,11 +530,8 @@ public class CodeMapMarkdownGenerator {
         lines.add("### Classes");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Documentation (optional) - add as comment above class
-            String doc = getPropertyAsString(artifact, "documentation", "");
-            if (!doc.isEmpty()) {
-                lines.add("// " + doc);
-            }
+            // Documentation (optional) - add as multi-line comment above class
+            renderMultiLineDocumentation(lines, artifact, "");
 
             lines.add("- " + modifiersPrefix(artifact) + "class " + artifact.name() + getInlineRange(artifact));
 
@@ -630,11 +606,8 @@ public class CodeMapMarkdownGenerator {
     private static void renderSingleFunction(List<String> lines, CodeMapArtifact artifact,
                                               String indent, boolean isResource) {
 
-        // Documentation (optional) - add as comment above function
-        String doc = getPropertyAsString(artifact, "documentation", "");
-        if (!doc.isEmpty()) {
-            lines.add(indent + "// " + doc);
-        }
+        // Documentation (optional) - add as multi-line comment above function
+        renderMultiLineDocumentation(lines, artifact, indent);
 
         // Build function signature
         StringBuilder signature = new StringBuilder(indent).append("- ");
@@ -869,6 +842,33 @@ public class CodeMapMarkdownGenerator {
 
         lines.add("");
         return String.join("\n", lines);
+    }
+
+    /**
+     * Renders multi-line documentation comments in the markdown format.
+     * Handles documentation that contains newlines and formats it as proper multi-line comments.
+     *
+     * @param lines the output lines list to add formatted documentation to
+     * @param artifact the artifact containing the documentation
+     * @param indent the indentation to apply to each line
+     */
+    private static void renderMultiLineDocumentation(List<String> lines, CodeMapArtifact artifact, String indent) {
+        String doc = getPropertyAsString(artifact, "documentation", "");
+        if (doc.isEmpty()) {
+            return;
+        }
+
+        // Split the documentation into lines and render each line as a comment
+        String[] docLines = doc.split("\\r?\\n");
+        for (String line : docLines) {
+            // Trim whitespace and handle empty lines
+            String trimmedLine = line.trim();
+            if (trimmedLine.isEmpty()) {
+                lines.add(indent + "//");
+            } else {
+                lines.add(indent + "// " + trimmedLine);
+            }
+        }
     }
 
     /**
