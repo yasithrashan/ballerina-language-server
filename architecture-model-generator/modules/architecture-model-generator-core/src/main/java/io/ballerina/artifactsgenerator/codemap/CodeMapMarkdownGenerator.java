@@ -107,7 +107,9 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("---");
             lines.add("");
-            lines.add("## File Path : " + filePath);
+            // Extract just the filename from the full path
+            String fileName = filePath.contains("/") ? filePath.substring(filePath.lastIndexOf("/") + 1) : filePath;
+            lines.add("## File Path : " + fileName);
 
             if (artifacts.isEmpty()) {
                 continue;
@@ -746,6 +748,62 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
+     * Generates markdown from a code map response with a custom project name and package prefix for file paths.
+     *
+     * @param files the code map files organized by file path
+     * @param projectName the name of the project/package
+     * @param packagePrefix the package name to prefix file paths with
+     * @return the generated markdown string
+     */
+    public static String generateMarkdownWithPackagePrefix(Map<String, CodeMapFile> files, String projectName,
+                                                           String packagePrefix) {
+        if (files == null || files.isEmpty()) {
+            return "# " + projectName + " Codebase Summary\n\nNo files found.";
+        }
+
+        List<String> lines = new ArrayList<>();
+        lines.add("# " + projectName + " Codebase Summary");
+
+        for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
+            String filePath = entry.getKey();
+            CodeMapFile fileData = entry.getValue();
+            List<CodeMapArtifact> artifacts = fileData.artifacts();
+
+            lines.add("");
+            lines.add("---");
+            lines.add("");
+            // Extract just the filename from the full path and prefix with package name
+            String fileName = filePath.contains("/") ? filePath.substring(filePath.lastIndexOf("/") + 1) : filePath;
+            lines.add("## File Path : " + packagePrefix + "/" + fileName);
+
+            if (artifacts.isEmpty()) {
+                continue;
+            }
+
+            // Group artifacts by type
+            ArtifactGroups groups = new ArtifactGroups();
+            categorizeArtifacts(artifacts, groups);
+
+            // Render sections in order (only non-empty)
+            renderCodeIssues(lines, groups.codeIssues);
+            renderImports(lines, groups.imports);
+            renderConfigurables(lines, groups.configurables);
+            renderVariables(lines, groups.variables);
+            renderTypes(lines, groups.types);
+            renderFunctions(lines, groups.functions);
+            renderAutomations(lines, groups.automations);
+            renderListeners(lines, groups.listeners);
+            renderConnections(lines, groups.connections);
+            renderServices(lines, groups.services);
+            renderClasses(lines, groups.classes);
+            renderDataMappers(lines, groups.dataMappers);
+        }
+
+        lines.add("");
+        return String.join("\n", lines);
+    }
+
+    /**
      * Generates consolidated markdown for all packages in a workspace.
      *
      * @param workspaceCodeMap a map of package names to their code map files
@@ -787,7 +845,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("## Package: " + packageName);
 
             // Generate markdown for this package using existing method with package name
-            String packageMarkdown = generateMarkdown(packageFiles, packageName);
+            String packageMarkdown = generateMarkdownWithPackagePrefix(packageFiles, packageName, packageName);
 
             // Remove the first line (package header) from package markdown to avoid duplicate headers
             String[] packageLines = packageMarkdown.split("\n");

@@ -5,7 +5,7 @@
 ## Package: utils
 ---
 
-## File Path : utils.bal
+## File Path : utils/utils.bal
 
 ### Functions
 - public function hello(string? : name) returns string [L:1 - L:6]
@@ -15,7 +15,7 @@
 ## Package: hello_app
 ---
 
-## File Path : main.bal
+## File Path : hello_app/main.bal
 
 ### Imports
 - ballerina/io [L:1 - L:1]
