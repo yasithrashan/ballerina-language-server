@@ -2,86 +2,46 @@
 
 ---
 
-## File Path : agents.bal
-
----
-
-## File Path : automation.bal
-
-```ballerina
-import ballerina/log [L:1 - L:1]
-import ballerinax/googleapis.sheets as sheets [L:2 - L:2]
-```
-
-```ballerina
-SheetRow columns [L:5 - L:5]
-string currentTimeStamp [L:6 - L:6]
-```
-
-```ballerina
-public function main() returns error? [L:8 - L:75]
-```
-
----
-
-## File Path : config.bal
-
-```ballerina
-configurable salesforceConfig [L:1 - L:7]
-configurable googleConfig [L:9 - L:13]
-configurable timezone [L:15 - L:15]
-configurable spreadsheetId [L:16 - L:16]
-configurable timeFrame [L:26 - L:26]
-```
-
-```ballerina
-type TimeFrame enum [L:18 - L:24]
-```
-
----
-
-## File Path : connections.bal
-
-```ballerina
-import ballerinax/salesforce [L:1 - L:1]
-import ballerinax/googleapis.sheets as sheets [L:2 - L:2]
-```
-
-```ballerina
-final salesforce:Client salesforceClient [L:4 - L:12]
-final sheets:Client sheetsClient [L:14 - L:21]
-```
-
----
-
-## File Path : data_mappings.bal
-
-```ballerina
-function mapOpportunityToRow(Opportunity : account) returns SheetRow [L:2 - L:13]
-```
-
----
-
-## File Path : functions.bal
-
-```ballerina
-import ballerina/time [L:1 - L:1]
-```
-
-```ballerina
-function getFormattedCurrentTimeStamp() returns string|error [L:3 - L:11]
-```
-
----
-
 ## File Path : main.bal
 
----
-
-## File Path : types.bal
+```ballerina
+import ballerina/io [L:1 - L:1]
+import ballerina/test [L:2 - L:2]
+import ballerina/http [L:3 - L:3]
+import ballerina/constraint [L:4 - L:4]
+```
 
 ```ballerina
-type Attributes record [L:2 - L:5]
-type Opportunity record [L:7 - L:49]
-type SheetRow (int|string|decimal|boolean|float)[] [L:51 - L:51]
+type People record [L:62 - L:62]
+# Represents a user.
+type User record [L:69 - L:77]
+# Represents a user with metadata.
+type UserWithMetadata record [L:80 - L:101]
+```
+
+```ballerina
+# Description.
+# + value - Parameter description
+# + return - Return value description
+function getValue(int : value) returns int [L:8 - L:14]
+function testFunction() [L:17 - L:24]
+function emptyAnnotationExample() [L:27 - L:30]
+public function secureFunction1(string : secureInName, int : secureInId, string : insecureIn) [L:36 - L:39]
+public function secureFunction2(string : secureInName, int : secureInId, string : insecureIn) [L:41 - L:49]
+public function taintedReturn1() returns string [L:52 - L:54]
+public function taintedReturn2() returns string [L:56 - L:59]
+function inlineCommentExample() [L:64 - L:66]
+function beforeFunc() [L:123 - L:125]
+function afterFunc() [L:127 - L:129]
+```
+
+```ballerina
+# Description.
+service / on new http:Listener(8080) { [L:104 - L:120]
+    # Description.
+    # Test description.
+    # + caller - Parameter description.
+    # + request - Parameter description.
+    resource function get greeting(http:Caller : caller, http:Request : request) [L:107 - L:119]
+}
 ```
