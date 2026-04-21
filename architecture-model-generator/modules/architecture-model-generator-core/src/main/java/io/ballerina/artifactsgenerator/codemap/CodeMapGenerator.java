@@ -23,7 +23,9 @@ import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
 import io.ballerina.modelgenerator.commons.ModuleInfo;
 import io.ballerina.projects.Document;
+import io.ballerina.projects.DocumentId;
 import io.ballerina.projects.Module;
+import io.ballerina.projects.ModuleId;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectKind;
@@ -88,17 +90,17 @@ public class CodeMapGenerator {
                 }))
                 .collect(Collectors.toList());
 
-        for (var moduleId : sortedModules) {
+        for (ModuleId moduleId : sortedModules) {
             Module module = currentPackage.module(moduleId);
             ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
 
             // Sort documents alphabetically for consistent order
-            var sortedDocs = module.documentIds()
+            List<DocumentId> sortedDocs = module.documentIds()
                     .stream()
                     .sorted(Comparator.comparing(docId -> module.document(docId).name()))
                     .collect(Collectors.toList());
 
-            for (var documentId : sortedDocs) {
+            for (DocumentId documentId : sortedDocs) {
                 Document document = module.document(documentId);
                 String fileName = document.name();
                 String relativeFilePath = getRelativeFilePath(module, fileName);
