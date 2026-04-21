@@ -1,42 +1,40 @@
-# menu_app Codebase Summary
+# source7 Codebase Summary
 
 ---
 
-## File Path : main.bal
+## Package: utils
+---
+
+## File Path : utils/utils.bal
 
 ```ballerina
-import ballerina/io [L:1 - L:1]
-import wso2/menu_app.menu [L:2 - L:2]
-import wso2/menu_app.dinner [L:3 - L:3]
-```
-
-```ballerina
-public function main() [L:5 - L:16]
+public function hello(string? : name) returns string [L:1 - L:6]
 ```
 
 ---
 
-## File Path : modules/dinner/dinner.bal
+## Package: hello_app
+---
+
+## File Path : hello_app/main.bal
 
 ```ballerina
 import ballerina/io [L:1 - L:1]
+import wso2/utils [L:2 - L:2]
 ```
 
 ```ballerina
-public function getDinnerRequest(string : userEmail) [L:3 - L:5]
-public function upsertDinnerRequest(string : userEmail, string : mealOption, string : date) [L:7 - L:9]
-public function cancelDinnerRequest(string : userEmail) [L:11 - L:13]
+public function main() [L:4 - L:7]
 ```
 
 ---
 
-## File Path : modules/menu/menu.bal
+## File Path : hello_app/modules/authentication/main.bal
 
 ```ballerina
 import ballerina/io [L:1 - L:1]
 ```
 
 ```ballerina
-public function getMenu() [L:3 - L:10]
-public function addFeedback(string : message) [L:12 - L:14]
+public function main() [L:3 - L:5]
 ```

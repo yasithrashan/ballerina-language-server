@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "test_with_semantic_error"
+version = "0.1.0"
