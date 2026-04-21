@@ -24,7 +24,9 @@ type UserWithMetadata record [L:80 - L:101]
 # + value - Parameter description
 # + return - Return value description
 function getValue(int : value) returns int [L:8 - L:14]
+@test:Config(before: beforeFunc, after: afterFunc)
 function testFunction() [L:17 - L:24]
+@test:Config
 function emptyAnnotationExample() [L:27 - L:30]
 public function secureFunction1(string : secureInName, int : secureInId, string : insecureIn) [L:36 - L:39]
 public function secureFunction2(string : secureInName, int : secureInId, string : insecureIn) [L:41 - L:49]

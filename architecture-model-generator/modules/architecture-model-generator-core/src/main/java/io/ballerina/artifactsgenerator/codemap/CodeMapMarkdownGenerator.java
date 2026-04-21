@@ -435,6 +435,7 @@ public class CodeMapMarkdownGenerator {
     /**
      * Renders a single function signature with appropriate formatting.
      * Handles both regular functions and resource functions with different syntax.
+     * Includes annotations if present.
      *
      * @param artifact the function artifact to render
      * @param indent the indentation string for the function
@@ -568,6 +569,7 @@ public class CodeMapMarkdownGenerator {
 
     /**
      * Renders a regular function signature with parameters and return type.
+     * Includes annotations if present.
      *
      * @param artifact the function artifact to render
      * @return the formatted function signature string
@@ -618,15 +620,17 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders API documentation comments from artifact documentation property.
+     * Renders API documentation comments and annotations from artifact properties.
      * Preserves existing comment formatting and adds comment markers for plain text.
      * Handles multi-line documentation with proper indentation.
      *
      * @param lines the list to append documentation lines to
-     * @param artifact the artifact containing documentation
+     * @param artifact the artifact containing documentation and annotations
      * @param indent the indentation string for the comments
      */
     private static void renderApiDocumentation(List<String> lines, CodeMapArtifact artifact, String indent) {
+        // Render annotations first
+        renderAnnotations(lines, artifact, indent);
         String doc = getPropertyAsString(artifact, "documentation", "");
         if (doc.isEmpty()) {
             return;
@@ -648,6 +652,21 @@ public class CodeMapMarkdownGenerator {
                     lines.add(indent + "# " + trimmedLine);
                 }
             }
+        }
+    }
+
+    /**
+     * Renders annotations for an artifact with proper indentation.
+     * Annotations are displayed before the artifact declaration.
+     *
+     * @param lines the list to append annotation lines to
+     * @param artifact the artifact containing annotations
+     * @param indent the indentation string for the annotations
+     */
+    private static void renderAnnotations(List<String> lines, CodeMapArtifact artifact, String indent) {
+        List<String> annotations = getPropertyAsStringList(artifact, "annotations");
+        for (String annotation : annotations) {
+            lines.add(indent + annotation);
         }
     }
 

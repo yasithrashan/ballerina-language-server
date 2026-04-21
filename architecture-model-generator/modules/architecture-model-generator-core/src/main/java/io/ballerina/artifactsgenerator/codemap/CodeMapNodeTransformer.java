@@ -30,6 +30,8 @@ import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeSymbol;
 import io.ballerina.compiler.api.symbols.VariableSymbol;
+import io.ballerina.compiler.syntax.tree.AnnotationNode;
+import io.ballerina.compiler.syntax.tree.BasicLiteralNode;
 import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
 import io.ballerina.compiler.syntax.tree.ConstantDeclarationNode;
 import io.ballerina.compiler.syntax.tree.DefaultableParameterNode;
@@ -43,6 +45,8 @@ import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
 import io.ballerina.compiler.syntax.tree.ImplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.ImportDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ListenerDeclarationNode;
+import io.ballerina.compiler.syntax.tree.MappingConstructorExpressionNode;
+import io.ballerina.compiler.syntax.tree.MappingFieldNode;
 import io.ballerina.compiler.syntax.tree.MarkdownDocumentationLineNode;
 import io.ballerina.compiler.syntax.tree.MarkdownDocumentationNode;
 import io.ballerina.compiler.syntax.tree.MetadataNode;
@@ -57,10 +61,13 @@ import io.ballerina.compiler.syntax.tree.ObjectFieldNode;
 import io.ballerina.compiler.syntax.tree.ParameterNode;
 import io.ballerina.compiler.syntax.tree.ParenthesizedArgList;
 import io.ballerina.compiler.syntax.tree.PositionalArgumentNode;
+import io.ballerina.compiler.syntax.tree.QualifiedNameReferenceNode;
 import io.ballerina.compiler.syntax.tree.RequiredParameterNode;
 import io.ballerina.compiler.syntax.tree.RestParameterNode;
 import io.ballerina.compiler.syntax.tree.SeparatedNodeList;
 import io.ballerina.compiler.syntax.tree.ServiceDeclarationNode;
+import io.ballerina.compiler.syntax.tree.SimpleNameReferenceNode;
+import io.ballerina.compiler.syntax.tree.SpecificFieldNode;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.compiler.syntax.tree.Token;
 import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
@@ -122,6 +129,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String PROP_VALUE = "value";
     private static final String PROP_FIELDS = "fields";
     private static final String PROP_ACCESSOR = "accessor";
+    private static final String PROP_ANNOTATIONS = "annotations";
 
     // Other constants
     private static final String RECORD_TYPE_NAME = "record";
@@ -171,6 +179,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
         extractInlineComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
+
+        List<String> annotations = extractAnnotations(functionDefinitionNode.metadata());
+        if (!annotations.isEmpty()) {
+            functionBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
 
         functionBuilder.type(TYPE_FUNCTION);
 
@@ -241,6 +254,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         extractDocumentation(serviceDeclarationNode.metadata()).ifPresent(serviceBuilder::documentation);
         extractInlineComments(serviceDeclarationNode).ifPresent(serviceBuilder::comment);
 
+        List<String> annotations = extractAnnotations(serviceDeclarationNode.metadata());
+        if (!annotations.isEmpty()) {
+            serviceBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
+
         serviceDeclarationNode.members().forEach(member -> {
             member.apply(this).ifPresent(serviceBuilder::addChild);
         });
@@ -310,6 +328,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         extractDocumentation(listenerDeclarationNode.metadata()).ifPresent(listenerBuilder::documentation);
         extractInlineComments(listenerDeclarationNode).ifPresent(listenerBuilder::comment);
+
+        List<String> annotations = extractAnnotations(listenerDeclarationNode.metadata());
+        if (!annotations.isEmpty()) {
+            listenerBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
 
         return Optional.of(listenerBuilder.build());
     }
@@ -383,6 +406,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         extractDocumentation(constantDeclarationNode.metadata()).ifPresent(constantBuilder::documentation);
         extractInlineComments(constantDeclarationNode).ifPresent(constantBuilder::comment);
 
+        List<String> annotations = extractAnnotations(constantDeclarationNode.metadata());
+        if (!annotations.isEmpty()) {
+            constantBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
+
         return Optional.of(constantBuilder.build());
     }
 
@@ -422,6 +450,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         extractDocumentation(moduleVariableDeclarationNode.metadata()).ifPresent(variableBuilder::documentation);
         extractInlineComments(moduleVariableDeclarationNode).ifPresent(variableBuilder::comment);
 
+        List<String> annotations = extractAnnotations(moduleVariableDeclarationNode.metadata());
+        if (!annotations.isEmpty()) {
+            variableBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
+
         return Optional.of(variableBuilder.build());
     }
 
@@ -449,6 +482,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
         extractInlineComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
 
+        List<String> annotations = extractAnnotations(typeDefinitionNode.metadata());
+        if (!annotations.isEmpty()) {
+            typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
+
         return Optional.of(typeBuilder.build());
     }
 
@@ -470,6 +508,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
         extractInlineComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
+
+        List<String> annotations = extractAnnotations(enumDeclarationNode.metadata());
+        if (!annotations.isEmpty()) {
+            typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
         return Optional.of(typeBuilder.build());
     }
 
@@ -484,6 +527,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
         extractInlineComments(classDefinitionNode).ifPresent(classBuilder::comment);
+
+        List<String> annotations = extractAnnotations(classDefinitionNode.metadata());
+        if (!annotations.isEmpty()) {
+            classBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
 
         classDefinitionNode.members().forEach(member -> {
             member.apply(this).ifPresent(classBuilder::addChild);
@@ -790,6 +838,77 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             return Optional.empty();
         }
         return Optional.of(String.join(System.lineSeparator(), comments));
+    }
+
+    private List<String> extractAnnotations(Optional<MetadataNode> metadata) {
+        if (metadata.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<String> annotations = new ArrayList<>();
+        for (AnnotationNode annotation : metadata.get().annotations()) {
+            StringBuilder annotationStr = new StringBuilder("@");
+
+            // Extract the annotation reference
+            Node annotReference = annotation.annotReference();
+            if (annotReference.kind() == SyntaxKind.QUALIFIED_NAME_REFERENCE) {
+                QualifiedNameReferenceNode qNameRef = (QualifiedNameReferenceNode) annotReference;
+                String prefix = qNameRef.modulePrefix().text();
+                String identifier = qNameRef.identifier().text();
+                annotationStr.append(prefix).append(":").append(identifier);
+            } else if (annotReference.kind() == SyntaxKind.SIMPLE_NAME_REFERENCE) {
+                SimpleNameReferenceNode simpleRef = (SimpleNameReferenceNode) annotReference;
+                annotationStr.append(simpleRef.name().text());
+            } else {
+                annotationStr.append(annotReference.toSourceCode().strip());
+            }
+
+            // Extract annotation value if present
+            Optional<MappingConstructorExpressionNode> annotValue = annotation.annotValue();
+            if (annotValue.isPresent()) {
+                annotationStr.append("(").append(extractAnnotationValue(annotValue.get())).append(")");
+            }
+
+            annotations.add(annotationStr.toString());
+        }
+        return annotations;
+    }
+
+    private String extractAnnotationValue(MappingConstructorExpressionNode mappingNode) {
+        List<String> fields = new ArrayList<>();
+
+        for (MappingFieldNode field : mappingNode.fields()) {
+            if (field instanceof SpecificFieldNode specificField) {
+                String fieldName = specificField.fieldName().toSourceCode().strip();
+                Optional<ExpressionNode> valueExpr = specificField.valueExpr();
+
+                if (valueExpr.isPresent()) {
+                    String value = extractExpressionValue(valueExpr.get());
+                    fields.add(fieldName + ": " + value);
+                }
+            } else {
+                // Handle other field types by using source code
+                fields.add(field.toSourceCode().strip());
+            }
+        }
+
+        return String.join(", ", fields);
+    }
+
+    private String extractExpressionValue(ExpressionNode expression) {
+        if (expression.kind() == SyntaxKind.STRING_LITERAL) {
+            BasicLiteralNode literalNode = (BasicLiteralNode) expression;
+            String value = literalNode.literalToken().text();
+            // Keep quotes for string literals in annotation display
+            return value;
+        } else if (expression.kind() == SyntaxKind.BOOLEAN_LITERAL ||
+                   expression.kind() == SyntaxKind.NUMERIC_LITERAL) {
+            BasicLiteralNode literalNode = (BasicLiteralNode) expression;
+            return literalNode.literalToken().text();
+        } else {
+            // For complex expressions, return the source code
+            return expression.toSourceCode().strip();
+        }
     }
 
 }
