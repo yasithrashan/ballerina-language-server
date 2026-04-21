@@ -187,9 +187,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         functionBuilder.type(TYPE_FUNCTION);
 
-        if (functionName.equals(MAIN_FUNCTION_NAME)) {
-            functionBuilder.name(MAIN_FUNCTION_NAME);
-        } else if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
+        if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
             functionBuilder
                     .name(pathString)
@@ -313,7 +311,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         listenerDeclarationNode.typeDescriptor().flatMap(semanticModel::symbol).ifPresent(symbol -> {
             if (symbol instanceof TypeSymbol typeSymbol) {
                 listenerBuilder.addProperty(PROP_TYPE,
-                        io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo));
+                        CommonUtils.getTypeSignature(typeSymbol, moduleInfo));
             }
         });
 
@@ -442,7 +440,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         semanticModel.symbol(moduleVariableDeclarationNode).ifPresent(symbol -> {
             if (symbol instanceof VariableSymbol variableSymbol) {
                 variableBuilder.addProperty(PROP_TYPE,
-                        io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(
+                        CommonUtils.getTypeSignature(
                                 variableSymbol.typeDescriptor(), moduleInfo));
             }
         });
@@ -471,21 +469,21 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 // just use "record" since fields are extracted separately
                 String typeDescriptor = isRecordType(typeSymbol)
                         ? RECORD_TYPE_NAME
-                        : io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
+                        : CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
                 typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeDescriptor);
+
+                List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
+                typeBuilder.addProperty(PROP_FIELDS, fields);
+
+                List<String> annotations = extractAnnotations(typeDefinitionNode.metadata());
+                if (!annotations.isEmpty()) {
+                    typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+                }
             }
         });
 
-        List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
-        typeBuilder.addProperty(PROP_FIELDS, fields);
-
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
         extractInlineComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
-
-        List<String> annotations = extractAnnotations(typeDefinitionNode.metadata());
-        if (!annotations.isEmpty()) {
-            typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
 
         return Optional.of(typeBuilder.build());
     }
@@ -655,7 +653,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 if (recordType != null) {
                     for (RecordFieldSymbol field : recordType.fieldDescriptors().values()) {
                         fields.add(field.getName().orElse("") + ": " +
-                                io.ballerina.designmodelgenerator.core.CommonUtils.getTypeSignature(
+                                CommonUtils.getTypeSignature(
                                         field.typeDescriptor(), moduleInfo));
                     }
                 }
@@ -710,19 +708,19 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (expression instanceof ExplicitNewExpressionNode explicitNewExpr) {
             return semanticModel.symbol(explicitNewExpr.typeDescriptor())
                     .filter(symbol -> symbol instanceof TypeSymbol)
-                    .map(symbol -> io.ballerina.designmodelgenerator.core.CommonUtils
+                    .map(symbol -> CommonUtils
                             .getTypeSignature((TypeSymbol) symbol, moduleInfo));
         }
 
         if (expression instanceof ImplicitNewExpressionNode) {
             return semanticModel.typeOf(expression)
-                    .map(typeSymbol -> io.ballerina.designmodelgenerator.core.CommonUtils
+                    .map(typeSymbol -> CommonUtils
                             .getTypeSignature(typeSymbol, moduleInfo));
         }
         return semanticModel.symbol(expression)
                 .filter(symbol -> symbol instanceof VariableSymbol)
                 .map(symbol -> ((VariableSymbol) symbol).typeDescriptor())
-                .map(typeSymbol -> io.ballerina.designmodelgenerator.core.CommonUtils
+                .map(typeSymbol -> CommonUtils
                         .getTypeSignature(typeSymbol, moduleInfo));
     }
 
