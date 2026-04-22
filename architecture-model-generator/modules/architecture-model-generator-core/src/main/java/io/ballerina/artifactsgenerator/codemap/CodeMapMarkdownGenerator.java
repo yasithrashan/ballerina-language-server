@@ -34,39 +34,6 @@ import java.util.stream.Collectors;
 public class CodeMapMarkdownGenerator {
 
     /**
-     * Generates Markdown documentation for a single Ballerina source file.
-     *
-     * @param filePath the path to the source file
-     * @param codeMapFile the parsed code map data for the file
-     * @return Markdown string representation of the file's contents
-     */
-    public static String generateFileMarkdown(String filePath, CodeMapFile codeMapFile) {
-        if (codeMapFile == null) {
-            return "";
-        }
-
-        List<String> lines = new ArrayList<>();
-        lines.add("### " + filePath);
-
-        if (codeMapFile.artifacts().isEmpty()) {
-            return String.join("\n", lines);
-        }
-
-        renderArtifacts(lines, codeMapFile.artifacts());
-        return String.join("\n", lines);
-    }
-
-    /**
-     * Generates Markdown documentation for multiple files using default project name.
-     *
-     * @param files map of file paths to their code map data
-     * @return Markdown string representation of the project
-     */
-    public static String generateMarkdown(Map<String, CodeMapFile> files) {
-        return generateMarkdown(files, "Project");
-    }
-
-    /**
      * Generates Markdown documentation for multiple files with a custom project name.
      * Creates a structured document with file sections separated by horizontal rules.
      *
@@ -140,15 +107,6 @@ public class CodeMapMarkdownGenerator {
         return String.join("\n", lines);
     }
 
-    /**
-     * Generates workspace-level Markdown documentation using default workspace name.
-     *
-     * @param workspaceCodeMap nested map of package names to file maps
-     * @return Markdown string representation of the entire workspace
-     */
-    public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap) {
-        return generateWorkspaceMarkdown(workspaceCodeMap, "Workspace");
-    }
 
     /**
      * Generates comprehensive workspace-level Markdown documentation.

@@ -22,8 +22,7 @@ package io.ballerina.designmodelgenerator.extension.request;
  * Record representing a request for code map.
  *
  * @param projectPath The path to the project for which code map is requested
- * @param changesOnly If true, returns code map only for changed files since last request
  * @since 1.6.0
  */
-public record CodeMapRequest(String projectPath, boolean changesOnly) {
+public record CodeMapRequest(String projectPath) {
 }

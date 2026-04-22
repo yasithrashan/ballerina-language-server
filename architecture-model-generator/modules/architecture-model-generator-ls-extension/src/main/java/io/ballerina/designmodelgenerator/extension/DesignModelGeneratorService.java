@@ -44,7 +44,6 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @JavaSPIService("org.ballerinalang.langserver.commons.service.spi.ExtendedLanguageServerService")
@@ -119,32 +118,15 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 boolean isWorkspace = compilerApi.isWorkspaceProject(project);
 
                 if (isWorkspace) {
-                    // Process as workspace (all packages)
-                    if (request.changesOnly()) {
-                        // Process incremental changes for entire workspace
-                        Map<String, Object> workspaceIncrementalResult =
-                                CodeMapGenerator.processWorkspaceIncrementalChanges(
-                                        project, workspaceManager, projectPath);
-                        response.setContent(workspaceIncrementalResult);
-                    } else {
-                        // Process full workspace codemap
-                        String fullWorkspaceMarkdown = CodeMapGenerator.processFullWorkspaceCodeMap(
-                                project, workspaceManager);
-                        response.setContent(fullWorkspaceMarkdown);
-                    }
+                    // Process full workspace codemap
+                    String fullWorkspaceMarkdown = CodeMapGenerator.processFullWorkspaceCodeMap(
+                            project, workspaceManager);
+                    response.setContent(fullWorkspaceMarkdown);
                 } else {
-                    // Single package project - use existing logic
-                    if (request.changesOnly()) {
-                        // Process incremental changes only
-                        Map<String, Object> incrementalResult = CodeMapGenerator.processIncrementalChanges(
-                                project, workspaceManager, projectPath);
-                        response.setContent(incrementalResult);
-                    } else {
-                        // Process full project codemap
-                        String fullProjectMarkdown = CodeMapGenerator.processFullProjectCodeMap(
-                                project, workspaceManager);
-                        response.setContent(fullProjectMarkdown);
-                    }
+                    // Process full project codemap
+                    String fullProjectMarkdown = CodeMapGenerator.processFullProjectCodeMap(
+                            project, workspaceManager);
+                    response.setContent(fullProjectMarkdown);
                 }
             } catch (Throwable e) {
                 response.setError(e);

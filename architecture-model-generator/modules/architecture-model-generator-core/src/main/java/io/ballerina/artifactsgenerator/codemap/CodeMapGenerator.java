@@ -299,52 +299,6 @@ public class CodeMapGenerator {
         return sourceRoot.resolve("modules").resolve(module.moduleName().moduleNamePart()).resolve(fileName);
     }
 
-    /**
-     * Processes incremental changes and returns a response map containing modified files.
-     *
-     * @param project the Ballerina project
-     * @param workspaceManager the workspace manager
-     * @param projectPath the project path
-     * @return response map with modifiedFiles
-     */
-    public static Map<String, Object> processIncrementalChanges(Project project, WorkspaceManager workspaceManager,
-                                                                Path projectPath) {
-        String projectKey = projectPath.toUri().toString();
-        CodeMapFilesTracker tracker = CodeMapFilesTracker.getInstance();
-
-        // Get tracked changes
-        List<String> modifiedFiles = tracker.getModifiedFiles(projectKey);
-
-        // No changes detected
-        if (modifiedFiles.isEmpty()) {
-            return java.util.Collections.emptyMap();
-        }
-
-        // Generate codemap for modified files only
-        Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager, modifiedFiles);
-
-        // Build incremental response structure
-        Map<String, Map<String, Object>> modifiedFilesData = new LinkedHashMap<>();
-        for (Map.Entry<String, CodeMapFile> entry : codeMapFiles.entrySet()) {
-            String filePath = entry.getKey();
-            CodeMapFile codeMapFile = entry.getValue();
-            String fileMarkdown = CodeMapMarkdownGenerator.generateFileMarkdown(filePath, codeMapFile);
-
-            Map<String, Object> fileData = new HashMap<>();
-            fileData.put("markdown", fileMarkdown);
-            modifiedFilesData.put(filePath, fileData);
-        }
-
-        // Build response with changes structure
-        Map<String, Object> changesResponse = new LinkedHashMap<>();
-        changesResponse.put("modifiedFiles", modifiedFilesData);
-        changesResponse.put("deletedFiles", Collections.emptyList());
-
-        // Clear tracker after successful processing
-        tracker.clearAllFiles(projectKey);
-
-        return changesResponse;
-    }
 
     /**
      * Processes full project codemap and returns consolidated markdown content.
@@ -410,59 +364,6 @@ public class CodeMapGenerator {
         return workspaceCodeMap;
     }
 
-    /**
-     * Processes incremental changes for workspace and returns a response map containing modified files
-     * for all packages.
-     *
-     * @param project the Ballerina workspace project
-     * @param workspaceManager the workspace manager
-     * @param projectPath the project path
-     * @return response map with modifiedFiles for all packages
-     */
-    public static Map<String, Object> processWorkspaceIncrementalChanges(Project project,
-                                                                         WorkspaceManager workspaceManager,
-                                                                         Path projectPath) {
-        BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
-
-        // Check if this is a workspace project
-        if (!compilerApi.isWorkspaceProject(project)) {
-            // If not a workspace, use single package incremental processing
-            return processIncrementalChanges(project, workspaceManager, projectPath);
-        }
-
-        Map<String, Object> workspaceChangesResponse = new LinkedHashMap<>();
-        Map<String, Map<String, Map<String, Object>>> workspaceModifiedFiles = new LinkedHashMap<>();
-
-        // Get all workspace packages
-        List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
-
-        for (Project packageProject : workspaceProjects) {
-            String packageName = packageProject.currentPackage().packageName().value();
-            Path packagePath = packageProject.sourceRoot();
-
-            // Process incremental changes for this package
-            Map<String, Object> packageChanges = processIncrementalChanges(packageProject, workspaceManager,
-                    packagePath);
-
-            if (!packageChanges.isEmpty()) {
-                @SuppressWarnings("unchecked")
-                Map<String, Map<String, Object>> modifiedFiles =
-                    (Map<String, Map<String, Object>>) packageChanges.get("modifiedFiles");
-
-                if (modifiedFiles != null && !modifiedFiles.isEmpty()) {
-                    workspaceModifiedFiles.put(packageName, modifiedFiles);
-                }
-            }
-        }
-
-        // Only add to response if there are changes
-        if (!workspaceModifiedFiles.isEmpty()) {
-            workspaceChangesResponse.put("modifiedFiles", workspaceModifiedFiles);
-        }
-        workspaceChangesResponse.put("deletedFiles", Collections.emptyMap());
-
-        return workspaceChangesResponse;
-    }
 
     /**
      * Processes full workspace codemap and returns consolidated markdown content for all packages.
