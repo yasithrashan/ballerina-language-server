@@ -8,7 +8,7 @@
 ## File Path : utils/utils.bal
 
 ```ballerina
-public function hello(string? : name) returns string [L:1 - L:6]
+public function hello(string? name) returns string [L:1 - L:6]
 ```
 
 ---

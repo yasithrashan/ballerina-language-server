@@ -19,6 +19,6 @@ type Albumm record [L:3 - L:6]
 ```ballerina
 service / on new http:Listener(9090) { [L:13 - L:23]
     resource function get albums() returns Album[] [L:15 - L:17]
-    resource function post albums(Album : album) returns Album [L:19 - L:22]
+    resource function post albums(Album album) returns Album [L:19 - L:22]
 }
 ```
