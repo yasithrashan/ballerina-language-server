@@ -594,21 +594,21 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                     String paramType = safeExtractSourceCode(requiredParam.typeName());
                     String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
                     if (!paramType.isEmpty()) {
-                        parameters.add(paramName + ": " + paramType);
+                        parameters.add(paramType + " " + paramName);
                     }
                 } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
                     String paramType = safeExtractSourceCode(defaultableParam.typeName());
                     String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
                     String defaultValue = safeExtractSourceCode(defaultableParam.expression());
                     if (!paramType.isEmpty()) {
-                        parameters.add(paramName + ": " + paramType + " = " + defaultValue);
+                        parameters.add(paramType + " " + paramName + " = " + defaultValue);
                     }
                 } else if (paramNode instanceof RestParameterNode restParam) {
                     // Handle varargs parameters
                     String paramType = safeExtractSourceCode(restParam.typeName());
                     String paramName = restParam.paramName().map(name -> name.text()).orElse("");
                     if (!paramType.isEmpty()) {
-                        parameters.add(paramName + ": " + paramType + "...");
+                        parameters.add(paramType + "... " + paramName);
                     }
                 } else {
                     // Fallback for unknown parameter types

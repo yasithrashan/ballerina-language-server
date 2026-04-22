@@ -23,13 +23,13 @@ type UserWithMetadata record [L:80 - L:101]
 # Description.
 # + value - Parameter description
 # + return - Return value description
-function getValue(int : value) returns int [L:8 - L:14]
+function getValue(int value) returns int [L:8 - L:14]
 @test:Config(before: beforeFunc, after: afterFunc)
 function testFunction() [L:17 - L:24]
 @test:Config
 function emptyAnnotationExample() [L:27 - L:30]
-public function secureFunction1(string : secureInName, int : secureInId, string : insecureIn) [L:36 - L:39]
-public function secureFunction2(string : secureInName, int : secureInId, string : insecureIn) [L:41 - L:49]
+public function secureFunction1(string secureInName, int secureInId, string insecureIn) [L:36 - L:39]
+public function secureFunction2(string secureInName, int secureInId, string insecureIn) [L:41 - L:49]
 public function taintedReturn1() returns string [L:52 - L:54]
 public function taintedReturn2() returns string [L:56 - L:59]
 function inlineCommentExample() [L:64 - L:66]
@@ -44,6 +44,6 @@ service / on new http:Listener(8080) { [L:104 - L:120]
     # Test description.
     # + caller - Parameter description.
     # + request - Parameter description.
-    resource function get greeting(http:Caller : caller, http:Request : request) [L:107 - L:119]
+    resource function get greeting(http:Caller caller, http:Request request) [L:107 - L:119]
 }
 ```

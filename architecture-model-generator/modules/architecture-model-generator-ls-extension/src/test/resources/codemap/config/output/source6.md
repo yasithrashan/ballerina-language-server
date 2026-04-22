@@ -23,9 +23,9 @@ import ballerina/io [L:1 - L:1]
 ```
 
 ```ballerina
-public function getDinnerRequest(string : userEmail) [L:3 - L:5]
-public function upsertDinnerRequest(string : userEmail, string : mealOption, string : date) [L:7 - L:9]
-public function cancelDinnerRequest(string : userEmail) [L:11 - L:13]
+public function getDinnerRequest(string userEmail) [L:3 - L:5]
+public function upsertDinnerRequest(string userEmail, string mealOption, string date) [L:7 - L:9]
+public function cancelDinnerRequest(string userEmail) [L:11 - L:13]
 ```
 
 ---
@@ -38,5 +38,5 @@ import ballerina/io [L:1 - L:1]
 
 ```ballerina
 public function getMenu() [L:3 - L:10]
-public function addFeedback(string : message) [L:12 - L:14]
+public function addFeedback(string message) [L:12 - L:14]
 ```
