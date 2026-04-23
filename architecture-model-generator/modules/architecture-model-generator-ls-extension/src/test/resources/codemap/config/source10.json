@@ -1,0 +1,5 @@
+{
+  "description": "Ballerina source10 project test ballerina syntax",
+  "source": "source10",
+  "output": "# test Codebase Summary\n\n---\n\n## File Path : rest_service.bal\n\n```ballerina\nimport ballerina/http [L:1 - L:1]\nimport ballerina/mime [L:2 - L:2]\n```\n\n```ballerina\ntable<Album> key(title) albums [L:19 - L:22]\n```\n\n```ballerina\ntype Album record [L:5 - L:8]\ntype AlbumConflict record [L:11 - L:16]\n```\n\n```ballerina\nservice / on new http:Listener(9090) { [L:25 - L:49]\n    resource function get albums(@http:Header string accept) returns Album[]|http:NotAcceptable [L:29 - L:36]\n    resource function post albums(Album album) returns Album|AlbumConflict [L:40 - L:48]\n}\n```\n"
+}

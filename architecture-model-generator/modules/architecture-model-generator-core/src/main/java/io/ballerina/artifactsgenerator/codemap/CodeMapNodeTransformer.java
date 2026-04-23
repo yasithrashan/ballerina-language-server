@@ -591,24 +591,44 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
             try {
                 if (paramNode instanceof RequiredParameterNode requiredParam) {
-                    String paramType = safeExtractSourceCode(requiredParam.typeName());
-                    String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
-                    if (!paramType.isEmpty()) {
-                        parameters.add(paramType + " " + paramName);
+                    // Try to extract full parameter source including annotations first
+                    String fullParamSource = safeExtractSourceCode(requiredParam);
+                    if (!fullParamSource.isEmpty()) {
+                        parameters.add(fullParamSource);
+                    } else {
+                        // Fallback to manual construction
+                        String paramType = safeExtractSourceCode(requiredParam.typeName());
+                        String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
+                        if (!paramType.isEmpty()) {
+                            parameters.add(paramType + " " + paramName);
+                        }
                     }
                 } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
-                    String paramType = safeExtractSourceCode(defaultableParam.typeName());
-                    String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
-                    String defaultValue = safeExtractSourceCode(defaultableParam.expression());
-                    if (!paramType.isEmpty()) {
-                        parameters.add(paramType + " " + paramName + " = " + defaultValue);
+                    // Try to extract full parameter source including annotations first
+                    String fullParamSource = safeExtractSourceCode(defaultableParam);
+                    if (!fullParamSource.isEmpty()) {
+                        parameters.add(fullParamSource);
+                    } else {
+                        // Fallback to manual construction
+                        String paramType = safeExtractSourceCode(defaultableParam.typeName());
+                        String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
+                        String defaultValue = safeExtractSourceCode(defaultableParam.expression());
+                        if (!paramType.isEmpty()) {
+                            parameters.add(paramType + " " + paramName + " = " + defaultValue);
+                        }
                     }
                 } else if (paramNode instanceof RestParameterNode restParam) {
-                    // Handle varargs parameters
-                    String paramType = safeExtractSourceCode(restParam.typeName());
-                    String paramName = restParam.paramName().map(name -> name.text()).orElse("");
-                    if (!paramType.isEmpty()) {
-                        parameters.add(paramType + "... " + paramName);
+                    // Try to extract full parameter source including annotations first
+                    String fullParamSource = safeExtractSourceCode(restParam);
+                    if (!fullParamSource.isEmpty()) {
+                        parameters.add(fullParamSource);
+                    } else {
+                        // Fallback to manual construction for varargs parameters
+                        String paramType = safeExtractSourceCode(restParam.typeName());
+                        String paramName = restParam.paramName().map(name -> name.text()).orElse("");
+                        if (!paramType.isEmpty()) {
+                            parameters.add(paramType + "... " + paramName);
+                        }
                     }
                 } else {
                     // Fallback for unknown parameter types
