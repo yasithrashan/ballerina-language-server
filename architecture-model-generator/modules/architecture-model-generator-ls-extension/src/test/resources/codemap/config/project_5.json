@@ -1,5 +1,0 @@
-{
-  "description": "Ballerina project5 test with syntax errors",
-  "source": "project_5",
-  "output": "# test_with_semantic_error Codebase Summary\n\n---\n\n## File Path : main.bal\n\n```ballerina\nimport ballerina/i0 [L:1 - L:1]\n```\n\n```ballerina\nfunction add(int x, int y) returns int [L:3 - L:6]\nfunction calculateWeight(decimal mass, decimal gForce = 9.8) returns decimal [L:8 - L:10]\nfunction print(anydata data) [L:12 - L:14]\n```\n\n```ballerina\npublic function main() [L:16 - L:25]\n```\n\n---\n\n## File Path : service.bal\n\n```ballerina\n// [Parser Error] missing open brace pipe token [L:4 - L:4]\nstring title;\n```\n\n```ballerina\nimport ballerina/http [L:1 - L:1]\n```\n\n```ballerina\ntable<Album> key(title) albums [L:8 - L:11]\n```\n\n```ballerina\nservice / on new http:Listener(9090) { [L:13 - L:23]\n    resource function get albums() returns Album[] [L:15 - L:17]\n    resource function post albums(Album album) returns Album [L:19 - L:22]\n}\n```\n"
-}

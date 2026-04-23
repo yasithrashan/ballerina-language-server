@@ -1,5 +1,0 @@
-{
-  "description": "Ballerina project6 test with semantic errors",
-  "source": "project_6",
-  "output": "# test Codebase Summary\n\n---\n\n## File Path : main.bal\n\n```ballerina\nimport ballerina/http [L:1 - L:1]\n```\n\n```ballerina\ntable<$CompilationError$> key(title) albums [L:8 - L:11]\n```\n\n```ballerina\ntype Albumm record [L:3 - L:6]\n```\n\n```ballerina\nservice / on new http:Listener(9090) { [L:13 - L:23]\n    resource function get albums() returns Album[] [L:15 - L:17]\n    resource function post albums(Album album) returns Album [L:19 - L:22]\n}\n```\n"
-}

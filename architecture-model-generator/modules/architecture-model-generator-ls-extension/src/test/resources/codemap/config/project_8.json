@@ -1,5 +1,0 @@
-{
-  "description": "Ballerina project8 test with annotations",
-  "source": "project_8",
-  "output": "# test Codebase Summary\n\n---\n\n## File Path : main.bal\n\n```ballerina\nimport ballerina/test [L:1 - L:1]\n```\n\n```ballerina\n@test:Config()\nfunction testAssertEquals() [L:3 - L:11]\n@test:Config()\nfunction testAssertNotEquals() [L:13 - L:19]\n@test:Config()\nfunction testAssertTrue() [L:21 - L:26]\n@test:Config()\nfunction testAssertFalse() [L:28 - L:33]\n@test:Config()\nfunction testAssertFail() [L:35 - L:43]\n@test:Config()\nfunction testAssertExactEquals() [L:53 - L:60]\n@test:Config()\n# Verifies that two `Person` objects are not exactly equal (not the same reference in memory).\nfunction testAssertNotExactEquals() [L:62 - L:70]\n```\n\n```ballerina\nclass Person { [L:45 - L:51]\n    public string name [L:46 - L:46]\n    public int age [L:47 - L:47]\n    public Person? parent [L:48 - L:48]\n    private string email [L:49 - L:49]\n    string address [L:50 - L:50]\n}\n```\n"
-}
