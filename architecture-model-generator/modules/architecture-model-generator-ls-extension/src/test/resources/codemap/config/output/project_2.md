@@ -1,4 +1,4 @@
-# source2 Codebase Summary
+# project_2 Codebase Summary
 
 ---
 
