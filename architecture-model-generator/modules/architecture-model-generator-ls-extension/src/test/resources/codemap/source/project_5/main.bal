@@ -1,23 +1,25 @@
-import ballerina/http;
+import ballerina/i0;
 
-type Albumm readonly & record {|
-    string title;
-    string artist;
-|};
+function add(int x, int y) returns int {
+    int sum = x + y;
+    return sum;
+}
 
-table<Album> key(title) albums = table [
-    {title: "Blue Train", artist: "John Coltrane"},
-    {title: "Jeru", artist: "Gerry Mulligan"}
-];
+function calculateWeight(decimal mass, decimal gForce = 9.8) returns decimal {
+    return mass * gForce;
+}
 
-service / on new http:Listener(9090) {
+function print(anydata data) {
+    io:println(data);
+}
 
-    resource function get albums() returns Album[] {
-        return albums.toArray();
-    }
+public function main() {
+    int sum = add(5, 11);
+    print(sum);
 
-    resource function post albums(Album album) returns Album {
-        albums.add(album);
-        return album;
-    }
+    print(calculateWeight(5));
+
+    print(add(x = 5, y = 6));
+
+    _ = calculateWeight(mass = 5, gForce = 10);
 }

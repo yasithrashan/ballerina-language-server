@@ -1,16 +1,23 @@
-import ballerina/io;
-import wso2/menu_app.menu;
-import wso2/menu_app.dinner;
+import ballerina/http;
 
-public function main() {
-    io:println("=== Menu App ===");
+type Albumm readonly & record {|
+    string title;
+    string artist;
+|};
 
-    menu:getMenu();
-    menu:addFeedback("Great lunch today!");
+table<Album> key(title) albums = table [
+    {title: "Blue Train", artist: "John Coltrane"},
+    {title: "Jeru", artist: "Gerry Mulligan"}
+];
 
-    io:println("=== Dinner Requests ===");
+service / on new http:Listener(9090) {
 
-    dinner:getDinnerRequest("yasith@wso2.com");
-    dinner:upsertDinnerRequest("yasith@wso2.com", "Veg Rice", "2026-04-20");
-    dinner:cancelDinnerRequest("yasith@wso2.com");
+    resource function get albums() returns Album[] {
+        return albums.toArray();
+    }
+
+    resource function post albums(Album album) returns Album {
+        albums.add(album);
+        return album;
+    }
 }
