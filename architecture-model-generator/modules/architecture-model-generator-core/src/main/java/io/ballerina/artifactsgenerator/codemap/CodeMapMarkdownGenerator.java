@@ -45,11 +45,13 @@ public class CodeMapMarkdownGenerator {
         List<String> lines = new ArrayList<>();
         lines.add("# " + projectName + " Codebase Summary");
 
+        // Process each file and its artifacts
         for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
             String filePath = entry.getKey();
             CodeMapFile fileData = entry.getValue();
             List<CodeMapArtifact> artifacts = fileData.artifacts();
 
+            // Add file section with separator
             lines.add("");
             lines.add("---");
             lines.add("");
@@ -122,6 +124,7 @@ public class CodeMapMarkdownGenerator {
         List<String> lines = new ArrayList<>();
         lines.add("# " + workspaceName + " Codebase Summary");
 
+        // Process each package in the workspace
         for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
             String packageName = packageEntry.getKey();
             Map<String, CodeMapFile> packageFiles = packageEntry.getValue();
@@ -135,16 +138,19 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("## Package: " + packageName);
 
+            // Generate package content and filter out redundant headers
             String packageMarkdown = generateMarkdownWithPackagePrefix(packageFiles, packageName, packageName);
             String[] packageLines = packageMarkdown.split("\n");
             boolean skipFirstHeader = false;
             boolean skipInitialEmptyLines = false;
             for (String line : packageLines) {
+                // Skip the package-level header as we already added it
                 if (!skipFirstHeader && line.trim().startsWith("# " + packageName + " Codebase Summary")) {
                     skipFirstHeader = true;
                     skipInitialEmptyLines = true;
                     continue;
                 }
+                // Skip empty lines after header
                 if (skipInitialEmptyLines && line.trim().isEmpty()) {
                     continue;
                 } else {
@@ -163,10 +169,11 @@ public class CodeMapMarkdownGenerator {
      * Groups similar artifacts together and renders them in sections for optimal readability.
      */
     private static void renderArtifacts(List<String> lines, List<CodeMapArtifact> artifacts) {
+        // Categorize artifacts by type for organized rendering
         ArtifactGroups groups = new ArtifactGroups();
         categorizeArtifacts(artifacts, groups);
 
-
+        // Render artifacts in logical order: errors first, then structure, then code
         renderCodeIssues(lines, groups.codeIssues);
         renderCodeBlock(lines, groups.imports, CodeMapMarkdownGenerator::renderImport);
         renderCodeBlockWithDocs(lines, groups.configurables,
@@ -234,6 +241,7 @@ public class CodeMapMarkdownGenerator {
         lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
+            // Extract error details from artifact properties
             String diagnosticMessage = getPropertyAsString(artifact, "diagnosticMessage", "");
             String errorMessage = getPropertyAsString(artifact, "errorMessage", "");
             String rawCode = getPropertyAsString(artifact, "rawCode", "");
@@ -241,6 +249,7 @@ public class CodeMapMarkdownGenerator {
 
             StringBuilder issueDescription = new StringBuilder();
 
+            // Categorize error type based on error code
             if (!errorCode.isEmpty()) {
                 try {
                     String numericPart = errorCode.replaceAll("[^0-9]", "");
@@ -254,6 +263,7 @@ public class CodeMapMarkdownGenerator {
                 }
             }
 
+            // Build error description with fallback chain
             if (!diagnosticMessage.isEmpty()) {
                 issueDescription.append(diagnosticMessage);
             } else if (!errorMessage.isEmpty()) {
@@ -264,6 +274,7 @@ public class CodeMapMarkdownGenerator {
 
             issueDescription.append(" ").append(formatRange(artifact));
 
+            // Render as code block with error comment and problematic code
             lines.add("```ballerina");
             lines.add("// " + issueDescription);
             if (!rawCode.isEmpty()) {
@@ -288,6 +299,7 @@ public class CodeMapMarkdownGenerator {
         for (CodeMapArtifact artifact : artifacts) {
             renderApiDocumentation(lines, artifact, "");
 
+            // Build service declaration with modifiers and listener binding
             StringBuilder serviceLine = new StringBuilder()
                     .append(modifiersPrefix(artifact))
                     .append("service ")
@@ -299,6 +311,7 @@ public class CodeMapMarkdownGenerator {
             serviceLine.append(" { ").append(formatRange(artifact));
             lines.add(serviceLine.toString());
 
+            // Render nested resource functions and methods
             if (!artifact.children().isEmpty()) {
                 renderChildren(lines, artifact.children(), "    ");
             }
@@ -339,6 +352,7 @@ public class CodeMapMarkdownGenerator {
      */
     private static void renderChildren(List<String> lines, List<CodeMapArtifact> children, String indent) {
         for (CodeMapArtifact child : children) {
+            // Handle fields and variables
             if ("VARIABLE".equals(child.type()) || "FIELD".equals(child.type())) {
                 renderApiDocumentation(lines, child, indent);
 
@@ -353,6 +367,7 @@ public class CodeMapMarkdownGenerator {
                 fieldLine.append(" ").append(formatRange(child));
                 lines.add(fieldLine.toString());
             } else if ("FUNCTION".equals(child.type())) {
+                // Handle methods and resource functions
                 renderApiDocumentation(lines, child, indent);
                 lines.add(renderSingleFunction(child, indent));
             }
@@ -366,11 +381,14 @@ public class CodeMapMarkdownGenerator {
     private static String renderSingleFunction(CodeMapArtifact artifact, String indent) {
         StringBuilder signature = new StringBuilder(indent);
 
+        // Determine if this is a resource function
         String category = getPropertyAsString(artifact, "category", "").toUpperCase(Locale.ROOT);
         Object accessor = artifact.properties().get("accessor");
         boolean isResource = "RESOURCE".equals(category) || accessor != null;
 
+        // Build function signature based on type
         if (isResource) {
+            // Resource function: "resource function [method] [path]"
             signature.append(modifiersPrefixExcluding(artifact, "resource"));
             signature.append("resource function ");
             String accessorStr = getPropertyAsString(artifact, "accessor", "");
@@ -379,10 +397,12 @@ public class CodeMapMarkdownGenerator {
             }
             signature.append(artifact.name());
         } else {
+            // Regular function: "function [name]"
             signature.append(modifiersPrefix(artifact)).append("function ");
             signature.append(artifact.name());
         }
 
+        // Add parameters
         String params = parametersInline(artifact);
         signature.append("(");
         if (!params.isEmpty()) {
@@ -390,6 +410,7 @@ public class CodeMapMarkdownGenerator {
         }
         signature.append(")");
 
+        // Add return type if not void
         String returns = getPropertyAsString(artifact, "returns", "()");
         if (!"()".equals(returns)) {
             signature.append(" returns ").append(returns);
@@ -537,6 +558,7 @@ public class CodeMapMarkdownGenerator {
     }
 
     private static void categorizeArtifacts(List<CodeMapArtifact> artifacts, ArtifactGroups groups) {
+        // Sort artifacts into appropriate groups for organized rendering
         for (CodeMapArtifact artifact : artifacts) {
             switch (artifact.type()) {
                 case "SYNTAX_ERROR":
@@ -561,9 +583,11 @@ public class CodeMapMarkdownGenerator {
                     groups.dataMappers.add(artifact);
                     break;
                 case "VARIABLE":
+                    // Variables need sub-categorization
                     categorizeVariable(artifact, groups);
                     break;
                 case "FUNCTION":
+                    // Separate main functions from regular functions
                     if ("main".equals(artifact.name())) {
                         groups.automations.add(artifact);
                     } else {
@@ -577,6 +601,7 @@ public class CodeMapMarkdownGenerator {
     }
 
     private static void categorizeVariable(CodeMapArtifact artifact, ArtifactGroups groups) {
+        // Sub-categorize variables based on their purpose and modifiers
         String category = getPropertyAsString(artifact, "category", "").toUpperCase(Locale.ROOT);
         List<String> modifiers = getPropertyAsStringList(artifact, "modifiers");
 
@@ -651,10 +676,12 @@ public class CodeMapMarkdownGenerator {
             return "";
         }
 
+        // Process parameters and handle different formats
         return params.stream()
                 .map(p -> {
                     if (p instanceof String) {
                         String paramStr = (String) p;
+                        // Reorder "name: type" to "type : name" for Ballerina syntax
                         if (paramStr.contains(": ")) {
                             String[] parts = paramStr.split(": ", 2);
                             if (parts.length == 2) {
@@ -663,6 +690,7 @@ public class CodeMapMarkdownGenerator {
                         }
                         return paramStr;
                     } else if (p instanceof Map) {
+                        // Handle map-based parameter representation
                         @SuppressWarnings("unchecked")
                         Map<String, Object> paramMap = (Map<String, Object>) p;
                         Object name = paramMap.get("name");
@@ -688,6 +716,7 @@ public class CodeMapMarkdownGenerator {
         if (range == null) {
             return "";
         }
+        // Convert 0-based LSP line numbers to 1-based display format
         return String.format("[L:%d - L:%d]",
                 range.getStart().getLine() + 1,
                 range.getEnd().getLine() + 1);
