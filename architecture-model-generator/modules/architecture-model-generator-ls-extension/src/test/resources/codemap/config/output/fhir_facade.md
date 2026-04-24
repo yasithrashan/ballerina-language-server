@@ -135,8 +135,8 @@ import ballerinax/persist.sql as psql [L:27 - L:27]
 ```
 
 ```ballerina
-PATIENT_DATA [L:29 - L:29]
-ENCOUNTER_DATA [L:30 - L:30]
+const PATIENT_DATA [L:29 - L:29]
+const ENCOUNTER_DATA [L:30 - L:30]
 ```
 
 ```ballerina

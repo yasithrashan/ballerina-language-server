@@ -425,9 +425,14 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         String value = constantDeclarationNode.initializer().toSourceCode().strip();
         constantBuilder.addProperty(PROP_VALUE, value);
 
+        // Extract visibility modifiers and const qualifier
+        List<String> modifiers = new ArrayList<>();
         constantDeclarationNode.visibilityQualifier().ifPresent(visibility -> {
-            constantBuilder.modifiers(List.of(visibility.text()));
+            modifiers.add(visibility.text());
         });
+        // Extract const keyword dynamically from the syntax tree
+        modifiers.add(constantDeclarationNode.constKeyword().text());
+        constantBuilder.modifiers(modifiers);
 
         extractDocumentation(constantDeclarationNode.metadata()).ifPresent(constantBuilder::documentation);
         extractInlineComments(constantDeclarationNode).ifPresent(constantBuilder::comment);
