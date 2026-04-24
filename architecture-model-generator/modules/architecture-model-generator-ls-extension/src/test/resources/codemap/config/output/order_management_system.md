@@ -47,8 +47,8 @@ import ballerina/lang.runtime as runtime [L:19 - L:19]
 ```
 
 ```ballerina
-final postgresql:Client dbClient [L:23 - L:29]
-final kafka:Producer kafkaProducer [L:32 - L:34]
+public final postgresql:Client dbClient [L:23 - L:29]
+public final kafka:Producer kafkaProducer [L:32 - L:34]
 ```
 
 ```ballerina
@@ -65,7 +65,7 @@ import ballerina/log [L:17 - L:17]
 ```
 
 ```ballerina
-type OrderCreationResponse record [L:61 - L:65]
+public type OrderCreationResponse record [L:61 - L:65]
 ```
 
 ```ballerina
@@ -84,17 +84,17 @@ service /v1 on new http:Listener(SERVICE_PORT) { [L:20 - L:59]
 ## File Path : types.bal
 
 ```ballerina
-type Order record [L:18 - L:30]
-type OrderModel record [L:33 - L:43]
-type OrderCreatePayload record [L:46 - L:53]
-type OrderLinePayload record [L:55 - L:58]
-type OrderLine record [L:60 - L:66]
-type Address record [L:68 - L:75]
-type Payment record [L:77 - L:81]
-type PaymentInfo record [L:83 - L:86]
-type Shipment record [L:88 - L:93]
-type OrderStatus "PENDING"|"CONFIRMED"|"AWAITING_PAYMENT"|"FULFILLING"|"SHIPPED"|"DELIVERED"|"CANCELLED"|"RETURNED"|"FAILED" [L:95 - L:95]
-type OrderCreatedEvent record [L:98 - L:103]
-type OrderCreatedEventData record [L:105 - L:112]
+public type Order record [L:18 - L:30]
+public type OrderModel record [L:33 - L:43]
+public type OrderCreatePayload record [L:46 - L:53]
+public type OrderLinePayload record [L:55 - L:58]
+public type OrderLine record [L:60 - L:66]
+public type Address record [L:68 - L:75]
+public type Payment record [L:77 - L:81]
+public type PaymentInfo record [L:83 - L:86]
+public type Shipment record [L:88 - L:93]
+public type OrderStatus "PENDING"|"CONFIRMED"|"AWAITING_PAYMENT"|"FULFILLING"|"SHIPPED"|"DELIVERED"|"CANCELLED"|"RETURNED"|"FAILED" [L:95 - L:95]
+public type OrderCreatedEvent record [L:98 - L:103]
+public type OrderCreatedEventData record [L:105 - L:112]
 type OrderNotFoundError error [L:114 - L:114]
 ```

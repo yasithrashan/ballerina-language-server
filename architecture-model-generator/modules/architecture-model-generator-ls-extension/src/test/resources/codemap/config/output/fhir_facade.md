@@ -72,8 +72,8 @@ final db:Client dbClient [L:34 - L:34]
 ```ballerina
 # Generic types to wrap all implemented profiles for each resource.
 # Add required profile types here.
-type Patient uscore700:USCorePatientProfile [L:41 - L:43]
-type Encounter uscore700:USCoreEncounterProfile [L:45 - L:45]
+public type Patient uscore700:USCorePatientProfile [L:41 - L:43]
+public type Encounter uscore700:USCoreEncounterProfile [L:45 - L:45]
 ```
 
 ```ballerina
@@ -183,14 +183,14 @@ configurable mysql:Options & readonly connectionOptions [L:29 - L:29]
 ## File Path : modules/db/persist_types.bal
 
 ```ballerina
-type PatientData record [L:22 - L:27]
-type PatientDataOptionalized record [L:29 - L:34]
-type PatientDataTargetType typedesc<db:PatientDataOptionalized> [L:36 - L:36]
-type PatientDataInsert db:PatientData [L:38 - L:38]
-type PatientDataUpdate record [L:40 - L:44]
-type EncounterData record [L:46 - L:56]
-type EncounterDataOptionalized record [L:58 - L:68]
-type EncounterDataTargetType typedesc<db:EncounterDataOptionalized> [L:70 - L:70]
-type EncounterDataInsert db:EncounterData [L:72 - L:72]
-type EncounterDataUpdate record [L:74 - L:83]
+public type PatientData record [L:22 - L:27]
+public type PatientDataOptionalized record [L:29 - L:34]
+public type PatientDataTargetType typedesc<db:PatientDataOptionalized> [L:36 - L:36]
+public type PatientDataInsert db:PatientData [L:38 - L:38]
+public type PatientDataUpdate record [L:40 - L:44]
+public type EncounterData record [L:46 - L:56]
+public type EncounterDataOptionalized record [L:58 - L:68]
+public type EncounterDataTargetType typedesc<db:EncounterDataOptionalized> [L:70 - L:70]
+public type EncounterDataInsert db:EncounterData [L:72 - L:72]
+public type EncounterDataUpdate record [L:74 - L:83]
 ```

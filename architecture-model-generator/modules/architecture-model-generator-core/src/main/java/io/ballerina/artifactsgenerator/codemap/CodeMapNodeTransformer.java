@@ -446,7 +446,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .name(CommonUtils.getVariableName(
                         moduleVariableDeclarationNode.typedBindingPattern().bindingPattern()));
 
-        List<String> modifiers = extractModifiers(moduleVariableDeclarationNode.qualifiers());
+        // Extract visibility modifiers and other qualifiers
+        List<String> modifiers = new ArrayList<>();
+        moduleVariableDeclarationNode.visibilityQualifier().ifPresent(visibility -> {
+            modifiers.add(visibility.text());
+        });
+        modifiers.addAll(extractModifiers(moduleVariableDeclarationNode.qualifiers()));
         variableBuilder.modifiers(modifiers);
 
         variableBuilder.type(TYPE_VARIABLE);
@@ -498,6 +503,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         CodeMapArtifact.Builder typeBuilder = new CodeMapArtifact.Builder(typeDefinitionNode)
                 .name(typeDefinitionNode.typeName().text())
                 .type(TYPE_TYPE);
+
+        // Extract visibility modifiers
+        typeDefinitionNode.visibilityQualifier().ifPresent(visibility -> {
+            typeBuilder.modifiers(List.of(visibility.text()));
+        });
 
         // Use semantic model to get detailed type information
         semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
