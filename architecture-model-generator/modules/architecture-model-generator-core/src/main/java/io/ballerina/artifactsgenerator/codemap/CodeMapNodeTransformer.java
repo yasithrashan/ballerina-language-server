@@ -102,9 +102,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private final ModuleInfo moduleInfo;
     private final boolean extractComments;
 
-    private static final String MAIN_FUNCTION_NAME = "main";
-
-    // Artifact type constants
     private static final String TYPE_FUNCTION = "FUNCTION";
     private static final String TYPE_SERVICE = "SERVICE";
     private static final String TYPE_IMPORT = "IMPORT";
@@ -114,7 +111,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String TYPE_CLASS = "CLASS";
     private static final String TYPE_FIELD = "FIELD";
 
-    // Property key constants
     private static final String PROP_PARAMETERS = "parameters";
     private static final String PROP_RETURNS = "returns";
     private static final String PROP_BASE_PATH = "basePath";
@@ -131,7 +127,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String PROP_ACCESSOR = "accessor";
     private static final String PROP_ANNOTATIONS = "annotations";
 
-    // Other constants
     private static final String RECORD_TYPE_NAME = "record";
     private static final String ENUM_TYPE_NAME = "enum";
     private static final String ALIAS_SEPARATOR = " as ";
@@ -156,13 +151,17 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
      * @param extractComments whether to extract comments from nodes
      */
     CodeMapNodeTransformer(String projectPath, SemanticModel semanticModel, ModuleInfo moduleInfo,
-                                  boolean extractComments) {
+                           boolean extractComments) {
         this.semanticModel = semanticModel;
         this.projectPath = projectPath;
         this.moduleInfo = moduleInfo;
         this.extractComments = extractComments;
     }
 
+    /**
+     * Transforms function definitions into CodeMapArtifact objects.
+     * Handles both regular functions and resource functions with different naming strategies.
+     */
     @Override
     public Optional<CodeMapArtifact> transform(FunctionDefinitionNode functionDefinitionNode) {
         CodeMapArtifact.Builder functionBuilder = new CodeMapArtifact.Builder(functionDefinitionNode);
@@ -189,15 +188,20 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
+            String httpMethod = extractHttpMethodFromResourceFunction(functionDefinitionNode);
             functionBuilder
                     .name(pathString)
-                    .addProperty(PROP_ACCESSOR, functionName);
+                    .addProperty(PROP_ACCESSOR, httpMethod);
         } else {
             functionBuilder.name(functionName);
         }
         return Optional.of(functionBuilder.build());
     }
 
+    /**
+     * Transforms service declarations into CodeMapArtifact objects.
+     * Handles service name determination and listener configuration extraction.
+     */
     @Override
     public Optional<CodeMapArtifact> transform(ServiceDeclarationNode serviceDeclarationNode) {
         CodeMapArtifact.Builder serviceBuilder = new CodeMapArtifact.Builder(serviceDeclarationNode);
@@ -208,21 +212,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         Optional<TypeDescriptorNode> typeDescriptorNode = serviceDeclarationNode.typeDescriptor();
         NodeList<Node> resourcePaths = serviceDeclarationNode.absoluteResourcePath();
 
-        // For service declarations like: service "Name" on listener
-        // - typeDescriptorNode contains "Name" (the service name)
-        // - firstExpression contains the listener (what comes after "on")
-        // - resourcePaths contains the path (for path-based services)
-
-
         Optional<String> serviceName = determineServiceName(serviceDeclarationNode, typeDescriptorNode,
                 resourcePaths, firstExpression);
         serviceName.ifPresent(serviceBuilder::name);
 
-        // Determine basePath based on service type
         String basePath = "";
         if (!resourcePaths.isEmpty() && typeDescriptorNode.isEmpty()) {
-            // This case handles: service "Name" on listener where "Name" ends up in resourcePaths
-            // In this case, use the firstExpression (listener) for basePath, not resourcePaths (service name)
             if (firstExpression != null) {
                 String expressionSource = safeExtractSourceCode(firstExpression);
                 if (!expressionSource.isEmpty()) {
@@ -230,10 +225,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 }
             }
         } else if (!resourcePaths.isEmpty()) {
-            // REST-style services: service on listener {"/path": ...
             basePath = getPathString(resourcePaths);
         } else if (firstExpression != null) {
-            // Named services: service "Name" on listener - basePath should be the listener expression
             String expressionSource = safeExtractSourceCode(firstExpression);
             if (!expressionSource.isEmpty()) {
                 basePath = expressionSource;
@@ -264,23 +257,23 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         return Optional.of(serviceBuilder.build());
     }
 
+    /**
+     * Transforms import declarations into CodeMapArtifact objects.
+     * Handles organization names, module names, and import aliases.
+     */
     @Override
     public Optional<CodeMapArtifact> transform(ImportDeclarationNode importDeclarationNode) {
-        // Extract org name
         String orgName = importDeclarationNode.orgName()
                 .map(org -> org.orgName().text())
                 .orElse("");
 
-        // Extract module name
         String moduleName = importDeclarationNode.moduleName().stream()
                 .map(Token::text)
                 .collect(Collectors.joining("."));
 
-        // Extract alias/prefix if present
         Optional<String> alias = importDeclarationNode.prefix()
                 .map(prefix -> prefix.prefix().text());
 
-        // Build full import name
         String fullImportName = orgName.isEmpty() ? moduleName : orgName + "/" + moduleName;
         if (alias.isPresent()) {
             fullImportName += ALIAS_SEPARATOR + alias.get();
@@ -290,7 +283,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .name(fullImportName)
                 .type(TYPE_IMPORT);
 
-        // Add individual components as properties
         if (!orgName.isEmpty()) {
             importBuilder.addProperty(PROP_ORG_NAME, orgName);
         }
@@ -315,7 +307,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             }
         });
 
-        // Extract initialization arguments
         Node initializer = listenerDeclarationNode.initializer();
         if (initializer instanceof NewExpressionNode newExpressionNode) {
             List<String> args = extractListenerArguments(newExpressionNode);
@@ -341,7 +332,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         for (FunctionArgumentNode argNode : argList) {
             if (argNode == null) {
-                continue; // Skip null argument nodes
+                continue;
             }
 
             try {
@@ -356,7 +347,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                     }
                 }
             } catch (RuntimeException e) {
-                // Skip malformed argument nodes
                 continue;
             }
         }
@@ -364,8 +354,36 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     }
 
     private String normalizeWhitespace(String source) {
-        // Replace newlines and multiple spaces with single space
         return source.replaceAll("\\s+", " ").strip();
+    }
+
+    /**
+     * Extracts the HTTP method from a resource function definition.
+     * Uses multiple strategies: parsing function signature, reflection, and fallback to function name.
+     */
+    private String extractHttpMethodFromResourceFunction(FunctionDefinitionNode functionDefinitionNode) {
+        FunctionSignatureNode functionSignature = functionDefinitionNode.functionSignature();
+        if (functionSignature != null && functionSignature.children() != null) {
+            for (Node child : functionSignature.children()) {
+                if (child.kind() == SyntaxKind.IDENTIFIER_TOKEN) {
+                    String text = child.toString().trim();
+                    if (text.matches("get|post|put|patch|delete|head|options")) {
+                        return text;
+                    }
+                }
+            }
+        }
+
+        try {
+            java.lang.reflect.Method method = functionDefinitionNode.getClass().getMethod("resourceAccessorName");
+            Object accessorName = method.invoke(functionDefinitionNode);
+            if (accessorName != null) {
+                return accessorName.toString().trim();
+            }
+        } catch (ReflectiveOperationException e) {
+        }
+
+        return functionDefinitionNode.functionName().text();
     }
 
     private SeparatedNodeList<FunctionArgumentNode> getArgList(NewExpressionNode newExpressionNode) {
@@ -386,17 +404,14 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .name(constantDeclarationNode.variableName().text())
                 .type(TYPE_VARIABLE);
 
-        // Extract the type descriptor
         constantDeclarationNode.typeDescriptor().ifPresent(typeDesc -> {
             String typeString = typeDesc.toSourceCode().strip();
             constantBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeString);
         });
 
-        // Extract the constant value/initializer
         String value = constantDeclarationNode.initializer().toSourceCode().strip();
         constantBuilder.addProperty(PROP_VALUE, value);
 
-        // Extract visibility qualifier (public, etc.)
         constantDeclarationNode.visibilityQualifier().ifPresent(visibility -> {
             constantBuilder.modifiers(List.of(visibility.text()));
         });
@@ -423,7 +438,13 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         variableBuilder.type(TYPE_VARIABLE);
 
-        if (!hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
+        if (hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
+            TypeDescriptorNode typeDesc = moduleVariableDeclarationNode.typedBindingPattern().typeDescriptor();
+            if (typeDesc != null) {
+                String typeString = typeDesc.toSourceCode().strip();
+                variableBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeString);
+            }
+        } else {
             Optional<ClassSymbol> connection = getConnection(moduleVariableDeclarationNode);
             if (connection.isPresent()) {
                 variableBuilder
@@ -464,8 +485,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
             if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
                 TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
-                // For records (including intersection types like "readonly & record"),
-                // just use "record" since fields are extracted separately
                 String typeDescriptor = isRecordType(typeSymbol)
                         ? RECORD_TYPE_NAME
                         : CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
@@ -583,20 +602,17 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         SeparatedNodeList<ParameterNode> parameterNodes = functionSignature.parameters();
 
-        // Process each parameter node, handling different parameter types
         for (ParameterNode paramNode : parameterNodes) {
             if (paramNode == null) {
-                continue; // Skip null parameter nodes
+                continue;
             }
 
             try {
                 if (paramNode instanceof RequiredParameterNode requiredParam) {
-                    // Try to extract full parameter source including annotations first
                     String fullParamSource = safeExtractSourceCode(requiredParam);
                     if (!fullParamSource.isEmpty()) {
                         parameters.add(fullParamSource);
                     } else {
-                        // Fallback to manual construction
                         String paramType = safeExtractSourceCode(requiredParam.typeName());
                         String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
                         if (!paramType.isEmpty()) {
@@ -604,12 +620,10 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                         }
                     }
                 } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
-                    // Try to extract full parameter source including annotations first
                     String fullParamSource = safeExtractSourceCode(defaultableParam);
                     if (!fullParamSource.isEmpty()) {
                         parameters.add(fullParamSource);
                     } else {
-                        // Fallback to manual construction
                         String paramType = safeExtractSourceCode(defaultableParam.typeName());
                         String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
                         String defaultValue = safeExtractSourceCode(defaultableParam.expression());
@@ -618,12 +632,10 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                         }
                     }
                 } else if (paramNode instanceof RestParameterNode restParam) {
-                    // Try to extract full parameter source including annotations first
                     String fullParamSource = safeExtractSourceCode(restParam);
                     if (!fullParamSource.isEmpty()) {
                         parameters.add(fullParamSource);
                     } else {
-                        // Fallback to manual construction for varargs parameters
                         String paramType = safeExtractSourceCode(restParam.typeName());
                         String paramName = restParam.paramName().map(name -> name.text()).orElse("");
                         if (!paramType.isEmpty()) {
@@ -631,14 +643,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                         }
                     }
                 } else {
-                    // Fallback for unknown parameter types
                     String paramSource = safeExtractSourceCode(paramNode);
                     if (!paramSource.isEmpty()) {
                         parameters.add(paramSource);
                     }
                 }
             } catch (RuntimeException e) {
-                // Skip malformed parameter nodes
                 continue;
             }
         }
@@ -689,7 +699,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (typeSymbol.typeKind() == TypeDescKind.RECORD) {
             return (RecordTypeSymbol) typeSymbol;
         }
-        // Handle intersection types like "readonly & record"
         if (typeSymbol.typeKind() == TypeDescKind.INTERSECTION) {
             IntersectionTypeSymbol intersectionType = (IntersectionTypeSymbol) typeSymbol;
             TypeSymbol effectiveType = intersectionType.effectiveTypeDescriptor();
@@ -701,9 +710,9 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     }
 
     private Optional<String> determineServiceName(ServiceDeclarationNode serviceDeclarationNode,
-                                       Optional<TypeDescriptorNode> typeDescriptorNode,
-                                       NodeList<Node> resourcePaths,
-                                       ExpressionNode firstExpression) {
+                                                  Optional<TypeDescriptorNode> typeDescriptorNode,
+                                                  NodeList<Node> resourcePaths,
+                                                  ExpressionNode firstExpression) {
         if (typeDescriptorNode.isPresent()) {
             return Optional.of(typeDescriptorNode.get().toSourceCode().strip());
         } else if (!resourcePaths.isEmpty()) {
@@ -765,13 +774,11 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 return Optional.empty();
             }
 
-            // Check if this is a client connection or AI-related store
             if (classSymbol.qualifiers().contains(Qualifier.CLIENT) || isAiKnowledgeBase(classSymbol)
                     || isAiVectorStore(symbol) || isAiMemoryStore(symbol)) {
                 return Optional.of(classSymbol);
             }
         } catch (ClassCastException e) {
-            // Handle type casting errors gracefully
             return Optional.empty();
         } catch (RuntimeException e) {
             // Handle other runtime exceptions during symbol resolution
@@ -815,18 +822,15 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                             }
                             firstLine = false;
 
-                            // Handle different types of documentation lines
                             StringBuilder lineContent = new StringBuilder();
                             if (documentationLine instanceof MarkdownDocumentationLineNode) {
                                 NodeList<Node> elements = ((MarkdownDocumentationLineNode) documentationLine)
                                         .documentElements();
                                 elements.forEach(element -> lineContent.append(element.toSourceCode()));
                             } else {
-                                // For parameter and return documentation lines, use toSourceCode directly
                                 lineContent.append(documentationLine.toSourceCode());
                             }
                             String line = lineContent.toString();
-                            // Add the line content (may be empty for blank doc lines)
                             description.append(line);
                         }
                     }
@@ -840,15 +844,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             return Optional.empty();
         }
         List<String> comments = new ArrayList<>();
-        // Extract leading minutiae (comments that appear before the node)
         node.leadingMinutiae().forEach(minutiae -> {
             if (minutiae.kind() == SyntaxKind.COMMENT_MINUTIAE) {
                 String commentText = minutiae.text().strip();
-                // Handle single-line comments (// style)
                 if (commentText.startsWith("//")) {
                     comments.add(commentText.substring(2).strip());
                 }
-                // Note: Block comments (/* */) are handled differently by the compiler
             }
         });
         if (comments.isEmpty()) {
@@ -866,7 +867,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         for (AnnotationNode annotation : metadata.get().annotations()) {
             StringBuilder annotationStr = new StringBuilder("@");
 
-            // Extract the annotation reference
             Node annotReference = annotation.annotReference();
             if (annotReference.kind() == SyntaxKind.QUALIFIED_NAME_REFERENCE) {
                 QualifiedNameReferenceNode qNameRef = (QualifiedNameReferenceNode) annotReference;
@@ -880,7 +880,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 annotationStr.append(annotReference.toSourceCode().strip());
             }
 
-            // Extract annotation value if present
             Optional<MappingConstructorExpressionNode> annotValue = annotation.annotValue();
             if (annotValue.isPresent()) {
                 annotationStr.append("(").append(extractAnnotationValue(annotValue.get())).append(")");
@@ -904,7 +903,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                     fields.add(fieldName + ": " + value);
                 }
             } else {
-                // Handle other field types by using source code
                 fields.add(field.toSourceCode().strip());
             }
         }
@@ -916,14 +914,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (expression.kind() == SyntaxKind.STRING_LITERAL) {
             BasicLiteralNode literalNode = (BasicLiteralNode) expression;
             String value = literalNode.literalToken().text();
-            // Keep quotes for string literals in annotation display
             return value;
         } else if (expression.kind() == SyntaxKind.BOOLEAN_LITERAL ||
-                   expression.kind() == SyntaxKind.NUMERIC_LITERAL) {
+                expression.kind() == SyntaxKind.NUMERIC_LITERAL) {
             BasicLiteralNode literalNode = (BasicLiteralNode) expression;
             return literalNode.literalToken().text();
         } else {
-            // For complex expressions, return the source code
             return expression.toSourceCode().strip();
         }
     }

@@ -5,14 +5,14 @@
 ## File Path : configurations.bal
 
 ```ballerina
-configurable DB_HOST [L:18 - L:18]
-configurable DB_PORT [L:19 - L:19]
-configurable DB_USER [L:20 - L:20]
-configurable DB_PASSWORD [L:21 - L:21]
-configurable DB_NAME [L:22 - L:22]
-configurable KAFKA_BROKER_URL [L:25 - L:25]
-configurable KAFKA_ORDER_EVENTS_TOPIC [L:26 - L:26]
-configurable SERVICE_PORT [L:29 - L:29]
+configurable string DB_HOST [L:18 - L:18]
+configurable int DB_PORT [L:19 - L:19]
+configurable string DB_USER [L:20 - L:20]
+configurable string DB_PASSWORD [L:21 - L:21]
+configurable string DB_NAME [L:22 - L:22]
+configurable string KAFKA_BROKER_URL [L:25 - L:25]
+configurable string KAFKA_ORDER_EVENTS_TOPIC [L:26 - L:26]
+configurable int SERVICE_PORT [L:29 - L:29]
 ```
 
 ---

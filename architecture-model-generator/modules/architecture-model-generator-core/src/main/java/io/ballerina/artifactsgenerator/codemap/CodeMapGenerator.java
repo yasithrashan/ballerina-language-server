@@ -81,7 +81,6 @@ public class CodeMapGenerator {
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
         Set<String> targetFiles = fileNames != null ? new HashSet<>(fileNames) : null;
 
-        // Sort modules alphabetically for consistent order
         var sortedModules = currentPackage.moduleIds()
                 .stream()
                 .sorted(Comparator.comparing(moduleId -> {
@@ -94,7 +93,6 @@ public class CodeMapGenerator {
             Module module = currentPackage.module(moduleId);
             ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
 
-            // Sort documents alphabetically for consistent order
             List<DocumentId> sortedDocs = module.documentIds()
                     .stream()
                     .sorted(Comparator.comparing(docId -> module.document(docId).name()))
@@ -105,7 +103,6 @@ public class CodeMapGenerator {
                 String fileName = document.name();
                 String relativeFilePath = getRelativeFilePath(module, fileName);
 
-                // Ignore the file if it is not in the targeted list.
                 if (targetFiles != null && !targetFiles.contains(relativeFilePath)) {
                     continue;
                 }
@@ -133,7 +130,6 @@ public class CodeMapGenerator {
                                                                         ModuleInfo moduleInfo) {
         List<CodeMapArtifact> artifacts = new ArrayList<>();
 
-        // Handle syntax errors first - create artifacts for each diagnostic
         if (syntaxTree.hasDiagnostics()) {
             List<CodeMapArtifact> syntaxErrorArtifacts = createSyntaxErrorArtifacts(
                     syntaxTree.diagnostics(), syntaxTree);
@@ -149,35 +145,30 @@ public class CodeMapGenerator {
                 moduleInfo);
 
         try {
-            // Process imports - filter out malformed ones to avoid transformation errors
             rootNode.imports().stream()
                     .filter(importNode -> !hasErrorInNode(importNode))
                     .map(importNode -> importNode.apply(codeMapNodeTransformer))
                     .flatMap(Optional::stream)
                     .forEach(artifacts::add);
 
-            // Process other members (functions, services, types, etc.) - filter out malformed ones
             rootNode.members().stream()
                     .filter(member -> !hasErrorInNode(member))
                     .map(member -> member.apply(codeMapNodeTransformer))
                     .flatMap(Optional::stream)
                     .forEach(artifacts::add);
         } catch (RuntimeException e) {
-            // Fallback: if processing fails due to severe syntax errors, create a general error artifact
             CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact(e.getMessage());
             artifacts.add(errorArtifact);
         } catch (Exception e) {
-            // Handle unexpected checked exceptions
             CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact("Unexpected error: " + e.getMessage());
             artifacts.add(errorArtifact);
         }
-
         return artifacts;
     }
 
 
     private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics,
-                                                                       SyntaxTree syntaxTree) {
+                                                                    SyntaxTree syntaxTree) {
         List<CodeMapArtifact> syntaxErrorArtifacts = new ArrayList<>();
 
         for (Diagnostic diagnostic : diagnostics) {
@@ -186,7 +177,6 @@ public class CodeMapGenerator {
             properties.put("severity", diagnostic.diagnosticInfo().severity().toString());
             properties.put("code", diagnostic.diagnosticInfo().code());
 
-            // Extract raw source code for the error lines if syntax tree is available
             if (syntaxTree != null) {
                 String rawCode = extractRawCodeFromDiagnostic(diagnostic, syntaxTree);
                 if (rawCode != null && !rawCode.trim().isEmpty()) {
@@ -195,11 +185,11 @@ public class CodeMapGenerator {
             }
 
             CodeMapArtifact syntaxErrorArtifact = new CodeMapArtifact(
-                "Syntax Error",
-                "SYNTAX_ERROR",
-                CodeMapArtifact.toRange(diagnostic.location().lineRange()),
-                properties,
-                Collections.emptyList()
+                    "Syntax Error",
+                    "SYNTAX_ERROR",
+                    CodeMapArtifact.toRange(diagnostic.location().lineRange()),
+                    properties,
+                    Collections.emptyList()
             );
             syntaxErrorArtifacts.add(syntaxErrorArtifact);
         }
@@ -215,19 +205,15 @@ public class CodeMapGenerator {
             }
             String[] lines = sourceText.split("\\r?\\n");
 
-            // Get diagnostic line range (0-based indexing from compiler API)
             int startLine = diagnostic.location().lineRange().startLine().line();
             int endLine = diagnostic.location().lineRange().endLine().line();
 
-            // Validate line bounds to prevent array access errors
             if (startLine < 0 || startLine >= lines.length || endLine < startLine) {
                 return null;
             }
 
-            // Ensure end line is within bounds
             int safeEndLine = Math.min(endLine, lines.length - 1);
 
-            // Extract the problematic code lines for error context
             StringBuilder codeBuilder = new StringBuilder();
             for (int i = startLine; i <= safeEndLine; i++) {
                 if (i > startLine) {
@@ -238,21 +224,19 @@ public class CodeMapGenerator {
 
             return codeBuilder.toString().trim();
         } catch (IndexOutOfBoundsException e) {
-            // Return null if line extraction fails due to invalid indices
             return null;
         } catch (RuntimeException e) {
-            // Handle other runtime issues during source code extraction
             return null;
         }
     }
 
     private static CodeMapArtifact createGeneralSyntaxErrorArtifact(String errorMessage) {
         return new CodeMapArtifact(
-            "Parsing Error",
-            "SYNTAX_ERROR",
-            null, // No specific range available
-            Map.of("errorMessage", "Failed to parse file: " + errorMessage),
-            Collections.emptyList()
+                "Parsing Error",
+                "SYNTAX_ERROR",
+                null,
+                Map.of("errorMessage", "Failed to parse file: " + errorMessage),
+                Collections.emptyList()
         );
     }
 
@@ -261,21 +245,17 @@ public class CodeMapGenerator {
             return true;
         }
 
-        // Primary check: node has compiler diagnostics indicating errors
         if (node.hasDiagnostics()) {
             return true;
         }
 
-        // Validate source code extraction - failure indicates malformed node
         try {
             String sourceText = node.toSourceCode();
             if (sourceText == null || sourceText.trim().isEmpty()) {
                 return true;
             }
-            // Check for error markers that indicate parsing issues
             return sourceText.contains("MISSING") || sourceText.contains("[error]");
         } catch (RuntimeException e) {
-            // Source code extraction failed - treat as error node
             return true;
         }
     }
@@ -303,56 +283,50 @@ public class CodeMapGenerator {
     /**
      * Processes full project codemap and returns consolidated markdown content.
      *
-     * @param project the Ballerina project
+     * @param project          the Ballerina project
      * @param workspaceManager the workspace manager
      * @return consolidated project markdown content
      */
     public static String processFullProjectCodeMap(Project project, WorkspaceManager workspaceManager) {
-        // Generate full project codemap
         Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager);
 
-        // Extract project name
         String projectName = project.currentPackage().packageName().value();
 
-        // Convert to consolidated markdown
         return CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles, projectName);
     }
 
     /**
      * Generates a code map for all packages in a workspace.
      *
-     * @param project the Ballerina workspace project
+     * @param project          the Ballerina workspace project
      * @param workspaceManager the workspace manager to obtain semantic models
      * @return a map of package names to their code map files
      */
     public static Map<String, Map<String, CodeMapFile>> generateWorkspaceCodeMap(Project project,
-                                                                                  WorkspaceManager workspaceManager) {
+                                                                                 WorkspaceManager workspaceManager) {
         return generateWorkspaceCodeMap(project, workspaceManager, null);
     }
 
     /**
      * Generates a code map for specific files in all packages of a workspace.
      *
-     * @param project the Ballerina workspace project
+     * @param project          the Ballerina workspace project
      * @param workspaceManager the workspace manager to obtain semantic models
-     * @param fileNames the list of file names to process, or {@code null} to process all files
+     * @param fileNames        the list of file names to process, or {@code null} to process all files
      * @return a map of package names to their code map files
      */
     public static Map<String, Map<String, CodeMapFile>> generateWorkspaceCodeMap(Project project,
-                                                                                  WorkspaceManager workspaceManager,
-                                                                                  List<String> fileNames) {
+                                                                                 WorkspaceManager workspaceManager,
+                                                                                 List<String> fileNames) {
         Map<String, Map<String, CodeMapFile>> workspaceCodeMap = new LinkedHashMap<>();
         BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
 
-        // Check if this is a workspace project
         if (!compilerApi.isWorkspaceProject(project)) {
-            // If not a workspace, just include the current package
             String packageName = project.currentPackage().packageName().value();
             workspaceCodeMap.put(packageName, generateCodeMap(project, workspaceManager, fileNames));
             return workspaceCodeMap;
         }
 
-        // Get all workspace packages in topological order
         List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
 
         for (Project packageProject : workspaceProjects) {
@@ -368,15 +342,13 @@ public class CodeMapGenerator {
     /**
      * Processes full workspace codemap and returns consolidated markdown content for all packages.
      *
-     * @param project the Ballerina workspace project
+     * @param project          the Ballerina workspace project
      * @param workspaceManager the workspace manager
      * @return consolidated workspace markdown content
      */
     public static String processFullWorkspaceCodeMap(Project project, WorkspaceManager workspaceManager) {
-        // Generate full workspace codemap
         Map<String, Map<String, CodeMapFile>> workspaceCodeMap = generateWorkspaceCodeMap(project, workspaceManager);
 
-        // Extract workspace name
         Path sourceRoot = project.sourceRoot();
         String workspaceName = "Unknown Workspace";
         if (sourceRoot != null) {
@@ -385,8 +357,6 @@ public class CodeMapGenerator {
                 workspaceName = fileName.toString();
             }
         }
-
-        // Convert to consolidated workspace markdown
         return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap, workspaceName);
     }
 }

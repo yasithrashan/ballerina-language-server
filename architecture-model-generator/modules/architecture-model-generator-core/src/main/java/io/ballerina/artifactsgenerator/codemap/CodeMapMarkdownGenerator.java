@@ -34,12 +34,8 @@ import java.util.stream.Collectors;
 public class CodeMapMarkdownGenerator {
 
     /**
-     * Generates Markdown documentation for multiple files with a custom project name.
-     * Creates a structured document with file sections separated by horizontal rules.
-     *
-     * @param files map of file paths to their code map data
-     * @param projectName the name to use in the document header
-     * @return Markdown string representation of the project
+     * Main entry point for generating Markdown documentation from code map files.
+     * Creates a structured document with proper section headers and separators.
      */
     public static String generateMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
@@ -73,8 +69,8 @@ public class CodeMapMarkdownGenerator {
      * This is useful for workspace-level documentation where file paths need to be
      * qualified with their package names.
      *
-     * @param files map of file paths to their code map data
-     * @param projectName the name to use in the document header
+     * @param files         map of file paths to their code map data
+     * @param projectName   the name to use in the document header
      * @param packagePrefix prefix to prepend to all file paths
      * @return Markdown string representation with prefixed file paths
      */
@@ -114,7 +110,7 @@ public class CodeMapMarkdownGenerator {
      * Filters out redundant headers and empty lines for cleaner output.
      *
      * @param workspaceCodeMap nested map where keys are package names and values are file maps
-     * @param workspaceName the name to use in the document header
+     * @param workspaceName    the name to use in the document header
      * @return Markdown string representation of the entire workspace
      */
     public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap,
@@ -139,7 +135,6 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("## Package: " + packageName);
 
-            // Generate package documentation and filter out redundant headers
             String packageMarkdown = generateMarkdownWithPackagePrefix(packageFiles, packageName, packageName);
             String[] packageLines = packageMarkdown.split("\n");
             boolean skipFirstHeader = false;
@@ -164,43 +159,40 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders all artifacts for a file by categorizing them into groups and
-     * rendering each group in a specific order for optimal documentation structure.
-     * Order: code issues, imports, configurables, variables, types, functions,
-     * automations, listeners, connections, services, classes, data mappers.
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param artifacts the list of code artifacts to render
+     * Main artifact rendering orchestrator that processes all code artifacts in logical order.
+     * Groups similar artifacts together and renders them in sections for optimal readability.
      */
     private static void renderArtifacts(List<String> lines, List<CodeMapArtifact> artifacts) {
         ArtifactGroups groups = new ArtifactGroups();
         categorizeArtifacts(artifacts, groups);
 
-        // Render artifacts in logical order for better documentation flow
+
         renderCodeIssues(lines, groups.codeIssues);
         renderCodeBlock(lines, groups.imports, CodeMapMarkdownGenerator::renderImport);
-        renderCodeBlockWithDocs(lines, groups.configurables, CodeMapMarkdownGenerator::renderConfigurable);
-        renderCodeBlockWithDocs(lines, groups.variables, CodeMapMarkdownGenerator::renderVariable);
-        renderCodeBlockWithDocs(lines, groups.types, CodeMapMarkdownGenerator::renderType);
+        renderCodeBlockWithDocs(lines, groups.configurables,
+                CodeMapMarkdownGenerator::renderConfigurable);
+        renderCodeBlockWithDocs(lines, groups.variables,
+                CodeMapMarkdownGenerator::renderVariable);
+        renderCodeBlockWithDocs(lines, groups.types,
+                CodeMapMarkdownGenerator::renderType);
         renderCodeBlockWithDocs(lines, groups.functions, CodeMapMarkdownGenerator::renderFunction);
-        renderCodeBlockWithDocs(lines, groups.automations, (artifact) -> renderSingleFunction(artifact, ""));
+        renderCodeBlockWithDocs(lines, groups.automations,
+                (artifact) -> renderSingleFunction(artifact, ""));
         renderCodeBlockWithDocs(lines, groups.listeners, CodeMapMarkdownGenerator::renderListener);
-        renderCodeBlockWithDocs(lines, groups.connections, CodeMapMarkdownGenerator::renderConnection);
+        renderCodeBlockWithDocs(lines, groups.connections,
+                CodeMapMarkdownGenerator::renderConnection);
         renderServices(lines, groups.services);
         renderClasses(lines, groups.classes);
-        renderCodeBlockWithDocs(lines, groups.dataMappers, (artifact) -> renderSingleFunction(artifact, ""));
+        renderCodeBlockWithDocs(lines, groups.dataMappers,
+                (artifact) -> renderSingleFunction(artifact, ""));
     }
 
     /**
-     * Renders a group of artifacts as a Ballerina code block without documentation comments.
-     * Used for simple artifacts like imports that don't need API documentation.
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param artifacts the artifacts to render
-     * @param renderer the rendering function for individual artifacts
+     * Renders artifacts as a simple Ballerina code block without documentation.
+     * Used for imports and other structural elements that don't need API docs.
      */
     private static void renderCodeBlock(List<String> lines, List<CodeMapArtifact> artifacts,
-                                       ArtifactRenderer renderer) {
+                                        ArtifactRenderer renderer) {
         if (artifacts.isEmpty()) {
             return;
         }
@@ -213,15 +205,11 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders a group of artifacts as a Ballerina code block with API documentation comments.
-     * Includes any documentation comments that were present in the source code.
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param artifacts the artifacts to render
-     * @param renderer the rendering function for individual artifacts
+     * Renders artifacts with their API documentation as a Ballerina code block.
+     * Includes comments, annotations, and documentation for comprehensive API reference.
      */
     private static void renderCodeBlockWithDocs(List<String> lines, List<CodeMapArtifact> artifacts,
-                                               ArtifactRenderer renderer) {
+                                                ArtifactRenderer renderer) {
         if (artifacts.isEmpty()) {
             return;
         }
@@ -235,11 +223,8 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders syntax errors and other code issues with detailed error information.
-     * Categorizes errors as parser errors (code < 2000) and includes the problematic code snippet.
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param artifacts the code issue artifacts to render
+     * Renders syntax errors and compilation issues with detailed diagnostic information.
+     * Shows error messages, categories, and the problematic code when available.
      */
     private static void renderCodeIssues(List<String> lines, List<CodeMapArtifact> artifacts) {
         if (artifacts.isEmpty()) {
@@ -256,7 +241,6 @@ public class CodeMapMarkdownGenerator {
 
             StringBuilder issueDescription = new StringBuilder();
 
-            // Categorize error types based on error codes
             if (!errorCode.isEmpty()) {
                 try {
                     String numericPart = errorCode.replaceAll("[^0-9]", "");
@@ -267,11 +251,9 @@ public class CodeMapMarkdownGenerator {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    // Continue without prefix if parsing fails
                 }
             }
 
-            // Use the most specific error message available
             if (!diagnosticMessage.isEmpty()) {
                 issueDescription.append(diagnosticMessage);
             } else if (!errorMessage.isEmpty()) {
@@ -292,11 +274,8 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders Ballerina service definitions with their resource functions and other members.
-     * Services are rendered with their base paths and nested child artifacts (resources, functions).
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param artifacts the service artifacts to render
+     * Renders Ballerina service definitions with their nested resource functions and methods.
+     * Services are rendered as hierarchical structures showing their complete API surface.
      */
     private static void renderServices(List<String> lines, List<CodeMapArtifact> artifacts) {
         if (artifacts.isEmpty()) {
@@ -309,11 +288,10 @@ public class CodeMapMarkdownGenerator {
         for (CodeMapArtifact artifact : artifacts) {
             renderApiDocumentation(lines, artifact, "");
 
-            // Build service declaration with optional base path
             StringBuilder serviceLine = new StringBuilder()
-                .append(modifiersPrefix(artifact))
-                .append("service ")
-                .append(artifact.name());
+                    .append(modifiersPrefix(artifact))
+                    .append("service ")
+                    .append(artifact.name());
             String basePath = getPropertyAsString(artifact, "basePath", "");
             if (!basePath.isEmpty()) {
                 serviceLine.append(" on ").append(basePath);
@@ -321,7 +299,6 @@ public class CodeMapMarkdownGenerator {
             serviceLine.append(" { ").append(formatRange(artifact));
             lines.add(serviceLine.toString());
 
-            // Render nested artifacts (resource functions, etc.)
             if (!artifact.children().isEmpty()) {
                 renderChildren(lines, artifact.children(), "    ");
             }
@@ -333,10 +310,7 @@ public class CodeMapMarkdownGenerator {
 
     /**
      * Renders Ballerina class definitions with their fields and methods.
-     * Classes are rendered with their modifiers and nested child artifacts.
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param artifacts the class artifacts to render
+     * Classes are rendered as hierarchical structures showing their complete interface.
      */
     private static void renderClasses(List<String> lines, List<CodeMapArtifact> artifacts) {
         if (artifacts.isEmpty()) {
@@ -350,7 +324,6 @@ public class CodeMapMarkdownGenerator {
             renderApiDocumentation(lines, artifact, "");
             lines.add(modifiersPrefix(artifact) + "class " + artifact.name() + " { " + formatRange(artifact));
 
-            // Render class members (fields, methods)
             if (!artifact.children().isEmpty()) {
                 renderChildren(lines, artifact.children(), "    ");
             }
@@ -361,12 +334,8 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders child artifacts of services and classes with appropriate indentation.
-     * Handles variables, fields, and functions as nested elements.
-     *
-     * @param lines the list to append rendered markdown lines to
-     * @param children the child artifacts to render
-     * @param indent the indentation string to use for nested elements
+     * Renders child artifacts (fields, methods, resources) with proper indentation.
+     * Used for nested elements within services and classes.
      */
     private static void renderChildren(List<String> lines, List<CodeMapArtifact> children, String indent) {
         for (CodeMapArtifact child : children) {
@@ -374,7 +343,7 @@ public class CodeMapMarkdownGenerator {
                 renderApiDocumentation(lines, child, indent);
 
                 StringBuilder fieldLine = new StringBuilder(indent)
-                    .append(modifiersPrefix(child));
+                        .append(modifiersPrefix(child));
                 String type = getPropertyAsString(child, "type", "");
                 if (!type.isEmpty()) {
                     fieldLine.append(type).append(" ").append(child.name());
@@ -391,13 +360,8 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Renders a single function signature with appropriate formatting.
-     * Handles both regular functions and resource functions with different syntax.
-     * Includes annotations if present.
-     *
-     * @param artifact the function artifact to render
-     * @param indent the indentation string for the function
-     * @return the formatted function signature string
+     * Renders function signatures with proper syntax for both regular and resource functions.
+     * Resource functions use "resource function [method] [path]" syntax, regular functions use "function [name]".
      */
     private static String renderSingleFunction(CodeMapArtifact artifact, String indent) {
         StringBuilder signature = new StringBuilder(indent);
@@ -406,8 +370,8 @@ public class CodeMapMarkdownGenerator {
         Object accessor = artifact.properties().get("accessor");
         boolean isResource = "RESOURCE".equals(category) || accessor != null;
 
-        // Build different syntax for resource vs regular functions
         if (isResource) {
+            signature.append(modifiersPrefixExcluding(artifact, "resource"));
             signature.append("resource function ");
             String accessorStr = getPropertyAsString(artifact, "accessor", "");
             if (!accessorStr.isEmpty()) {
@@ -419,7 +383,6 @@ public class CodeMapMarkdownGenerator {
             signature.append(artifact.name());
         }
 
-        // Add parameters
         String params = parametersInline(artifact);
         signature.append("(");
         if (!params.isEmpty()) {
@@ -427,7 +390,6 @@ public class CodeMapMarkdownGenerator {
         }
         signature.append(")");
 
-        // Add return type if present
         String returns = getPropertyAsString(artifact, "returns", "()");
         if (!"()".equals(returns)) {
             signature.append(" returns ").append(returns);
@@ -437,12 +399,6 @@ public class CodeMapMarkdownGenerator {
         return signature.toString();
     }
 
-    /**
-     * Renders an import statement with organization, module name and optional alias.
-     *
-     * @param artifact the import artifact to render
-     * @return the formatted import statement string
-     */
     private static String renderImport(CodeMapArtifact artifact) {
         String org = getPropertyAsString(artifact, "orgName", "");
         String mod = getPropertyAsString(artifact, "moduleName", "");
@@ -456,18 +412,17 @@ public class CodeMapMarkdownGenerator {
         return entry.toString();
     }
 
-    /**
-     * Renders a configurable variable declaration with type and optional default value.
-     *
-     * @param artifact the configurable artifact to render
-     * @return the formatted configurable declaration string
-     */
     private static String renderConfigurable(CodeMapArtifact artifact) {
         StringBuilder configurableLine = new StringBuilder("configurable ");
         String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
+        String type = getPropertyAsString(artifact, "type", "");
+
         if (!typeDescriptor.isEmpty()) {
             configurableLine.append(typeDescriptor).append(" ");
+        } else if (!type.isEmpty()) {
+            configurableLine.append(type).append(" ");
         }
+
         configurableLine.append(artifact.name());
         String value = getPropertyAsString(artifact, "value", "");
         if (!value.isEmpty()) {
@@ -477,13 +432,6 @@ public class CodeMapMarkdownGenerator {
         return configurableLine.toString();
     }
 
-    /**
-     * Renders a variable declaration, handling both constants and regular variables.
-     * Constants are detected by having both typeDescriptor and value properties.
-     *
-     * @param artifact the variable artifact to render
-     * @return the formatted variable declaration string
-     */
     private static String renderVariable(CodeMapArtifact artifact) {
         StringBuilder variableLine = new StringBuilder();
         variableLine.append(modifiersPrefix(artifact));
@@ -508,16 +456,10 @@ public class CodeMapMarkdownGenerator {
         return variableLine.toString();
     }
 
-    /**
-     * Renders a type definition with its type descriptor.
-     *
-     * @param artifact the type artifact to render
-     * @return the formatted type definition string
-     */
     private static String renderType(CodeMapArtifact artifact) {
         String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
         StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact))
-            .append("type ").append(artifact.name());
+                .append("type ").append(artifact.name());
         if (!typeDescriptor.isEmpty()) {
             typeLine.append(" ").append(typeDescriptor);
         }
@@ -525,16 +467,9 @@ public class CodeMapMarkdownGenerator {
         return typeLine.toString();
     }
 
-    /**
-     * Renders a regular function signature with parameters and return type.
-     * Includes annotations if present.
-     *
-     * @param artifact the function artifact to render
-     * @return the formatted function signature string
-     */
     private static String renderFunction(CodeMapArtifact artifact) {
         StringBuilder signature = new StringBuilder(modifiersPrefix(artifact))
-            .append("function ").append(artifact.name());
+                .append("function ").append(artifact.name());
         String params = parametersInline(artifact);
         String returns = getPropertyAsString(artifact, "returns", "()");
 
@@ -551,12 +486,6 @@ public class CodeMapMarkdownGenerator {
         return signature.toString();
     }
 
-    /**
-     * Renders a listener declaration with its type information.
-     *
-     * @param artifact the listener artifact to render
-     * @return the formatted listener declaration string
-     */
     private static String renderListener(CodeMapArtifact artifact) {
         StringBuilder listenerLine = new StringBuilder("listener ").append(artifact.name());
         String type = getPropertyAsString(artifact, "type", "");
@@ -567,27 +496,15 @@ public class CodeMapMarkdownGenerator {
         return listenerLine.toString();
     }
 
-    /**
-     * Renders a connection artifact (typically client connections).
-     *
-     * @param artifact the connection artifact to render
-     * @return the formatted connection string
-     */
     private static String renderConnection(CodeMapArtifact artifact) {
         return modifiersPrefix(artifact) + artifact.name() + " " + formatRange(artifact);
     }
 
     /**
-     * Renders API documentation comments and annotations from artifact properties.
-     * Preserves existing comment formatting and adds comment markers for plain text.
-     * Handles multi-line documentation with proper indentation.
-     *
-     * @param lines the list to append documentation lines to
-     * @param artifact the artifact containing documentation and annotations
-     * @param indent the indentation string for the comments
+     * Renders documentation comments and annotations for artifacts in Ballerina comment format.
+     * Preserves existing comment markers and adds proper indentation.
      */
     private static void renderApiDocumentation(List<String> lines, CodeMapArtifact artifact, String indent) {
-        // Render annotations first
         renderAnnotations(lines, artifact, indent);
         String doc = getPropertyAsString(artifact, "documentation", "");
         if (doc.isEmpty()) {
@@ -601,7 +518,6 @@ public class CodeMapMarkdownGenerator {
             if (trimmedLine.equals("#")) {
                 lines.add(indent + "#");
             } else if (!trimmedLine.isEmpty()) {
-                // Preserve existing comment formatting or add comment markers
                 if (trimmedLine.startsWith("# + ") || trimmedLine.startsWith("# - ")) {
                     lines.add(indent + trimmedLine);
                 } else if (trimmedLine.startsWith("#")) {
@@ -613,14 +529,6 @@ public class CodeMapMarkdownGenerator {
         }
     }
 
-    /**
-     * Renders annotations for an artifact with proper indentation.
-     * Annotations are displayed before the artifact declaration.
-     *
-     * @param lines the list to append annotation lines to
-     * @param artifact the artifact containing annotations
-     * @param indent the indentation string for the annotations
-     */
     private static void renderAnnotations(List<String> lines, CodeMapArtifact artifact, String indent) {
         List<String> annotations = getPropertyAsStringList(artifact, "annotations");
         for (String annotation : annotations) {
@@ -628,14 +536,6 @@ public class CodeMapMarkdownGenerator {
         }
     }
 
-    /**
-     * Categorizes artifacts into logical groups for organized rendering.
-     * Variables are further subcategorized based on their properties.
-     * The 'main' function is treated as an automation rather than a regular function.
-     *
-     * @param artifacts the list of artifacts to categorize
-     * @param groups the group container to populate
-     */
     private static void categorizeArtifacts(List<CodeMapArtifact> artifacts, ArtifactGroups groups) {
         for (CodeMapArtifact artifact : artifacts) {
             switch (artifact.type()) {
@@ -664,7 +564,6 @@ public class CodeMapMarkdownGenerator {
                     categorizeVariable(artifact, groups);
                     break;
                 case "FUNCTION":
-                    // Special handling for main function as automation entry point
                     if ("main".equals(artifact.name())) {
                         groups.automations.add(artifact);
                     } else {
@@ -677,13 +576,6 @@ public class CodeMapMarkdownGenerator {
         }
     }
 
-    /**
-     * Subcategorizes variable artifacts based on their category and modifiers.
-     * Separates configurables and connections from regular variables for better organization.
-     *
-     * @param artifact the variable artifact to categorize
-     * @param groups the group container to add the artifact to
-     */
     private static void categorizeVariable(CodeMapArtifact artifact, ArtifactGroups groups) {
         String category = getPropertyAsString(artifact, "category", "").toUpperCase(Locale.ROOT);
         List<String> modifiers = getPropertyAsStringList(artifact, "modifiers");
@@ -697,33 +589,18 @@ public class CodeMapMarkdownGenerator {
         }
     }
 
-    /**
-     * Safely retrieves a string property from an artifact, with fallback value.
-     *
-     * @param artifact the artifact to get property from
-     * @param key the property key
-     * @param fallback the value to return if property is null
-     * @return the property value as string or fallback
-     */
     private static String getPropertyAsString(CodeMapArtifact artifact, String key, String fallback) {
         Object value = artifact.properties().get(key);
         return value != null ? value.toString() : fallback;
     }
 
-    /**
-     * Safely retrieves a list property from an artifact and converts to string list.
-     *
-     * @param artifact the artifact to get property from
-     * @param key the property key
-     * @return list of strings or empty list if property is null/invalid
-     */
     private static List<String> getPropertyAsStringList(CodeMapArtifact artifact, String key) {
         Object value = artifact.properties().get(key);
         if (value instanceof List) {
             try {
                 return ((List<?>) value).stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
             } catch (ClassCastException e) {
                 return new ArrayList<>();
             }
@@ -731,18 +608,33 @@ public class CodeMapMarkdownGenerator {
         return new ArrayList<>();
     }
 
-    /**
-     * Builds a modifier prefix string from artifact modifiers (public, private, etc.).
-     *
-     * @param artifact the artifact to get modifiers from
-     * @return space-separated modifiers with trailing space, or empty string
-     */
     private static String modifiersPrefix(CodeMapArtifact artifact) {
         List<String> mods = getPropertyAsStringList(artifact, "modifiers");
         if (mods.isEmpty()) {
             return "";
         }
         return String.join(" ", mods) + " ";
+    }
+
+    /**
+     * Builds a modifier prefix string from artifact modifiers, excluding specific modifiers.
+     *
+     * @param artifact        the artifact to get modifiers from
+     * @param excludeModifier the modifier to exclude from the prefix
+     * @return space-separated modifiers with trailing space, or empty string
+     */
+    private static String modifiersPrefixExcluding(CodeMapArtifact artifact, String excludeModifier) {
+        List<String> mods = getPropertyAsStringList(artifact, "modifiers");
+        if (mods.isEmpty()) {
+            return "";
+        }
+        List<String> filteredMods = mods.stream()
+                .filter(mod -> !excludeModifier.equals(mod))
+                .collect(Collectors.toList());
+        if (filteredMods.isEmpty()) {
+            return "";
+        }
+        return String.join(" ", filteredMods) + " ";
     }
 
     /**
@@ -760,29 +652,28 @@ public class CodeMapMarkdownGenerator {
         }
 
         return params.stream()
-            .map(p -> {
-                if (p instanceof String) {
-                    String paramStr = (String) p;
-                    // Reorder "name: type" to "type : name" format
-                    if (paramStr.contains(": ")) {
-                        String[] parts = paramStr.split(": ", 2);
-                        if (parts.length == 2) {
-                            return parts[1] + " : " + parts[0];
+                .map(p -> {
+                    if (p instanceof String) {
+                        String paramStr = (String) p;
+                        if (paramStr.contains(": ")) {
+                            String[] parts = paramStr.split(": ", 2);
+                            if (parts.length == 2) {
+                                return parts[1] + " : " + parts[0];
+                            }
+                        }
+                        return paramStr;
+                    } else if (p instanceof Map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> paramMap = (Map<String, Object>) p;
+                        Object name = paramMap.get("name");
+                        Object type = paramMap.get("type");
+                        if (name != null && type != null) {
+                            return type + " : " + name;
                         }
                     }
-                    return paramStr;
-                } else if (p instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> paramMap = (Map<String, Object>) p;
-                    Object name = paramMap.get("name");
-                    Object type = paramMap.get("type");
-                    if (name != null && type != null) {
-                        return type + " : " + name;
-                    }
-                }
-                return p.toString();
-            })
-            .collect(Collectors.joining(", "));
+                    return p.toString();
+                })
+                .collect(Collectors.joining(", "));
     }
 
     /**
@@ -798,8 +689,8 @@ public class CodeMapMarkdownGenerator {
             return "";
         }
         return String.format("[L:%d - L:%d]",
-            range.getStart().getLine() + 1,
-            range.getEnd().getLine() + 1);
+                range.getStart().getLine() + 1,
+                range.getEnd().getLine() + 1);
     }
 
     /**
@@ -815,17 +706,17 @@ public class CodeMapMarkdownGenerator {
      * Each group corresponds to a different type of Ballerina language construct.
      */
     private static class ArtifactGroups {
-        final List<CodeMapArtifact> codeIssues = new ArrayList<>();      // Syntax errors and diagnostics
-        final List<CodeMapArtifact> imports = new ArrayList<>();         // Import statements
-        final List<CodeMapArtifact> configurables = new ArrayList<>();   // Configurable variables
-        final List<CodeMapArtifact> connections = new ArrayList<>();     // Client connections
-        final List<CodeMapArtifact> variables = new ArrayList<>();       // Regular variables
-        final List<CodeMapArtifact> types = new ArrayList<>();           // Type definitions
-        final List<CodeMapArtifact> functions = new ArrayList<>();       // Regular functions
-        final List<CodeMapArtifact> automations = new ArrayList<>();     // Main function and automations
-        final List<CodeMapArtifact> listeners = new ArrayList<>();       // Listener declarations
-        final List<CodeMapArtifact> services = new ArrayList<>();        // Service definitions
-        final List<CodeMapArtifact> classes = new ArrayList<>();         // Class definitions
-        final List<CodeMapArtifact> dataMappers = new ArrayList<>();     // Data mapping functions
+        final List<CodeMapArtifact> codeIssues = new ArrayList<>();
+        final List<CodeMapArtifact> imports = new ArrayList<>();
+        final List<CodeMapArtifact> configurables = new ArrayList<>();
+        final List<CodeMapArtifact> connections = new ArrayList<>();
+        final List<CodeMapArtifact> variables = new ArrayList<>();
+        final List<CodeMapArtifact> types = new ArrayList<>();
+        final List<CodeMapArtifact> functions = new ArrayList<>();
+        final List<CodeMapArtifact> automations = new ArrayList<>();
+        final List<CodeMapArtifact> listeners = new ArrayList<>();
+        final List<CodeMapArtifact> services = new ArrayList<>();
+        final List<CodeMapArtifact> classes = new ArrayList<>();
+        final List<CodeMapArtifact> dataMappers = new ArrayList<>();
     }
 }

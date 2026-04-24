@@ -113,17 +113,14 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 WorkspaceManager workspaceManager = workspaceManagerProxy.get();
                 Project project = workspaceManager.loadProject(projectPath);
 
-                // Workspace detection
                 BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
                 boolean isWorkspace = compilerApi.isWorkspaceProject(project);
 
                 if (isWorkspace) {
-                    // Process full workspace codemap
                     String fullWorkspaceMarkdown = CodeMapGenerator.processFullWorkspaceCodeMap(
                             project, workspaceManager);
                     response.setContent(fullWorkspaceMarkdown);
                 } else {
-                    // Process full project codemap
                     String fullProjectMarkdown = CodeMapGenerator.processFullProjectCodeMap(
                             project, workspaceManager);
                     response.setContent(fullProjectMarkdown);
