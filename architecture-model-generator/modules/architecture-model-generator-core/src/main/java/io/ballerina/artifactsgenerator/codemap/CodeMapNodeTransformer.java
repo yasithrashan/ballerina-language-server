@@ -516,26 +516,33 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             typeBuilder.modifiers(List.of(visibility.text()));
         });
 
-        // Use semantic model to get detailed type information
-        semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
-            if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
-                TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
-                // Special handling for record types
-                String typeDescriptor = isRecordType(typeSymbol)
-                        ? RECORD_TYPE_NAME
-                        : CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
-                typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeDescriptor);
-
-                // Extract fields for record types
-                List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
-                typeBuilder.addProperty(PROP_FIELDS, fields);
-
-                List<String> annotations = extractAnnotations(typeDefinitionNode.metadata());
-                if (!annotations.isEmpty()) {
-                    typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        // Extract type descriptor from syntax tree first, fallback to semantic model
+        String typeDescriptor = extractTypeDescriptorFromSyntax(typeDefinitionNode);
+        if (typeDescriptor.isEmpty()) {
+            // Use semantic model to get detailed type information for complex types
+            semanticModel.symbol(typeDefinitionNode).ifPresent(symbol -> {
+                if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
+                    TypeSymbol typeSymbol = typeDefSymbol.typeDescriptor();
+                    // Special handling for record types
+                    String semanticTypeDescriptor = isRecordType(typeSymbol)
+                            ? RECORD_TYPE_NAME
+                            : CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
+                    typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, semanticTypeDescriptor);
                 }
-            }
-        });
+            });
+        } else {
+            typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeDescriptor);
+        }
+
+        // Extract fields for record types
+        List<String> fields = extractFieldsFromTypeDefinition(typeDefinitionNode);
+        typeBuilder.addProperty(PROP_FIELDS, fields);
+
+        // Extract annotations
+        List<String> annotations = extractAnnotations(typeDefinitionNode.metadata());
+        if (!annotations.isEmpty()) {
+            typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
 
         extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
         extractInlineComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
@@ -749,6 +756,24 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         return functionSignature.returnTypeDesc()
                 .map(returnTypeDesc -> returnTypeDesc.type().toSourceCode().strip())
                 .orElse("()");
+    }
+
+    /**
+     * Extracts type descriptor directly from the syntax tree for simple type aliases.
+     * This preserves the original source code without module prefixes added by the semantic model.
+     * For record types, returns just "record" to avoid cluttering with field details.
+     */
+    private String extractTypeDescriptorFromSyntax(TypeDefinitionNode typeDefinitionNode) {
+        Node typeDescriptor = typeDefinitionNode.typeDescriptor();
+        if (typeDescriptor != null) {
+            String sourceCode = safeExtractSourceCode(typeDescriptor);
+            // For record types, just return "record" instead of the full field definition
+            if (sourceCode.startsWith("record {") || sourceCode.startsWith("record{")) {
+                return RECORD_TYPE_NAME;
+            }
+            return sourceCode;
+        }
+        return "";
     }
 
     private List<String> extractFieldsFromTypeDefinition(TypeDefinitionNode typeDefinitionNode) {
