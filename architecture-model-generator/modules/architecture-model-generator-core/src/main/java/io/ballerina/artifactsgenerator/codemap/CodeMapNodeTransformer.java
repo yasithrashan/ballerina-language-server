@@ -72,6 +72,7 @@ import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.compiler.syntax.tree.Token;
 import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
 import io.ballerina.compiler.syntax.tree.TypeDescriptorNode;
+import io.ballerina.compiler.syntax.tree.TypeReferenceNode;
 import io.ballerina.modelgenerator.commons.CommonUtils;
 import io.ballerina.modelgenerator.commons.ModuleInfo;
 
@@ -110,6 +111,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String TYPE_TYPE = "TYPE";
     private static final String TYPE_CLASS = "CLASS";
     private static final String TYPE_FIELD = "FIELD";
+    private static final String TYPE_INCLUSION = "TYPE_INCLUSION";
 
     private static final String PROP_PARAMETERS = "parameters";
     private static final String PROP_RETURNS = "returns";
@@ -609,6 +611,42 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         extractInlineComments(objectFieldNode).ifPresent(fieldBuilder::comment);
 
         return Optional.of(fieldBuilder.build());
+    }
+
+    /**
+     * Transforms type references (used for object and record type inclusions) into CodeMapArtifact objects.
+     * Handles both qualified and simple type references with proper source code extraction.
+     */
+    @Override
+    public Optional<CodeMapArtifact> transform(TypeReferenceNode typeReferenceNode) {
+        // Extract the type reference source code (e.g., "*persist:AbstractPersistClient")
+        String typeRefSource = safeExtractSourceCode(typeReferenceNode);
+        if (typeRefSource.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // The source code already includes the asterisk prefix for type inclusions
+        String inclusionName = typeRefSource;
+
+        CodeMapArtifact.Builder inclusionBuilder = new CodeMapArtifact.Builder(typeReferenceNode)
+                .name(inclusionName)
+                .type(TYPE_INCLUSION);
+
+        // Store the referenced type (without asterisk) for additional context
+        String referencedType = typeRefSource.startsWith("*") ? typeRefSource.substring(1) : typeRefSource;
+        inclusionBuilder.addProperty(PROP_TYPE, referencedType);
+
+        // Try to get semantic information about the referenced type
+        semanticModel.symbol(typeReferenceNode).ifPresent(symbol -> {
+            if (symbol instanceof TypeSymbol typeSymbol) {
+                String typeSignature = CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
+                inclusionBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeSignature);
+            }
+        });
+
+        extractInlineComments(typeReferenceNode).ifPresent(inclusionBuilder::comment);
+
+        return Optional.of(inclusionBuilder.build());
     }
 
     private List<String> extractModifiers(Optional<Token> visibilityQualifier, NodeList<Token> classTypeQualifiers) {

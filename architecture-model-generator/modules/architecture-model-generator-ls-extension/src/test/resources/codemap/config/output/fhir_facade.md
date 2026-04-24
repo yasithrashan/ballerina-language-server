@@ -141,6 +141,7 @@ const ENCOUNTER_DATA [L:30 - L:30]
 
 ```ballerina
 public isolated client class Client { [L:32 - L:174]
+    *persist:AbstractPersistClient; [L:33 - L:33]
     private final mysql:Client dbClient [L:35 - L:35]
     private final map<psql:SQLClient> persistClients [L:37 - L:37]
     private final record {|psql:SQLMetadata...;|} & readonly metadata [L:39 - L:67]

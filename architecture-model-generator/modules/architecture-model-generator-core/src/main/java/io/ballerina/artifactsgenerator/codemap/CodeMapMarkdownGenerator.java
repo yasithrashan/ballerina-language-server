@@ -389,6 +389,10 @@ public class CodeMapMarkdownGenerator {
                 // Handle methods and resource functions
                 renderApiDocumentation(lines, child, indent);
                 lines.add(renderSingleFunction(child, indent));
+            } else if ("TYPE_INCLUSION".equals(child.type())) {
+                // Handle object type inclusions (e.g., *persist:AbstractPersistClient;)
+                renderApiDocumentation(lines, child, indent);
+                lines.add(indent + child.name() + " " + formatRange(child));
             }
         }
     }
@@ -601,6 +605,9 @@ public class CodeMapMarkdownGenerator {
                 case "DATA_MAPPER":
                     groups.dataMappers.add(artifact);
                     break;
+                case "TYPE_INCLUSION":
+                    groups.typeInclusions.add(artifact);
+                    break;
                 case "VARIABLE":
                     // Variables need sub-categorization
                     categorizeVariable(artifact, groups);
@@ -766,5 +773,6 @@ public class CodeMapMarkdownGenerator {
         final List<CodeMapArtifact> services = new ArrayList<>();
         final List<CodeMapArtifact> classes = new ArrayList<>();
         final List<CodeMapArtifact> dataMappers = new ArrayList<>();
+        final List<CodeMapArtifact> typeInclusions = new ArrayList<>();
     }
 }
