@@ -309,13 +309,17 @@ public class CodeMapMarkdownGenerator {
             String listener = getPropertyAsString(artifact, "listener", "");
 
             // Add service name if present (e.g., http:Service)
-            if (serviceName != null && !serviceName.isEmpty()) {
+            boolean hasServiceName = serviceName != null && !serviceName.isEmpty();
+            if (hasServiceName) {
                 serviceLine.append(serviceName);
             }
 
             // Add service path if present (e.g., /fhir/r4/metadata)
             if (!servicePath.isEmpty()) {
-                serviceLine.append(" ").append(servicePath);
+                if (hasServiceName) {
+                    serviceLine.append(" ");
+                }
+                serviceLine.append(servicePath);
             }
 
             // Add listener if present (e.g., httpListener, new fhirr4:Listener(...))

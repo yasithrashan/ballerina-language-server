@@ -73,7 +73,7 @@ type OrderCreationResponse record [L:61 - L:65]
         allowOrigins: ["https://grc.com"],
         allowMethods: ["GET", "POST"]
     })
-service  /v1 on new http:Listener(SERVICE_PORT) { [L:20 - L:59]
+service /v1 on new http:Listener(SERVICE_PORT) { [L:20 - L:59]
     resource function post orders(@http:Payload OrderCreatePayload payload) returns OrderCreationResponse|http:InternalServerError|http:BadRequest [L:30 - L:47]
     resource function get orders/[string orderId]() returns Order|http:NotFound|http:InternalServerError [L:49 - L:58]
 }
