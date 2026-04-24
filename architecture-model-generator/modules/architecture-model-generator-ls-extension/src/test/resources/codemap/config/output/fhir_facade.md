@@ -86,7 +86,7 @@ listener httpListener : http:Listener [L:47 - L:47]
 
 ```ballerina
 # initialize source system endpoints here
-service http:Service on /fhir/r4/metadata { [L:49 - L:62]
+service http:Service /fhir/r4/metadata on httpListener { [L:49 - L:62]
     # The capability statement is a key part of the overall conformance framework in FHIR. It is used as a statement of the
     # features of actual software, or of a set of rules for an application to provide. This statement connects to all the
     # detailed statements of functionality, such as StructureDefinitions and ValueSets. This composite statement of application
@@ -96,7 +96,7 @@ service http:Service on /fhir/r4/metadata { [L:49 - L:62]
     isolated resource function get .() returns r4:CapabilityStatement|error [L:53 - L:61]
 }
 # Patient API                                                                                                          #
-service /fhir/r4/Patient on new fhirr4:Listener(config = patientApiConfig) { [L:64 - L:160]
+service  /fhir/r4/Patient on new fhirr4:Listener(config = patientApiConfig) { [L:64 - L:160]
     isolated resource function get [string id](r4:FHIRContext fhirContext) returns Patient|r4:OperationOutcome|r4:FHIRError [L:68 - L:79]
     isolated resource function get [string id]/_history/[string vid](r4:FHIRContext fhirContext) returns Patient|r4:OperationOutcome|r4:FHIRError [L:82 - L:84]
     isolated resource function get .(r4:FHIRContext fhirContext) returns r4:Bundle|r4:OperationOutcome|r4:FHIRError [L:87 - L:116]
@@ -108,7 +108,7 @@ service /fhir/r4/Patient on new fhirr4:Listener(config = patientApiConfig) { [L:
     isolated resource function get _history(r4:FHIRContext fhirContext) returns r4:Bundle|r4:OperationOutcome|r4:FHIRError [L:157 - L:159]
 }
 # Encounter API                                                                                                          #
-service /fhir/r4/Encounter on new fhirr4:Listener(config = encounterApiConfig) { [L:162 - L:209]
+service  /fhir/r4/Encounter on new fhirr4:Listener(config = encounterApiConfig) { [L:162 - L:209]
     isolated resource function get [string id](r4:FHIRContext fhirContext) returns Encounter|r4:OperationOutcome|r4:FHIRError [L:166 - L:168]
     isolated resource function get [string id]/_history/[string vid](r4:FHIRContext fhirContext) returns Encounter|r4:OperationOutcome|r4:FHIRError [L:171 - L:173]
     isolated resource function get .(r4:FHIRContext fhirContext) returns r4:Bundle|r4:OperationOutcome|r4:FHIRError [L:176 - L:178]

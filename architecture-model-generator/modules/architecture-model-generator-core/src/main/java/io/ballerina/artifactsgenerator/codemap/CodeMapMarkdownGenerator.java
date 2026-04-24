@@ -299,15 +299,30 @@ public class CodeMapMarkdownGenerator {
         for (CodeMapArtifact artifact : artifacts) {
             renderApiDocumentation(lines, artifact, "");
 
-            // Build service declaration with modifiers and listener binding
+            // Build service declaration with modifiers, service path, and listener binding
             StringBuilder serviceLine = new StringBuilder()
                     .append(modifiersPrefix(artifact))
-                    .append("service ")
-                    .append(artifact.name());
-            String basePath = getPropertyAsString(artifact, "basePath", "");
-            if (!basePath.isEmpty()) {
-                serviceLine.append(" on ").append(basePath);
+                    .append("service ");
+
+            String serviceName = artifact.name();
+            String servicePath = getPropertyAsString(artifact, "basePath", "");
+            String listener = getPropertyAsString(artifact, "listener", "");
+
+            // Add service name if present (e.g., http:Service)
+            if (serviceName != null && !serviceName.isEmpty()) {
+                serviceLine.append(serviceName);
             }
+
+            // Add service path if present (e.g., /fhir/r4/metadata)
+            if (!servicePath.isEmpty()) {
+                serviceLine.append(" ").append(servicePath);
+            }
+
+            // Add listener if present (e.g., httpListener, new fhirr4:Listener(...))
+            if (!listener.isEmpty()) {
+                serviceLine.append(" on ").append(listener);
+            }
+
             serviceLine.append(" { ").append(formatRange(artifact));
             lines.add(serviceLine.toString());
 

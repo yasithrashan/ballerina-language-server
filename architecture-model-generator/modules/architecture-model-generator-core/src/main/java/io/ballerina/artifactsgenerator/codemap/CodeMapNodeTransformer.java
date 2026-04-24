@@ -126,6 +126,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String PROP_FIELDS = "fields";
     private static final String PROP_ACCESSOR = "accessor";
     private static final String PROP_ANNOTATIONS = "annotations";
+    private static final String PROP_LISTENER = "listener";
 
     private static final String RECORD_TYPE_NAME = "record";
     private static final String ENUM_TYPE_NAME = "enum";
@@ -220,24 +221,24 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 resourcePaths, firstExpression);
         serviceName.ifPresent(serviceBuilder::name);
 
-        // Extract base path with priority: resource path > listener expression
-        String basePath = "";
-        if (!resourcePaths.isEmpty() && typeDescriptorNode.isEmpty()) {
+        // Extract service path and listener information separately
+        String servicePath = "";
+        String listener = "";
+
+        if (!resourcePaths.isEmpty()) {
+            servicePath = getPathString(resourcePaths);
             if (firstExpression != null) {
-                String expressionSource = safeExtractSourceCode(firstExpression);
-                if (!expressionSource.isEmpty()) {
-                    basePath = expressionSource;
-                }
+                listener = safeExtractSourceCode(firstExpression);
             }
-        } else if (!resourcePaths.isEmpty()) {
-            basePath = getPathString(resourcePaths);
         } else if (firstExpression != null) {
-            String expressionSource = safeExtractSourceCode(firstExpression);
-            if (!expressionSource.isEmpty()) {
-                basePath = expressionSource;
-            }
+            listener = safeExtractSourceCode(firstExpression);
         }
-        serviceBuilder.addProperty(PROP_BASE_PATH, basePath);
+
+        // Store service path as basePath for backward compatibility and listener separately
+        serviceBuilder.addProperty(PROP_BASE_PATH, servicePath);
+        if (!listener.isEmpty()) {
+            serviceBuilder.addProperty(PROP_LISTENER, listener);
+        }
 
         // Extract listener configuration (port and type)
         if (firstExpression != null) {
@@ -744,7 +745,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (typeDescriptorNode.isPresent()) {
             return Optional.of(typeDescriptorNode.get().toSourceCode().strip());
         } else if (!resourcePaths.isEmpty()) {
-            return Optional.of(getPathString(resourcePaths));
+            // For services without type descriptor, use just the path as service type (empty service name)
+            return Optional.empty();
         } else if (firstExpression != null) {
             return Optional.of(firstExpression.toSourceCode().strip());
         } else {
