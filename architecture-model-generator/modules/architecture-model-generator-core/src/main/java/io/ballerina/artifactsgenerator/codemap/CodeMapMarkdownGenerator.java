@@ -690,8 +690,7 @@ public class CodeMapMarkdownGenerator {
 
     /**
      * Formats function parameters as an inline comma-separated string.
-     * Handles both string and map representations of parameters.
-     * Reorders "name: type" format to "type : name" for Ballerina syntax.
+     * Parameters are already in the correct "type name" format from the transformer.
      *
      * @param artifact the function artifact containing parameters
      * @return comma-separated parameter string or empty string
@@ -702,31 +701,8 @@ public class CodeMapMarkdownGenerator {
             return "";
         }
 
-        // Process parameters and handle different formats
         return params.stream()
-                .map(p -> {
-                    if (p instanceof String) {
-                        String paramStr = (String) p;
-                        // Reorder "name: type" to "type : name" for Ballerina syntax
-                        if (paramStr.contains(": ")) {
-                            String[] parts = paramStr.split(": ", 2);
-                            if (parts.length == 2) {
-                                return parts[1] + " : " + parts[0];
-                            }
-                        }
-                        return paramStr;
-                    } else if (p instanceof Map) {
-                        // Handle map-based parameter representation
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> paramMap = (Map<String, Object>) p;
-                        Object name = paramMap.get("name");
-                        Object type = paramMap.get("type");
-                        if (name != null && type != null) {
-                            return type + " : " + name;
-                        }
-                    }
-                    return p.toString();
-                })
+                .map(Object::toString)
                 .collect(Collectors.joining(", "));
     }
 

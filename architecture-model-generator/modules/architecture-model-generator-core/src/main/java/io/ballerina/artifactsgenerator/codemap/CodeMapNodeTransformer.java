@@ -767,7 +767,18 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         Node typeDescriptor = typeDefinitionNode.typeDescriptor();
         if (typeDescriptor != null) {
             String sourceCode = safeExtractSourceCode(typeDescriptor);
-            // For record types, just return "record" instead of the full field definition
+
+            // Strip field definitions from record types
+            if (sourceCode.contains("record {|") && sourceCode.contains("|}")) {
+                int recordStart = sourceCode.indexOf("record {|");
+                int recordEnd = sourceCode.indexOf("|}", recordStart);
+                if (recordStart != -1 && recordEnd != -1) {
+                    String prefix = sourceCode.substring(0, recordStart);
+                    String suffix = sourceCode.substring(recordEnd + 2);
+                    return (prefix + RECORD_TYPE_NAME + suffix).trim();
+                }
+            }
+
             if (sourceCode.startsWith("record {") || sourceCode.startsWith("record{")) {
                 return RECORD_TYPE_NAME;
             }
