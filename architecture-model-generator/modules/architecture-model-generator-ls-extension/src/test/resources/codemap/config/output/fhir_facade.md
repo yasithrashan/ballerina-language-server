@@ -81,7 +81,7 @@ function init() returns error? [L:37 - L:39]
 ```
 
 ```ballerina
-listener httpListener : http:Listener [L:47 - L:47]
+listener http:Listener httpListener [L:47 - L:47]
 ```
 
 ```ballerina

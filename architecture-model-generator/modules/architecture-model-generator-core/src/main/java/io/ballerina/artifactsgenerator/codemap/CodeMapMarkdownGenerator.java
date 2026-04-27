@@ -531,11 +531,12 @@ public class CodeMapMarkdownGenerator {
     }
 
     private static String renderListener(CodeMapArtifact artifact) {
-        StringBuilder listenerLine = new StringBuilder("listener ").append(artifact.name());
+        StringBuilder listenerLine = new StringBuilder("listener ");
         String type = getPropertyAsString(artifact, "type", "");
         if (!type.isEmpty()) {
-            listenerLine.append(" : ").append(type);
+            listenerLine.append(type).append(" ");
         }
+        listenerLine.append(artifact.name());
         listenerLine.append(" ").append(formatRange(artifact));
         return listenerLine.toString();
     }
