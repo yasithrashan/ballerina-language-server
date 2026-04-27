@@ -478,16 +478,24 @@ public class CodeMapMarkdownGenerator {
 
     private static String renderVariable(CodeMapArtifact artifact) {
         StringBuilder variableLine = new StringBuilder();
-        variableLine.append(modifiersPrefix(artifact));
 
         String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
         String value = getPropertyAsString(artifact, "value", "");
-        boolean isConstant = !typeDescriptor.isEmpty() && !value.isEmpty();
+        List<String> modifiers = getPropertyAsStringList(artifact, "modifiers");
+        boolean isConstant = modifiers.contains("const");
 
         if (isConstant) {
-            variableLine.append("const ").append(typeDescriptor).append(" ").append(artifact.name());
-            variableLine.append(" = ").append(value);
+            variableLine.append(modifiersPrefixExcluding(artifact, "const"));
+            variableLine.append("const ");
+            if (!typeDescriptor.isEmpty()) {
+                variableLine.append(typeDescriptor).append(" ");
+            }
+            variableLine.append(artifact.name());
+            if (!value.isEmpty()) {
+                variableLine.append(" = ").append(value);
+            }
         } else {
+            variableLine.append(modifiersPrefix(artifact));
             String type = getPropertyAsString(artifact, "type", "");
             if (!type.isEmpty()) {
                 variableLine.append(type).append(" ").append(artifact.name());
