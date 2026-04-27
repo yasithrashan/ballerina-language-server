@@ -754,7 +754,16 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
     private String extractReturnType(FunctionSignatureNode functionSignature) {
         return functionSignature.returnTypeDesc()
-                .map(returnTypeDesc -> returnTypeDesc.type().toSourceCode().strip())
+                .map(returnTypeDesc -> {
+                    // Use the full return type descriptor which includes annotations
+                    String fullReturnType = safeExtractSourceCode(returnTypeDesc);
+                    if (!fullReturnType.isEmpty()) {
+                        // Remove the "returns" keyword since the markdown generator will add it back
+                        return fullReturnType.replaceFirst("^\\s*returns\\s+", "").strip();
+                    } else {
+                        return returnTypeDesc.type().toSourceCode().strip();
+                    }
+                })
                 .orElse("()");
     }
 
