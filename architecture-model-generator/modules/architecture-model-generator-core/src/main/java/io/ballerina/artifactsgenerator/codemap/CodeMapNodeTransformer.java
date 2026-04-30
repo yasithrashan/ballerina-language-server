@@ -1012,7 +1012,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
             Optional<MappingConstructorExpressionNode> annotValue = annotation.annotValue();
             if (annotValue.isPresent()) {
-                annotationStr.append("(").append(extractAnnotationValue(annotValue.get())).append(")");
+                annotationStr.append(" {").append(extractAnnotationValue(annotValue.get())).append("}");
             }
 
             annotations.add(annotationStr.toString());
