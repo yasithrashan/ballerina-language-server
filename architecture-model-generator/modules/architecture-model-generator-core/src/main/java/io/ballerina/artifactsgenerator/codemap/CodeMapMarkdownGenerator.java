@@ -614,9 +614,6 @@ public class CodeMapMarkdownGenerator {
                 case "DATA_MAPPER":
                     groups.dataMappers.add(artifact);
                     break;
-                case "TYPE_INCLUSION":
-                    groups.typeInclusions.add(artifact);
-                    break;
                 case "VARIABLE":
                     // Variables need sub-categorization
                     categorizeVariable(artifact, groups);
@@ -705,8 +702,12 @@ public class CodeMapMarkdownGenerator {
      * @return comma-separated parameter string or empty string
      */
     private static String parametersInline(CodeMapArtifact artifact) {
-        List<?> params = (List<?>) artifact.properties().get("parameters");
-        if (params == null || params.isEmpty()) {
+        Object raw = artifact.properties().get("parameters");
+        if (!(raw instanceof List)) {
+            return "";
+        }
+        List<?> params = (List<?>) raw;
+        if (params.isEmpty()) {
             return "";
         }
 
@@ -758,6 +759,5 @@ public class CodeMapMarkdownGenerator {
         final List<CodeMapArtifact> services = new ArrayList<>();
         final List<CodeMapArtifact> classes = new ArrayList<>();
         final List<CodeMapArtifact> dataMappers = new ArrayList<>();
-        final List<CodeMapArtifact> typeInclusions = new ArrayList<>();
     }
 }
