@@ -9,7 +9,7 @@ import ballerinax/health.fhir.r4 [L:22 - L:22]
 ```
 
 ```ballerina
-final r4:ResourceAPIConfig encounterApiConfig [L:24 - L:108]
+final $CompilationError$ encounterApiConfig [L:24 - L:108]
 ```
 
 ---
@@ -43,7 +43,7 @@ import ballerinax/health.fhir.r4 [L:22 - L:22]
 ```
 
 ```ballerina
-final r4:ResourceAPIConfig patientApiConfig [L:24 - L:128]
+final $CompilationError$ patientApiConfig [L:24 - L:128]
 ```
 
 ---

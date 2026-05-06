@@ -25,14 +25,18 @@ import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
+import io.ballerina.designmodelgenerator.extension.request.CodeMapResolveModuleDependenciesRequest;
 import io.ballerina.designmodelgenerator.extension.request.GetDesignModelRequest;
 import io.ballerina.designmodelgenerator.extension.request.ProjectInfoRequest;
 import io.ballerina.designmodelgenerator.extension.response.ArtifactResponse;
+import io.ballerina.designmodelgenerator.extension.response.CodeMapResolveModuleDependenciesResponse;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
+import io.ballerina.designmodelgenerator.extension.utils.ModuleDependencyResolver;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
+import org.ballerinalang.compiler.BLangCompilerException;
 import org.ballerinalang.langserver.common.utils.PathUtil;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.LanguageServerContext;
@@ -51,12 +55,14 @@ import java.util.concurrent.CompletableFuture;
 public class DesignModelGeneratorService implements ExtendedLanguageServerService {
 
     private WorkspaceManagerProxy workspaceManagerProxy;
+    private LanguageServerContext serverContext;
 
     @Override
     public void init(LanguageServer langServer,
                      WorkspaceManagerProxy workspaceManagerProxy,
                      LanguageServerContext serverContext) {
         this.workspaceManagerProxy = workspaceManagerProxy;
+        this.serverContext = serverContext;
         ArtifactsCache.initialize();
     }
 
@@ -144,6 +150,62 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 visitor.populate();
             } catch (Throwable e) {
                 response.setError(e);
+            }
+            return response;
+        });
+    }
+
+    @JsonRequest
+    public CompletableFuture<CodeMapResolveModuleDependenciesResponse> codeMapResolveModuleDependencies(
+            CodeMapResolveModuleDependenciesRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            CodeMapResolveModuleDependenciesResponse response = new CodeMapResolveModuleDependenciesResponse();
+            try {
+                Path projectPath = Path.of(request.projectPath());
+                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
+                Project project = workspaceManager.loadProject(projectPath);
+
+                BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
+                boolean isWorkspace = compilerApi.isWorkspaceProject(project);
+
+                boolean hasUnresolvedModules;
+                if (isWorkspace) {
+                    hasUnresolvedModules = ModuleDependencyResolver.hasUnresolvedModulesInWorkspace(
+                            project, workspaceManager, compilerApi);
+                } else {
+                    hasUnresolvedModules = ModuleDependencyResolver.hasUnresolvedModulesInPackage(
+                            project, workspaceManager);
+                }
+
+                if (!hasUnresolvedModules) {
+                    response.setSuccess(true);
+                    return response;
+                }
+
+                // If there are unresolved modules, attempt to resolve them automatically
+                try {
+                    String projectUri = projectPath.toUri().toString();
+                    ModuleDependencyResolver.executeResolveModules(projectUri, workspaceManager, serverContext);
+                    response.setSuccess(true);
+                } catch (BLangCompilerException e) {
+                    String message = e.getMessage();
+                    if (message != null && message.startsWith("failed to load the module")) {
+                        try {
+                            String projectUri = projectPath.toUri().toString();
+                            ModuleDependencyResolver.executeResolveModules(projectUri, workspaceManager, serverContext);
+                            response.setSuccess(true);
+                        } catch (Throwable ex) {
+                            ModuleDependencyResolver.handleException(response, ex);
+                        }
+                    } else {
+                        ModuleDependencyResolver.handleException(response, e);
+                    }
+                } catch (Throwable e) {
+                    ModuleDependencyResolver.handleException(response, e);
+                }
+            } catch (Throwable e) {
+                response.setSuccess(false);
+                response.setErrorMsg("An internal error occurred while processing codemap module dependencies.");
             }
             return response;
         });
