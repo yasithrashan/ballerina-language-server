@@ -565,28 +565,26 @@ public class CodeMapMarkdownGenerator {
      * Preserves existing comment markers and adds proper indentation.
      */
     private static void renderApiDocumentation(List<String> lines, CodeMapArtifact artifact, String indent) {
-        renderAnnotations(lines, artifact, indent);
         String doc = getPropertyAsString(artifact, "documentation", "");
-        if (doc.isEmpty()) {
-            return;
-        }
+        if (!doc.isEmpty()) {
+            String[] docLines = doc.split("\\r?\\n", -1);
 
-        String[] docLines = doc.split("\\r?\\n", -1);
-
-        for (String line : docLines) {
-            String trimmedLine = line.trim();
-            if (trimmedLine.equals("#")) {
-                lines.add(indent + "#");
-            } else if (!trimmedLine.isEmpty()) {
-                if (trimmedLine.startsWith("# + ") || trimmedLine.startsWith("# - ")) {
-                    lines.add(indent + trimmedLine);
-                } else if (trimmedLine.startsWith("#")) {
-                    lines.add(indent + trimmedLine);
-                } else {
-                    lines.add(indent + "# " + trimmedLine);
+            for (String line : docLines) {
+                String trimmedLine = line.trim();
+                if (trimmedLine.equals("#")) {
+                    lines.add(indent + "#");
+                } else if (!trimmedLine.isEmpty()) {
+                    if (trimmedLine.startsWith("# + ") || trimmedLine.startsWith("# - ")) {
+                        lines.add(indent + trimmedLine);
+                    } else if (trimmedLine.startsWith("#")) {
+                        lines.add(indent + trimmedLine);
+                    } else {
+                        lines.add(indent + "# " + trimmedLine);
+                    }
                 }
             }
         }
+        renderAnnotations(lines, artifact, indent);
     }
 
     private static void renderAnnotations(List<String> lines, CodeMapArtifact artifact, String indent) {
