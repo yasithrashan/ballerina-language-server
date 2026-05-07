@@ -144,25 +144,11 @@ public class CodeMapGenerator {
         CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer(projectPath, semanticModel,
                 moduleInfo);
 
-        try {
-            rootNode.imports().stream()
-                    .filter(importNode -> !hasErrorInNode(importNode))
-                    .map(importNode -> importNode.apply(codeMapNodeTransformer))
-                    .flatMap(Optional::stream)
-                    .forEach(artifacts::add);
+        // Process imports individually with per-node error handling
+        rootNode.imports().forEach(importNode -> addArtifactSafely(importNode, codeMapNodeTransformer, artifacts));
 
-            rootNode.members().stream()
-                    .filter(member -> !hasErrorInNode(member))
-                    .map(member -> member.apply(codeMapNodeTransformer))
-                    .flatMap(Optional::stream)
-                    .forEach(artifacts::add);
-        } catch (RuntimeException e) {
-            CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact(e.getMessage());
-            artifacts.add(errorArtifact);
-        } catch (Exception e) {
-            CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact("Unexpected error: " + e.getMessage());
-            artifacts.add(errorArtifact);
-        }
+        // Process members individually with per-node error handling
+        rootNode.members().forEach(member -> addArtifactSafely(member, codeMapNodeTransformer, artifacts));
         return artifacts;
     }
 
@@ -358,5 +344,30 @@ public class CodeMapGenerator {
             }
         }
         return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap, workspaceName);
+    }
+
+    /**
+     * Safely processes a single node and adds the resulting artifact to the list.
+     * If the node has errors or processing fails, adds an error artifact instead.
+     */
+    private static void addArtifactSafely(io.ballerina.compiler.syntax.tree.Node node,
+                                        CodeMapNodeTransformer transformer,
+                                        List<CodeMapArtifact> artifacts) {
+        if (hasErrorInNode(node)) {
+            return; // Skip nodes that already have errors
+        }
+
+        try {
+            Optional<CodeMapArtifact> artifact = node.apply(transformer);
+            artifact.ifPresent(artifacts::add);
+        } catch (RuntimeException e) {
+            CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact(
+                    "Error processing node: " + e.getMessage());
+            artifacts.add(errorArtifact);
+        } catch (Exception e) {
+            CodeMapArtifact errorArtifact = createGeneralSyntaxErrorArtifact(
+                    "Unexpected error processing node: " + e.getMessage());
+            artifacts.add(errorArtifact);
+        }
     }
 }

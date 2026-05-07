@@ -156,7 +156,8 @@ public class ModuleDependencyResolver {
      */
     public static void handleException(CodeMapResolveModuleDependenciesResponse response, Throwable e) {
         response.setSuccess(false);
-        response.setErrorMsg(e.getCause() instanceof UserErrorException ?
-                e.getCause().getMessage() : RESOLVE_MODULE_FAILURE_MESSAGE);
+        response.setErrorMsg(e instanceof UserErrorException ? e.getMessage() :
+                e.getCause() instanceof UserErrorException ? e.getCause().getMessage() :
+                RESOLVE_MODULE_FAILURE_MESSAGE);
     }
 }
