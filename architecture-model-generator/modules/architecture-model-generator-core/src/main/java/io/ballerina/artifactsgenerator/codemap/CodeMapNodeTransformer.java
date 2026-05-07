@@ -78,8 +78,10 @@ import io.ballerina.modelgenerator.commons.ModuleInfo;
 
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.ballerina.modelgenerator.commons.CommonUtils.CONNECTOR_TYPE;
@@ -223,30 +225,39 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 resourcePaths, firstExpression);
         serviceName.ifPresent(serviceBuilder::name);
 
-        // Extract service path and listener information separately
+        // Extract service path
         String servicePath = "";
-        String listener = "";
-
         if (!resourcePaths.isEmpty()) {
             servicePath = getPathString(resourcePaths);
-            if (firstExpression != null) {
-                listener = safeExtractSourceCode(firstExpression);
-            }
-        } else if (firstExpression != null) {
-            listener = safeExtractSourceCode(firstExpression);
         }
-
-        // Store service path as basePath for backward compatibility and listener separately
         serviceBuilder.addProperty(PROP_BASE_PATH, servicePath);
-        if (!listener.isEmpty()) {
-            serviceBuilder.addProperty(PROP_LISTENER, listener);
-        }
 
-        // Extract listener configuration (port and type)
-        if (firstExpression != null) {
-            extractPortFromExpression(firstExpression).ifPresent(port -> serviceBuilder.addProperty(PROP_PORT, port));
-            extractListenerType(firstExpression).ifPresent(listenerType ->
-                    serviceBuilder.addProperty(PROP_LISTENER_TYPE, listenerType));
+        // Process all listener expressions
+        if (!expressions.isEmpty()) {
+            List<String> listeners = new ArrayList<>();
+            Set<String> ports = new LinkedHashSet<>();
+            Set<String> listenerTypes = new LinkedHashSet<>();
+
+            for (ExpressionNode expression : expressions) {
+                String listenerSource = safeExtractSourceCode(expression);
+                if (!listenerSource.isEmpty()) {
+                    listeners.add(listenerSource);
+                }
+
+                extractPortFromExpression(expression).ifPresent(ports::add);
+                extractListenerType(expression).ifPresent(listenerTypes::add);
+            }
+
+            // Set aggregated listener information
+            if (!listeners.isEmpty()) {
+                serviceBuilder.addProperty(PROP_LISTENER, String.join(", ", listeners));
+            }
+            if (!ports.isEmpty()) {
+                serviceBuilder.addProperty(PROP_PORT, String.join(", ", ports));
+            }
+            if (!listenerTypes.isEmpty()) {
+                serviceBuilder.addProperty(PROP_LISTENER_TYPE, String.join(", ", listenerTypes));
+            }
         }
 
         serviceBuilder.type(TYPE_SERVICE);
