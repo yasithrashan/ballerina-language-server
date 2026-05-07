@@ -510,11 +510,18 @@ public class CodeMapMarkdownGenerator {
 
     private static String renderType(CodeMapArtifact artifact) {
         String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
-        StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact))
-                .append("type ").append(artifact.name());
-        if (!typeDescriptor.isEmpty()) {
-            typeLine.append(" ").append(typeDescriptor);
+        StringBuilder typeLine = new StringBuilder(modifiersPrefix(artifact));
+
+        // Handle enums differently from regular types
+        if ("enum".equals(typeDescriptor)) {
+            typeLine.append("enum ").append(artifact.name());
+        } else {
+            typeLine.append("type ").append(artifact.name());
+            if (!typeDescriptor.isEmpty()) {
+                typeLine.append(" ").append(typeDescriptor);
+            }
         }
+
         typeLine.append(" ").append(formatRange(artifact));
         return typeLine.toString();
     }

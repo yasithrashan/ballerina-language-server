@@ -566,12 +566,30 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .name(enumDeclarationNode.identifier().text())
                 .type(TYPE_TYPE);
 
+        // Extract visibility modifiers using semantic model
+        semanticModel.symbol(enumDeclarationNode).ifPresent(symbol -> {
+            if (symbol instanceof TypeDefinitionSymbol typeDefSymbol) {
+                if (typeDefSymbol.qualifiers().contains(io.ballerina.compiler.api.symbols.Qualifier.PUBLIC)) {
+                    typeBuilder.modifiers(List.of("public"));
+                } else if (typeDefSymbol.qualifiers().contains(io.ballerina.compiler.api.symbols.Qualifier.PRIVATE)) {
+                    typeBuilder.modifiers(List.of("private"));
+                }
+            }
+        });
+
         typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, ENUM_TYPE_NAME);
 
         List<String> members = new ArrayList<>();
         for (Node memberNode : enumDeclarationNode.enumMemberList()) {
             if (memberNode instanceof EnumMemberNode enumMember) {
-                members.add(enumMember.identifier().text());
+                String memberName = enumMember.identifier().text();
+                // Check if the member has an assigned value
+                if (enumMember.equalToken().isPresent() && enumMember.constExprNode().isPresent()) {
+                    String memberValue = safeExtractSourceCode(enumMember.constExprNode().get());
+                    members.add(memberName + " = " + memberValue);
+                } else {
+                    members.add(memberName);
+                }
             }
         }
         typeBuilder.addProperty(PROP_FIELDS, members);
