@@ -48,7 +48,7 @@ import ballerina/lang.runtime as runtime [L:19 - L:19]
 
 ```ballerina
 public final $CompilationError$ dbClient [L:23 - L:29]
-public final $CompilationError$ kafkaProducer [L:32 - L:34]
+public final kafka:Producer kafkaProducer [L:32 - L:34]
 ```
 
 ```ballerina

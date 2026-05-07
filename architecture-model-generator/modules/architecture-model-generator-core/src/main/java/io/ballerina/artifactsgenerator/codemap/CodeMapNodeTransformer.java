@@ -78,7 +78,9 @@ import io.ballerina.modelgenerator.commons.ModuleInfo;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -102,6 +104,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private final String projectPath;
     private final ModuleInfo moduleInfo;
     private final boolean extractComments;
+    private final Map<String, String> importAliases = new HashMap<>();
 
     private static final String TYPE_FUNCTION = "FUNCTION";
     private static final String TYPE_SERVICE = "SERVICE";
@@ -301,6 +304,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         importBuilder.addProperty(PROP_MODULE_NAME, moduleName);
         alias.ifPresent(a -> importBuilder.addProperty(PROP_ALIAS, a));
 
+        // Store the alias mapping for type signature resolution
+        String fullModuleName = orgName.isEmpty() ? moduleName : orgName + "/" + moduleName;
+        if (alias.isPresent()) {
+            importAliases.put(fullModuleName, alias.get());
+        }
+
         extractInlineComments(importDeclarationNode).ifPresent(importBuilder::comment);
 
         return Optional.of(importBuilder.build());
@@ -489,7 +498,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         semanticModel.symbol(moduleVariableDeclarationNode).ifPresent(symbol -> {
             if (symbol instanceof VariableSymbol variableSymbol) {
                 variableBuilder.addProperty(PROP_TYPE,
-                        CommonUtils.getTypeSignature(
+                        getTypeSignatureWithAliases(
                                 variableSymbol.typeDescriptor(), moduleInfo));
             }
         });
@@ -986,6 +995,37 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             return Optional.empty();
         }
         return Optional.of(String.join(System.lineSeparator(), comments));
+    }
+
+    /**
+     * Gets the type signature with import aliases applied.
+     * This method applies alias substitution to the type signature returned by CommonUtils.getTypeSignature.
+     *
+     * @param typeSymbol the type symbol to get the signature for
+     * @param moduleInfo the module information
+     * @return the type signature with import aliases applied
+     */
+    private String getTypeSignatureWithAliases(TypeSymbol typeSymbol, ModuleInfo moduleInfo) {
+        String typeSignature = CommonUtils.getTypeSignature(typeSymbol, moduleInfo);
+
+        // Apply import alias substitution
+        for (Map.Entry<String, String> aliasEntry : importAliases.entrySet()) {
+            String fullModuleName = aliasEntry.getKey();
+            String alias = aliasEntry.getValue();
+
+            // Extract just the module name part for replacement
+            String moduleNamePart = fullModuleName;
+            if (fullModuleName.contains("/")) {
+                moduleNamePart = fullModuleName.substring(fullModuleName.lastIndexOf("/") + 1);
+            }
+
+            // Replace module name with alias in the type signature
+            if (typeSignature.contains(moduleNamePart + ":")) {
+                typeSignature = typeSignature.replace(moduleNamePart + ":", alias + ":");
+            }
+        }
+
+        return typeSignature;
     }
 
     private List<String> extractAnnotations(Optional<MetadataNode> metadata) {
