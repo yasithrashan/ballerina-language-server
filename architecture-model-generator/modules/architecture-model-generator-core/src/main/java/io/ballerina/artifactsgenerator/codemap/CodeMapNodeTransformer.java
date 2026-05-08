@@ -196,8 +196,9 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
             String httpMethod = extractHttpMethodFromResourceFunction(functionDefinitionNode);
+            String stableName = pathString.isEmpty() ? "/" : pathString;
             functionBuilder
-                    .name(pathString)
+                    .name(stableName)
                     .addProperty(PROP_ACCESSOR, httpMethod);
         } else {
             functionBuilder.name(functionName);
@@ -475,6 +476,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         variableBuilder.type(TYPE_VARIABLE);
 
+        boolean typeAlreadySet = false;
+
         // Handle configurable variables differently
         if (hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
             TypeDescriptorNode typeDesc = moduleVariableDeclarationNode.typedBindingPattern().typeDescriptor();
@@ -488,6 +491,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             if (connection.isPresent()) {
                 variableBuilder
                         .addProperty(PROP_TYPE, connection.get().signature());
+                typeAlreadySet = true;
                 // Special handling for persist clients
                 if (isPersistClient(connection.get(), semanticModel)) {
                     variableBuilder.addProperty(CONNECTOR_TYPE, PERSIST);
@@ -498,14 +502,16 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
 
         // Get type information - prefer syntax tree representation to preserve aliases
+        // Always set PROP_TYPE from syntax tree if available, but preserve connector metadata
         TypeDescriptorNode typeDesc = moduleVariableDeclarationNode.typedBindingPattern().typeDescriptor();
         if (typeDesc != null) {
             String syntaxTypeString = typeDesc.toSourceCode().strip();
             if (!syntaxTypeString.isEmpty()) {
                 variableBuilder.addProperty(PROP_TYPE, syntaxTypeString);
             }
-        } else {
+        } else if (!typeAlreadySet) {
             // Fallback to semantic model if syntax tree doesn't provide type info
+            // Only if PROP_TYPE wasn't already set by connection handling
             semanticModel.symbol(moduleVariableDeclarationNode).ifPresent(symbol -> {
                 if (symbol instanceof VariableSymbol variableSymbol) {
                     variableBuilder.addProperty(PROP_TYPE,
@@ -894,7 +900,12 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private Optional<String> extractPortFromExpression(ExpressionNode expression) {
         String expressionText = expression.toSourceCode().strip();
         if (expressionText.matches(".*\\d+.*")) {
-            return Optional.of(expressionText.replaceAll("\\D", ""));
+            // Find the first standalone integer token instead of concatenating all digits
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\b\\d+\\b");
+            java.util.regex.Matcher matcher = pattern.matcher(expressionText);
+            if (matcher.find()) {
+                return Optional.of(matcher.group());
+            }
         }
         return Optional.empty();
     }
