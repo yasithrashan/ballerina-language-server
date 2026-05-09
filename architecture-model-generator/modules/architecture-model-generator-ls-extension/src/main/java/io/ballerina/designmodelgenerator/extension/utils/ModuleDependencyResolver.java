@@ -123,26 +123,25 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Gets the document path for a given module and file name.
+     * Gets the URI for a specific module.
      *
      * @param project the project
      * @param module the module
-     * @param fileName the file name
-     * @return the resolved document path
+     * @return the module URI
      */
-    public static Path getDocumentPath(Project project, Module module, String fileName) {
+    public static String getModuleUri(Project project, Module module) {
         Path sourceRoot = project.sourceRoot();
         if (project.kind() == ProjectKind.SINGLE_FILE_PROJECT) {
-            return sourceRoot;
+            return sourceRoot.toUri().toString();
         }
         if (module.isDefaultModule()) {
-            return sourceRoot.resolve(fileName);
+            return sourceRoot.toUri().toString();
         }
-        return sourceRoot.resolve("modules").resolve(module.moduleName().moduleNamePart()).resolve(fileName);
+        return sourceRoot.resolve("modules").resolve(module.moduleName().moduleNamePart()).toUri().toString();
     }
 
     /**
-     * Executes module resolution for all modules in a project.
+     * Executes module resolution for each module in a project.
      *
      * @param project the project
      * @param workspaceManager the workspace manager
@@ -158,19 +157,14 @@ public class ModuleDependencyResolver {
         for (ModuleId moduleId : currentPackage.moduleIds()) {
             Module module = currentPackage.module(moduleId);
 
-            // Get any document from the module to create a file URI for resolution
-            if (!module.documentIds().isEmpty()) {
-                String fileName = module.document(module.documentIds().iterator().next()).name();
-                Path documentPath = getDocumentPath(project, module, fileName);
-                String fileUri = documentPath.toUri().toString();
-
-                PullModuleExecutor.resolveModules(
-                        fileUri,
-                        serverContext.get(ExtendedLanguageClient.class),
-                        workspaceManager,
-                        serverContext
-                ).get();
-            }
+            // Resolve dependencies for each module
+            String moduleUri = getModuleUri(project, module);
+            PullModuleExecutor.resolveModules(
+                    moduleUri,
+                    serverContext.get(ExtendedLanguageClient.class),
+                    workspaceManager,
+                    serverContext
+            ).get();
         }
     }
 
