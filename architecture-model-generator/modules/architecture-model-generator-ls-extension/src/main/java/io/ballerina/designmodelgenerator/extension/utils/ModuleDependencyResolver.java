@@ -20,11 +20,10 @@ package io.ballerina.designmodelgenerator.extension.utils;
 
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResolveModuleDependenciesResponse;
-import io.ballerina.projects.Document;
-import io.ballerina.projects.DocumentId;
 import io.ballerina.projects.Module;
 import io.ballerina.projects.ModuleId;
 import io.ballerina.projects.Package;
+import io.ballerina.projects.PackageCompilation;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectKind;
 import org.ballerinalang.langserver.command.executors.PullModuleExecutor;
@@ -85,17 +84,31 @@ public class ModuleDependencyResolver {
         for (ModuleId moduleId : currentPackage.moduleIds()) {
             Module module = currentPackage.module(moduleId);
 
-            for (DocumentId documentId : module.documentIds()) {
-                Document document = module.document(documentId);
-                Path documentPath = getDocumentPath(project, module, document.name());
-                Optional<SemanticModel> semanticModel = workspaceManager.semanticModel(documentPath);
+            // Get semantic model for the entire module instead of per document
+            Optional<SemanticModel> semanticModel = getModuleSemanticModel(project, module);
 
-                if (semanticModel.isPresent() && hasUnresolvedModules(semanticModel.get())) {
-                    return true;
-                }
+            if (semanticModel.isPresent() && hasUnresolvedModules(semanticModel.get())) {
+                return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Gets the semantic model for a specific module.
+     *
+     * @param project the project
+     * @param module the module
+     * @return the semantic model for the module
+     */
+    public static Optional<SemanticModel> getModuleSemanticModel(Project project, Module module) {
+        try {
+            PackageCompilation packageCompilation = project.currentPackage().getCompilation();
+            SemanticModel semanticModel = packageCompilation.getSemanticModel(module.moduleId());
+            return Optional.of(semanticModel);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -129,23 +142,57 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Executes module resolution for the given project.
+     * Executes module resolution for all modules in a project.
      *
-     * @param fileUri the file URI
+     * @param project the project
      * @param workspaceManager the workspace manager
      * @param serverContext the language server context
      * @throws ExecutionException if execution fails
      * @throws InterruptedException if interrupted
      */
-    public static void executeResolveModules(String fileUri, WorkspaceManager workspaceManager,
-                                           LanguageServerContext serverContext)
+    public static void executeResolveModulesForProject(Project project, WorkspaceManager workspaceManager,
+                                                     LanguageServerContext serverContext)
             throws ExecutionException, InterruptedException {
-        PullModuleExecutor.resolveModules(
-                fileUri,
-                serverContext.get(ExtendedLanguageClient.class),
-                workspaceManager,
-                serverContext
-        ).get();
+        Package currentPackage = project.currentPackage();
+
+        for (ModuleId moduleId : currentPackage.moduleIds()) {
+            Module module = currentPackage.module(moduleId);
+
+            // Get any document from the module to create a file URI for resolution
+            if (!module.documentIds().isEmpty()) {
+                String fileName = module.document(module.documentIds().iterator().next()).name();
+                Path documentPath = getDocumentPath(project, module, fileName);
+                String fileUri = documentPath.toUri().toString();
+
+                PullModuleExecutor.resolveModules(
+                        fileUri,
+                        serverContext.get(ExtendedLanguageClient.class),
+                        workspaceManager,
+                        serverContext
+                ).get();
+            }
+        }
+    }
+
+    /**
+     * Executes module resolution for all packages in a workspace.
+     *
+     * @param project the root project
+     * @param workspaceManager the workspace manager
+     * @param serverContext the language server context
+     * @param compilerApi the compiler API instance
+     * @throws ExecutionException if execution fails
+     * @throws InterruptedException if interrupted
+     */
+    public static void executeResolveModulesForWorkspace(Project project, WorkspaceManager workspaceManager,
+                                                        LanguageServerContext serverContext,
+                                                        BallerinaCompilerApi compilerApi)
+            throws ExecutionException, InterruptedException {
+        List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
+
+        for (Project packageProject : workspaceProjects) {
+            executeResolveModulesForProject(packageProject, workspaceManager, serverContext);
+        }
     }
 
     /**

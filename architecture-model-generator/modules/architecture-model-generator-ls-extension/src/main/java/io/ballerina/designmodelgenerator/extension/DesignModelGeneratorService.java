@@ -184,15 +184,25 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 // If there are unresolved modules, attempt to resolve them automatically
                 try {
-                    String projectUri = projectPath.toUri().toString();
-                    ModuleDependencyResolver.executeResolveModules(projectUri, workspaceManager, serverContext);
+                    if (isWorkspace) {
+                        ModuleDependencyResolver.executeResolveModulesForWorkspace(
+                                project, workspaceManager, serverContext, compilerApi);
+                    } else {
+                        ModuleDependencyResolver.executeResolveModulesForProject(
+                                project, workspaceManager, serverContext);
+                    }
                     response.setSuccess(true);
                 } catch (BLangCompilerException e) {
                     String message = e.getMessage();
                     if (message != null && message.startsWith("failed to load the module")) {
                         try {
-                            String projectUri = projectPath.toUri().toString();
-                            ModuleDependencyResolver.executeResolveModules(projectUri, workspaceManager, serverContext);
+                            if (isWorkspace) {
+                                ModuleDependencyResolver.executeResolveModulesForWorkspace(
+                                        project, workspaceManager, serverContext, compilerApi);
+                            } else {
+                                ModuleDependencyResolver.executeResolveModulesForProject(
+                                        project, workspaceManager, serverContext);
+                            }
                             response.setSuccess(true);
                         } catch (Throwable ex) {
                             ModuleDependencyResolver.handleException(response, ex);
