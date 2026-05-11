@@ -39,9 +39,10 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Utility class for resolving module dependencies in projects and workspaces.
- * This class provides functionality to detect and resolve unresolved module dependencies
- * across packages, sub-modules, and workspaces.
+ * Utility class for resolving module dependencies in Ballerina projects and workspaces.
+ * This class provides functionality to detect unresolved module dependencies (BCE2003 errors)
+ * and automatically resolve them by pulling required modules from Ballerina Central.
+ * Supports both single packages and multi-package workspaces.
  *
  * @since 1.6.0
  */
@@ -95,11 +96,12 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Gets the semantic model for a specific module.
+     * Gets the semantic model for a specific module from the project's package compilation.
+     * This provides access to the module's type information and diagnostics.
      *
-     * @param project the project
-     * @param module the module
-     * @return the semantic model for the module
+     * @param project the project containing the module
+     * @param module the module to get the semantic model for
+     * @return the semantic model for the module, or empty if compilation fails
      */
     public static Optional<SemanticModel> getModuleSemanticModel(Project project, Module module) {
         try {
@@ -107,15 +109,17 @@ public class ModuleDependencyResolver {
             SemanticModel semanticModel = packageCompilation.getSemanticModel(module.moduleId());
             return Optional.of(semanticModel);
         } catch (Exception e) {
+            // Return empty if compilation fails due to syntax errors or missing dependencies
             return Optional.empty();
         }
     }
 
     /**
-     * Checks if a semantic model has unresolved modules.
+     * Checks if a semantic model has unresolved modules by looking for BCE2003 diagnostics.
+     * BCE2003 indicates that a required module could not be found or loaded.
      *
-     * @param semanticModel the semantic model to check
-     * @return true if there are unresolved modules
+     * @param semanticModel the semantic model to check for unresolved module diagnostics
+     * @return true if there are unresolved modules (BCE2003 errors present)
      */
     public static boolean hasUnresolvedModules(SemanticModel semanticModel) {
         return semanticModel.diagnostics().stream()
@@ -123,11 +127,13 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Gets the URI for a specific module.
+     * Gets the file system URI for a specific module's root directory.
+     * For single-file projects, returns the file URI. For default modules, returns
+     * the project source root. For sub-modules, returns the modules/moduleName directory.
      *
-     * @param project the project
-     * @param module the module
-     * @return the module URI
+     * @param project the project containing the module
+     * @param module the module to get the URI for
+     * @return the module's root directory URI as a string
      */
     public static String getModuleUri(Project project, Module module) {
         Path sourceRoot = project.sourceRoot();
@@ -141,13 +147,14 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Executes module resolution for each module in a project.
+     * Executes module resolution for a single project by pulling missing dependencies.
+     * Uses any module URI from the package since all modules share the same package dependencies.
      *
-     * @param project the project
-     * @param workspaceManager the workspace manager
-     * @param serverContext the language server context
-     * @throws ExecutionException if execution fails
-     * @throws InterruptedException if interrupted
+     * @param project the project to resolve dependencies for
+     * @param workspaceManager the workspace manager for project access
+     * @param serverContext the language server context containing the client
+     * @throws ExecutionException if the pull module operation fails
+     * @throws InterruptedException if the operation is interrupted
      */
     public static void executeResolveModulesForProject(Project project, WorkspaceManager workspaceManager,
                                                      LanguageServerContext serverContext)
@@ -170,14 +177,15 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Executes module resolution for all packages in a workspace.
+     * Executes module resolution for all packages in a multi-package workspace.
+     * Iterates through all workspace projects and resolves dependencies for each.
      *
-     * @param project the root project
-     * @param workspaceManager the workspace manager
-     * @param serverContext the language server context
-     * @param compilerApi the compiler API instance
-     * @throws ExecutionException if execution fails
-     * @throws InterruptedException if interrupted
+     * @param project the root workspace project
+     * @param workspaceManager the workspace manager for project access
+     * @param serverContext the language server context containing the client
+     * @param compilerApi the compiler API instance for workspace operations
+     * @throws ExecutionException if any package's dependency resolution fails
+     * @throws InterruptedException if the operation is interrupted
      */
     public static void executeResolveModulesForWorkspace(Project project, WorkspaceManager workspaceManager,
                                                         LanguageServerContext serverContext,
@@ -192,9 +200,10 @@ public class ModuleDependencyResolver {
 
     /**
      * Handles exceptions during module resolution and sets appropriate response values.
+     * Extracts user-friendly error messages from UserErrorExceptions, otherwise uses a generic message.
      *
-     * @param response the response object to update
-     * @param e the exception that occurred
+     * @param response the response object to update with error information
+     * @param e the exception that occurred during module resolution
      */
     public static void handleException(CodeMapResolveModuleDependenciesResponse response, Throwable e) {
         response.setSuccess(false);
