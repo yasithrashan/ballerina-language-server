@@ -154,11 +154,12 @@ public class ModuleDependencyResolver {
             throws ExecutionException, InterruptedException {
         Package currentPackage = project.currentPackage();
 
-        for (ModuleId moduleId : currentPackage.moduleIds()) {
-            Module module = currentPackage.module(moduleId);
+        // Get any module URI from the package - they all resolve the same package dependencies
+        if (!currentPackage.moduleIds().isEmpty()) {
+            ModuleId firstModuleId = currentPackage.moduleIds().iterator().next();
+            Module firstModule = currentPackage.module(firstModuleId);
+            String moduleUri = getModuleUri(project, firstModule);
 
-            // Resolve dependencies for each module
-            String moduleUri = getModuleUri(project, module);
             PullModuleExecutor.resolveModules(
                     moduleUri,
                     serverContext.get(ExtendedLanguageClient.class),
