@@ -128,8 +128,6 @@ public record CodeMapArtifact(String name, String type, Range range,
             return addProperty(COMMENT, comment);
         }
 
-
-
         /**
          * Builds and returns the {@link CodeMapArtifact} instance.
          *

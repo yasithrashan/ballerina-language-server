@@ -34,8 +34,12 @@ import java.util.stream.Collectors;
 public class CodeMapMarkdownGenerator {
 
     /**
-     * Main entry point for generating Markdown documentation from code map files.
+     * Generates Markdown documentation from code map files.
      * Creates a structured document with proper section headers and separators.
+     *
+     * @param files       map of file paths to their code map data
+     * @param projectName the name to use in the document header
+     * @return Markdown string representation
      */
     public static String generateMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
@@ -164,10 +168,7 @@ public class CodeMapMarkdownGenerator {
         return String.join("\n", lines);
     }
 
-    /**
-     * Main artifact rendering orchestrator that processes all code artifacts in logical order.
-     * Groups similar artifacts together and renders them in sections for optimal readability.
-     */
+    // Renders artifacts in logical order with grouping for readability
     private static void renderArtifacts(List<String> lines, List<CodeMapArtifact> artifacts) {
         // Categorize artifacts by type for organized rendering
         ArtifactGroups groups = new ArtifactGroups();
@@ -194,10 +195,7 @@ public class CodeMapMarkdownGenerator {
                 (artifact) -> renderSingleFunction(artifact, ""));
     }
 
-    /**
-     * Renders artifacts as a simple Ballerina code block without documentation.
-     * Used for imports and other structural elements that don't need API docs.
-     */
+    // Renders artifacts as simple code block without documentation
     private static void renderCodeBlock(List<String> lines, List<CodeMapArtifact> artifacts,
                                         ArtifactRenderer renderer) {
         if (artifacts.isEmpty()) {
@@ -211,10 +209,7 @@ public class CodeMapMarkdownGenerator {
         lines.add("```");
     }
 
-    /**
-     * Renders artifacts with their API documentation as a Ballerina code block.
-     * Includes comments, annotations, and documentation for comprehensive API reference.
-     */
+    // Renders artifacts with API documentation as code block
     private static void renderCodeBlockWithDocs(List<String> lines, List<CodeMapArtifact> artifacts,
                                                 ArtifactRenderer renderer) {
         if (artifacts.isEmpty()) {

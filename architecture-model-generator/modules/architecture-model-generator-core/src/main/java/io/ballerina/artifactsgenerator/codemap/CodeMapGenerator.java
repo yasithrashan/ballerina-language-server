@@ -125,6 +125,7 @@ public class CodeMapGenerator {
         return codeMapFiles;
     }
 
+    // Collects code artifacts from syntax tree with error handling
     private static List<CodeMapArtifact> collectArtifactsFromSyntaxTree(String projectPath, SyntaxTree syntaxTree,
                                                                         SemanticModel semanticModel,
                                                                         ModuleInfo moduleInfo) {
@@ -153,6 +154,7 @@ public class CodeMapGenerator {
     }
 
 
+    // Creates artifacts for syntax errors found in diagnostics
     private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics,
                                                                     SyntaxTree syntaxTree) {
         List<CodeMapArtifact> syntaxErrorArtifacts = new ArrayList<>();
@@ -183,6 +185,7 @@ public class CodeMapGenerator {
         return syntaxErrorArtifacts;
     }
 
+    // Extracts raw source code from diagnostic location
     private static String extractRawCodeFromDiagnostic(Diagnostic diagnostic, SyntaxTree syntaxTree) {
         try {
             String sourceText = syntaxTree.toSourceCode();
@@ -216,6 +219,7 @@ public class CodeMapGenerator {
         }
     }
 
+    // Creates a general syntax error artifact when specific error details are unavailable
     private static CodeMapArtifact createGeneralSyntaxErrorArtifact(String errorMessage) {
         return new CodeMapArtifact(
                 "Parsing Error",
@@ -226,6 +230,7 @@ public class CodeMapGenerator {
         );
     }
 
+    // Checks if a syntax node contains errors or missing tokens
     private static boolean hasErrorInNode(io.ballerina.compiler.syntax.tree.Node node) {
         if (node == null) {
             return true;
@@ -246,6 +251,7 @@ public class CodeMapGenerator {
         }
     }
 
+    // Gets relative file path considering module structure
     private static String getRelativeFilePath(Module module, String fileName) {
         if (module.isDefaultModule()) {
             return fileName;
@@ -254,6 +260,7 @@ public class CodeMapGenerator {
         return "modules" + File.separator + moduleName + File.separator + fileName;
     }
 
+    // Gets full document path for a file within a module
     private static Path getDocumentPath(Project project, Module module, String fileName) {
         Path sourceRoot = project.sourceRoot();
         if (project.kind() == ProjectKind.SINGLE_FILE_PROJECT) {
@@ -346,10 +353,7 @@ public class CodeMapGenerator {
         return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap, workspaceName);
     }
 
-    /**
-     * Safely processes a single node and adds the resulting artifact to the list.
-     * If the node has errors or processing fails, adds an error artifact instead.
-     */
+    // Safely processes a single node with error handling
     private static void addArtifactSafely(io.ballerina.compiler.syntax.tree.Node node,
                                         CodeMapNodeTransformer transformer,
                                         List<CodeMapArtifact> artifacts) {

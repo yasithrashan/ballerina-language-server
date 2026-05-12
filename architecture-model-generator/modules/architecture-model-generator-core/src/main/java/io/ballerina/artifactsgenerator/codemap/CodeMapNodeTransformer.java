@@ -382,10 +382,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         return source.replaceAll("\\s+", " ").strip();
     }
 
-    /**
-     * Extracts the HTTP method from a resource function definition.
-     * Uses reflection to access internal API and falls back to function name if reflection fails.
-     */
+    // Extracts HTTP method from resource function using reflection fallback
     private String extractHttpMethodFromResourceFunction(FunctionDefinitionNode functionDefinitionNode) {
         // Strategy 1: Parse function signature for HTTP method tokens
         FunctionSignatureNode functionSignature = functionDefinitionNode.functionSignature();
@@ -812,11 +809,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .orElse("()");
     }
 
-    /**
-     * Extracts type descriptor directly from the syntax tree.
-     * This preserves the original source code without module prefixes added by the semantic model.
-     * For record types, returns just "record" to avoid cluttering with field details.
-     */
+    // Extracts type descriptor from syntax tree preserving original source
     private String extractTypeDescriptorFromSyntax(TypeDefinitionNode typeDefinitionNode) {
         Node typeDescriptor = typeDefinitionNode.typeDescriptor();
         if (typeDescriptor != null) {
