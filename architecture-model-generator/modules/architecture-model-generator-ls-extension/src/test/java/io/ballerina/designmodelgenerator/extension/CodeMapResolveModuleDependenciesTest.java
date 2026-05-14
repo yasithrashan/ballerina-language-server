@@ -106,4 +106,32 @@ public class CodeMapResolveModuleDependenciesTest {
         Assert.assertTrue(response.getErrorMsg().contains("internal error"),
                 "Error message should indicate internal error");
     }
+
+    @Test
+    public void testModuleDependencyResolverHandleExceptionWithDetailedMessage() {
+        CodeMapResolveModuleDependenciesResponse response = new CodeMapResolveModuleDependenciesResponse();
+        java.util.concurrent.TimeoutException timeoutException =
+                new java.util.concurrent.TimeoutException("2 of 3 packages failed to resolve: packageA, packageB");
+
+        ModuleDependencyResolver.handleException(response, timeoutException);
+
+        Assert.assertFalse(response.isSuccess());
+        Assert.assertNotNull(response.getErrorMsg());
+        Assert.assertEquals(response.getErrorMsg(),
+                "2 of 3 packages failed to resolve: packageA, packageB");
+    }
+
+    @Test
+    public void testModuleDependencyResolverHandleExceptionWithGenericTimeoutMessage() {
+        CodeMapResolveModuleDependenciesResponse response = new CodeMapResolveModuleDependenciesResponse();
+        java.util.concurrent.TimeoutException timeoutException =
+                new java.util.concurrent.TimeoutException("Generic timeout");
+
+        ModuleDependencyResolver.handleException(response, timeoutException);
+
+        Assert.assertFalse(response.isSuccess());
+        Assert.assertNotNull(response.getErrorMsg());
+        Assert.assertEquals(response.getErrorMsg(),
+                "Module dependency resolution timed out. Please try again or check your network connection.");
+    }
 }

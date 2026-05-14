@@ -56,7 +56,13 @@ public class ModuleDependencyResolver {
             "An internal error occurred while resolving module dependencies.";
     private static final String RESOLVE_MODULE_TIMEOUT_MESSAGE =
             "Module dependency resolution timed out. Please try again or check your network connection.";
-    private static final long MODULE_RESOLUTION_TIMEOUT_MINUTES = 3;
+    private static final long MODULE_RESOLUTION_TIMEOUT_SECONDS = 13;
+
+    private ModuleDependencyResolver() {
+    }
+
+    private record FailedPackage(String name, Exception cause) {
+    }
 
     /**
      * Finds all packages with unresolved module imports across a project or workspace.
@@ -84,11 +90,14 @@ public class ModuleDependencyResolver {
 
     private static boolean hasUnresolvedModulesInPackage(Project project) {
         Package currentPackage = project.currentPackage();
+        PackageCompilation compilation;
+        try {
+            compilation = currentPackage.getCompilation();
+        } catch (RuntimeException e) {
+            return false;
+        }
         for (ModuleId moduleId : currentPackage.moduleIds()) {
-            Module module = currentPackage.module(moduleId);
-            Optional<SemanticModel> semanticModel = getModuleSemanticModel(project, module);
-
-            if (semanticModel.isPresent() && hasUnresolvedModules(semanticModel.get())) {
+            if (hasUnresolvedModules(compilation.getSemanticModel(moduleId))) {
                 return true;
             }
         }
@@ -160,8 +169,6 @@ public class ModuleDependencyResolver {
                                                      LanguageServerContext serverContext)
             throws ExecutionException, InterruptedException, TimeoutException {
         Package currentPackage = project.currentPackage();
-
-        // Use default module URI for dependency resolution
         Module defaultModule = currentPackage.getDefaultModule();
         String moduleUri = getModuleUri(project, defaultModule);
 
@@ -170,25 +177,117 @@ public class ModuleDependencyResolver {
                 serverContext.get(ExtendedLanguageClient.class),
                 workspaceManager,
                 serverContext
-        ).get(MODULE_RESOLUTION_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+        ).get(MODULE_RESOLUTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     /**
      * Resolves dependencies for multiple packages.
+     * Continues processing remaining packages even if some fail or timeout.
      *
+     * @param rootProject the root project (workspace or single package) used to format failure names
      * @param packages packages with unresolved dependencies
      * @param workspaceManager the workspace manager
      * @param serverContext the language server context
-     * @throws ExecutionException if resolution fails
+     * @throws ExecutionException if any packages fail to resolve
      * @throws InterruptedException if interrupted
-     * @throws TimeoutException if resolution times out
+     * @throws TimeoutException if any packages timeout
      */
-    public static void resolvePackages(List<Project> packages, WorkspaceManager workspaceManager,
+    public static void resolvePackages(Project rootProject, List<Project> packages, WorkspaceManager workspaceManager,
                                        LanguageServerContext serverContext)
             throws ExecutionException, InterruptedException, TimeoutException {
+        List<FailedPackage> failed = new ArrayList<>();
+
         for (Project packageProject : packages) {
-            executeResolveModulesForProject(packageProject, workspaceManager, serverContext);
+            try {
+                executeResolveModulesForProject(packageProject, workspaceManager, serverContext);
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                failed.add(new FailedPackage(getPackageDisplayName(rootProject, packageProject), e));
+            }
         }
+
+        if (failed.isEmpty()) {
+            return;
+        }
+
+        StringBuilder details = new StringBuilder();
+        for (int i = 0; i < failed.size(); i++) {
+            FailedPackage fp = failed.get(i);
+            details.append(fp.name()).append(" - ").append(getErrorMessage(fp.cause()));
+            if (i < failed.size() - 1) {
+                details.append("\n");
+            }
+        }
+
+        String summary = "Failed to resolve " + formatPackageList(failed);
+        PackageResolutionException ex = new PackageResolutionException(
+                summary, details.toString(), failed.getFirst().cause());
+        for (int i = 1; i < failed.size(); i++) {
+            ex.addSuppressed(failed.get(i).cause());
+        }
+        throw ex;
+    }
+
+    /**
+     * Builds a display name for a failed package.
+     * For workspace projects, the format is {@code <workspace-dir>.<package-name>} since the workspace
+     * root has no Ballerina.toml. For single packages, the Ballerina.toml name is used, falling back to
+     * the source root directory name if unavailable.
+     *
+     * @param rootProject the root project (workspace or single package)
+     * @param packageProject the package whose display name is being computed
+     * @return the formatted display name
+     */
+    private static String getPackageDisplayName(Project rootProject, Project packageProject) {
+        String packageName = packageProject.currentPackage().packageName().value();
+        String fallback = getDirectoryName(packageProject.sourceRoot());
+        String resolved = (packageName == null || packageName.isBlank()) ? fallback : packageName;
+
+        if (BallerinaCompilerApi.getInstance().isWorkspaceProject(rootProject)) {
+            String workspaceName = getDirectoryName(rootProject.sourceRoot());
+            return workspaceName + "." + resolved;
+        }
+        return resolved;
+    }
+
+    private static String getDirectoryName(Path path) {
+        Path name = path.getFileName();
+        return name != null ? name.toString() : path.toString();
+    }
+
+    private static String formatPackageList(List<FailedPackage> failed) {
+        if (failed.size() == 1) {
+            return failed.getFirst().name() + " package";
+        }
+        List<String> names = failed.stream().map(FailedPackage::name).toList();
+        String joined = names.size() == 2
+                ? names.get(0) + " and " + names.get(1)
+                : String.join(", ", names.subList(0, names.size() - 1)) + " and " + names.getLast();
+        return joined + " packages";
+    }
+
+
+    /**
+     * Gets the error message from an exception, extracting meaningful details.
+     *
+     * @param exception the exception to analyze
+     * @return the error message from the exception
+     */
+    private static String getErrorMessage(Exception exception) {
+        return switch (exception) {
+            case TimeoutException ignored -> RESOLVE_MODULE_TIMEOUT_MESSAGE;
+            case InterruptedException ignored -> "Module dependency resolution was interrupted";
+            case ExecutionException ex -> {
+                Throwable cause = ex.getCause();
+                if (cause instanceof TimeoutException) {
+                    yield RESOLVE_MODULE_TIMEOUT_MESSAGE;
+                }
+                if (cause != null && cause.getMessage() != null) {
+                    yield cause.getMessage();
+                }
+                yield ex.getMessage() != null ? ex.getMessage() : "Execution failed";
+            }
+            default -> exception.getMessage() != null ? exception.getMessage() : "Unknown error occurred";
+        };
     }
 
     /**
@@ -199,15 +298,39 @@ public class ModuleDependencyResolver {
      */
     public static void handleException(CodeMapResolveModuleDependenciesResponse response, Throwable e) {
         response.setSuccess(false);
-        // Extract user-friendly error messages from different exception types
-        if (e instanceof TimeoutException || e.getCause() instanceof TimeoutException) {
-            response.setErrorMsg(RESOLVE_MODULE_TIMEOUT_MESSAGE);
-        } else if (e instanceof UserErrorException) {
-            response.setErrorMsg(e.getMessage());
-        } else if (e.getCause() instanceof UserErrorException) {
-            response.setErrorMsg(e.getCause().getMessage());
-        } else {
-            response.setErrorMsg(RESOLVE_MODULE_FAILURE_MESSAGE);
+
+        if (e instanceof PackageResolutionException pe) {
+            response.setErrorMsg(pe.getMessage());
+            response.setErrorDetails(pe.getErrorDetails());
+            return;
         }
+
+        if (e instanceof TimeoutException) {
+            String msg = e.getMessage();
+            response.setErrorMsg(hasFailedToResolveMessage(msg) ? msg : RESOLVE_MODULE_TIMEOUT_MESSAGE);
+            return;
+        }
+
+        if (e.getCause() instanceof TimeoutException) {
+            response.setErrorMsg(RESOLVE_MODULE_TIMEOUT_MESSAGE);
+            return;
+        }
+
+        if (e instanceof UserErrorException) {
+            response.setErrorMsg(e.getMessage());
+            return;
+        }
+
+        if (e.getCause() instanceof UserErrorException ue) {
+            response.setErrorMsg(ue.getMessage());
+            return;
+        }
+
+        response.setErrorMsg(RESOLVE_MODULE_FAILURE_MESSAGE);
+    }
+
+    private static boolean hasFailedToResolveMessage(String msg) {
+        return msg != null
+                && (msg.contains("packages failed to resolve") || msg.contains("package failed to resolve"));
     }
 }

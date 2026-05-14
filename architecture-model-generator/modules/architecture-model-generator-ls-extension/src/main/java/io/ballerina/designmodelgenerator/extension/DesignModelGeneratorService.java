@@ -184,7 +184,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 try {
                     // Resolve missing dependencies
                     ModuleDependencyResolver.resolvePackages(
-                            unresolvedPackages, workspaceManager, serverContext);
+                            project, unresolvedPackages, workspaceManager, serverContext);
                     unresolvedPackages.clear();
                     response.setSuccess(true);
                 } catch (Throwable e) {

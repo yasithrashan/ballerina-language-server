@@ -29,12 +29,17 @@ package io.ballerina.designmodelgenerator.extension.response;
  * <p>
  * The {@code errorMsg} field contains the error message describing the failure.
  * This is set only when {@code success} is {@code false}.
+ * <p>
+ * The {@code errorDetails} field contains detailed error information for each failed package.
+ * This provides package-specific error messages when multiple packages fail.
+ * This is set only when {@code success} is {@code false}.
  *
  * @since 1.6.0
  */
 public class CodeMapResolveModuleDependenciesResponse {
     private boolean success;
     private String errorMsg;
+    private String errorDetails;
 
     public CodeMapResolveModuleDependenciesResponse() {
     }
@@ -58,5 +63,13 @@ public class CodeMapResolveModuleDependenciesResponse {
 
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    public String getErrorDetails() {
+        return errorDetails;
+    }
+
+    public void setErrorDetails(String errorDetails) {
+        this.errorDetails = errorDetails;
     }
 }
