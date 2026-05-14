@@ -36,7 +36,6 @@ import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
 import io.ballerina.designmodelgenerator.extension.utils.ModuleDependencyResolver;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
-import org.ballerinalang.compiler.BLangCompilerException;
 import org.ballerinalang.langserver.common.utils.PathUtil;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.LanguageServerContext;
@@ -48,6 +47,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @JavaSPIService("org.ballerinalang.langserver.commons.service.spi.ExtendedLanguageServerService")
@@ -155,6 +155,12 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
         });
     }
 
+    /**
+     * Resolves missing module dependencies for codemap generation.
+     *
+     * @param request the dependency resolution request
+     * @return response indicating success or failure with error details
+     */
     @JsonRequest
     public CompletableFuture<CodeMapResolveModuleDependenciesResponse> codeMapResolveModuleDependencies(
             CodeMapResolveModuleDependenciesRequest request) {
@@ -166,50 +172,21 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 Project project = workspaceManager.loadProject(projectPath);
 
                 BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
-                boolean isWorkspace = compilerApi.isWorkspaceProject(project);
+                // Find packages with unresolved dependencies
+                List<Project> unresolvedPackages = ModuleDependencyResolver.findUnresolvedPackages(
+                        project, compilerApi);
 
-                boolean hasUnresolvedModules;
-                if (isWorkspace) {
-                    hasUnresolvedModules = ModuleDependencyResolver.hasUnresolvedModulesInWorkspace(
-                            project, workspaceManager, compilerApi);
-                } else {
-                    hasUnresolvedModules = ModuleDependencyResolver.hasUnresolvedModulesInPackage(
-                            project, workspaceManager);
-                }
-
-                if (!hasUnresolvedModules) {
+                if (unresolvedPackages.isEmpty()) {
                     response.setSuccess(true);
                     return response;
                 }
 
-                // If there are unresolved modules, attempt to resolve them automatically
                 try {
-                    if (isWorkspace) {
-                        ModuleDependencyResolver.executeResolveModulesForWorkspace(
-                                project, workspaceManager, serverContext, compilerApi);
-                    } else {
-                        ModuleDependencyResolver.executeResolveModulesForProject(
-                                project, workspaceManager, serverContext);
-                    }
+                    // Resolve missing dependencies
+                    ModuleDependencyResolver.resolvePackages(
+                            unresolvedPackages, workspaceManager, serverContext);
+                    unresolvedPackages.clear();
                     response.setSuccess(true);
-                } catch (BLangCompilerException e) {
-                    String message = e.getMessage();
-                    if (message != null && message.startsWith("failed to load the module")) {
-                        try {
-                            if (isWorkspace) {
-                                ModuleDependencyResolver.executeResolveModulesForWorkspace(
-                                        project, workspaceManager, serverContext, compilerApi);
-                            } else {
-                                ModuleDependencyResolver.executeResolveModulesForProject(
-                                        project, workspaceManager, serverContext);
-                            }
-                            response.setSuccess(true);
-                        } catch (Throwable ex) {
-                            ModuleDependencyResolver.handleException(response, ex);
-                        }
-                    } else {
-                        ModuleDependencyResolver.handleException(response, e);
-                    }
                 } catch (Throwable e) {
                     ModuleDependencyResolver.handleException(response, e);
                 }

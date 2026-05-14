@@ -34,6 +34,7 @@ import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 import org.ballerinalang.langserver.exception.UserErrorException;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -53,39 +54,33 @@ public class ModuleDependencyResolver {
             "An internal error occurred while resolving module dependencies.";
 
     /**
-     * Checks if there are unresolved modules in a workspace.
+     * Finds all packages with unresolved module imports across a project or workspace.
+     * Walks each package's modules and short-circuits per-package on the first BCE2003 diagnostic,
+     * so a package with one missing import does not trigger a full scan of its remaining modules.
      *
-     * @param project the root project
-     * @param workspaceManager the workspace manager
+     * @param project the root project (single package or workspace)
      * @param compilerApi the compiler API instance
-     * @return true if there are unresolved modules in the workspace
+     * @return the packages containing unresolved modules; empty if everything resolves
      */
-    public static boolean hasUnresolvedModulesInWorkspace(Project project, WorkspaceManager workspaceManager,
-                                                          BallerinaCompilerApi compilerApi) {
-        List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
+    public static List<Project> findUnresolvedPackages(Project project, BallerinaCompilerApi compilerApi) {
+        List<Project> candidates = compilerApi.isWorkspaceProject(project)
+                ? compilerApi.getWorkspaceProjectsInOrder(project)
+                : List.of(project);
 
-        for (Project packageProject : workspaceProjects) {
-            if (hasUnresolvedModulesInPackage(packageProject, workspaceManager)) {
-                return true;
+        List<Project> unresolved = new ArrayList<>();
+
+        for (Project packageProject : candidates) {
+            if (hasUnresolvedModulesInPackage(packageProject)) {
+                unresolved.add(packageProject);
             }
         }
-        return false;
+        return unresolved;
     }
 
-    /**
-     * Checks if there are unresolved modules in a package.
-     *
-     * @param project the project
-     * @param workspaceManager the workspace manager
-     * @return true if there are unresolved modules in the package
-     */
-    public static boolean hasUnresolvedModulesInPackage(Project project, WorkspaceManager workspaceManager) {
+    private static boolean hasUnresolvedModulesInPackage(Project project) {
         Package currentPackage = project.currentPackage();
-
         for (ModuleId moduleId : currentPackage.moduleIds()) {
             Module module = currentPackage.module(moduleId);
-
-            // Get semantic model for the entire module instead of per document
             Optional<SemanticModel> semanticModel = getModuleSemanticModel(project, module);
 
             if (semanticModel.isPresent() && hasUnresolvedModules(semanticModel.get())) {
@@ -147,66 +142,57 @@ public class ModuleDependencyResolver {
     }
 
     /**
-     * Executes module resolution for a single project by pulling missing dependencies.
-     * Uses any module URI from the package since all modules share the same package dependencies.
+     * Resolves dependencies for a project by pulling missing modules.
      *
      * @param project the project to resolve dependencies for
-     * @param workspaceManager the workspace manager for project access
-     * @param serverContext the language server context containing the client
-     * @throws ExecutionException if the pull module operation fails
-     * @throws InterruptedException if the operation is interrupted
+     * @param workspaceManager the workspace manager
+     * @param serverContext the language server context
+     * @throws ExecutionException if resolution fails
+     * @throws InterruptedException if interrupted
      */
     public static void executeResolveModulesForProject(Project project, WorkspaceManager workspaceManager,
                                                      LanguageServerContext serverContext)
             throws ExecutionException, InterruptedException {
         Package currentPackage = project.currentPackage();
 
-        // Get any module URI from the package - they all resolve the same package dependencies
-        if (!currentPackage.moduleIds().isEmpty()) {
-            ModuleId firstModuleId = currentPackage.moduleIds().iterator().next();
-            Module firstModule = currentPackage.module(firstModuleId);
-            String moduleUri = getModuleUri(project, firstModule);
+        // Use default module URI for dependency resolution
+        Module defaultModule = currentPackage.getDefaultModule();
+        String moduleUri = getModuleUri(project, defaultModule);
 
-            PullModuleExecutor.resolveModules(
-                    moduleUri,
-                    serverContext.get(ExtendedLanguageClient.class),
-                    workspaceManager,
-                    serverContext
-            ).get();
-        }
+        PullModuleExecutor.resolveModules(
+                moduleUri,
+                serverContext.get(ExtendedLanguageClient.class),
+                workspaceManager,
+                serverContext
+        ).get();
     }
 
     /**
-     * Executes module resolution for all packages in a multi-package workspace.
-     * Iterates through all workspace projects and resolves dependencies for each.
+     * Resolves dependencies for multiple packages.
      *
-     * @param project the root workspace project
-     * @param workspaceManager the workspace manager for project access
-     * @param serverContext the language server context containing the client
-     * @param compilerApi the compiler API instance for workspace operations
-     * @throws ExecutionException if any package's dependency resolution fails
-     * @throws InterruptedException if the operation is interrupted
+     * @param packages packages with unresolved dependencies
+     * @param workspaceManager the workspace manager
+     * @param serverContext the language server context
+     * @throws ExecutionException if resolution fails
+     * @throws InterruptedException if interrupted
      */
-    public static void executeResolveModulesForWorkspace(Project project, WorkspaceManager workspaceManager,
-                                                        LanguageServerContext serverContext,
-                                                        BallerinaCompilerApi compilerApi)
+    public static void resolvePackages(List<Project> packages, WorkspaceManager workspaceManager,
+                                       LanguageServerContext serverContext)
             throws ExecutionException, InterruptedException {
-        List<Project> workspaceProjects = compilerApi.getWorkspaceProjectsInOrder(project);
-
-        for (Project packageProject : workspaceProjects) {
+        for (Project packageProject : packages) {
             executeResolveModulesForProject(packageProject, workspaceManager, serverContext);
         }
     }
 
     /**
-     * Handles exceptions during module resolution and sets appropriate response values.
-     * Extracts user-friendly error messages from UserErrorExceptions, otherwise uses a generic message.
+     * Handles exceptions during dependency resolution.
      *
-     * @param response the response object to update with error information
-     * @param e the exception that occurred during module resolution
+     * @param response the response to update
+     * @param e the exception that occurred
      */
     public static void handleException(CodeMapResolveModuleDependenciesResponse response, Throwable e) {
         response.setSuccess(false);
+        // Extract user-friendly error messages from UserErrorException
         response.setErrorMsg(e instanceof UserErrorException ? e.getMessage() :
                 e.getCause() instanceof UserErrorException ? e.getCause().getMessage() :
                 RESOLVE_MODULE_FAILURE_MESSAGE);
