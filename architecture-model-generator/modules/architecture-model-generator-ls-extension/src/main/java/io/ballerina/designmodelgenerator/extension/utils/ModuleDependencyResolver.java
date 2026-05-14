@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Utility class for resolving module dependencies in Ballerina projects and workspaces.
@@ -52,6 +54,9 @@ public class ModuleDependencyResolver {
     private static final String UNRESOLVED_MODULE_CODE = "BCE2003";
     private static final String RESOLVE_MODULE_FAILURE_MESSAGE =
             "An internal error occurred while resolving module dependencies.";
+    private static final String RESOLVE_MODULE_TIMEOUT_MESSAGE =
+            "Module dependency resolution timed out. Please try again or check your network connection.";
+    private static final long MODULE_RESOLUTION_TIMEOUT_MINUTES = 3;
 
     /**
      * Finds all packages with unresolved module imports across a project or workspace.
@@ -149,10 +154,11 @@ public class ModuleDependencyResolver {
      * @param serverContext the language server context
      * @throws ExecutionException if resolution fails
      * @throws InterruptedException if interrupted
+     * @throws TimeoutException if resolution times out
      */
     public static void executeResolveModulesForProject(Project project, WorkspaceManager workspaceManager,
                                                      LanguageServerContext serverContext)
-            throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, TimeoutException {
         Package currentPackage = project.currentPackage();
 
         // Use default module URI for dependency resolution
@@ -164,7 +170,7 @@ public class ModuleDependencyResolver {
                 serverContext.get(ExtendedLanguageClient.class),
                 workspaceManager,
                 serverContext
-        ).get();
+        ).get(MODULE_RESOLUTION_TIMEOUT_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
@@ -175,10 +181,11 @@ public class ModuleDependencyResolver {
      * @param serverContext the language server context
      * @throws ExecutionException if resolution fails
      * @throws InterruptedException if interrupted
+     * @throws TimeoutException if resolution times out
      */
     public static void resolvePackages(List<Project> packages, WorkspaceManager workspaceManager,
                                        LanguageServerContext serverContext)
-            throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, TimeoutException {
         for (Project packageProject : packages) {
             executeResolveModulesForProject(packageProject, workspaceManager, serverContext);
         }
@@ -192,9 +199,15 @@ public class ModuleDependencyResolver {
      */
     public static void handleException(CodeMapResolveModuleDependenciesResponse response, Throwable e) {
         response.setSuccess(false);
-        // Extract user-friendly error messages from UserErrorException
-        response.setErrorMsg(e instanceof UserErrorException ? e.getMessage() :
-                e.getCause() instanceof UserErrorException ? e.getCause().getMessage() :
-                RESOLVE_MODULE_FAILURE_MESSAGE);
+        // Extract user-friendly error messages from different exception types
+        if (e instanceof TimeoutException || e.getCause() instanceof TimeoutException) {
+            response.setErrorMsg(RESOLVE_MODULE_TIMEOUT_MESSAGE);
+        } else if (e instanceof UserErrorException) {
+            response.setErrorMsg(e.getMessage());
+        } else if (e.getCause() instanceof UserErrorException) {
+            response.setErrorMsg(e.getCause().getMessage());
+        } else {
+            response.setErrorMsg(RESOLVE_MODULE_FAILURE_MESSAGE);
+        }
     }
 }
