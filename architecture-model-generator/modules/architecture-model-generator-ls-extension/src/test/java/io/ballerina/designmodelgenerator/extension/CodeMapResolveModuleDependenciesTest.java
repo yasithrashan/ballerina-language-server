@@ -20,7 +20,7 @@ package io.ballerina.designmodelgenerator.extension;
 
 import io.ballerina.designmodelgenerator.extension.request.CodeMapResolveModuleDependenciesRequest;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResolveModuleDependenciesResponse;
-import io.ballerina.designmodelgenerator.extension.utils.ModuleDependencyResolver;
+import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ResolveExceptionHandler;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -68,7 +68,7 @@ public class CodeMapResolveModuleDependenciesTest {
         CodeMapResolveModuleDependenciesResponse response = new CodeMapResolveModuleDependenciesResponse();
         RuntimeException testException = new RuntimeException("Test exception");
 
-        ModuleDependencyResolver.handleException(response, testException);
+        ResolveExceptionHandler.handleException(response, testException);
 
         Assert.assertFalse(response.isSuccess());
         Assert.assertNotNull(response.getErrorMsg());
@@ -82,7 +82,7 @@ public class CodeMapResolveModuleDependenciesTest {
         java.util.concurrent.TimeoutException timeoutException =
                 new java.util.concurrent.TimeoutException("Timeout occurred");
 
-        ModuleDependencyResolver.handleException(response, timeoutException);
+        ResolveExceptionHandler.handleException(response, timeoutException);
 
         Assert.assertFalse(response.isSuccess());
         Assert.assertNotNull(response.getErrorMsg());
@@ -113,7 +113,7 @@ public class CodeMapResolveModuleDependenciesTest {
         java.util.concurrent.TimeoutException timeoutException =
                 new java.util.concurrent.TimeoutException("2 of 3 packages failed to resolve: packageA, packageB");
 
-        ModuleDependencyResolver.handleException(response, timeoutException);
+        ResolveExceptionHandler.handleException(response, timeoutException);
 
         Assert.assertFalse(response.isSuccess());
         Assert.assertNotNull(response.getErrorMsg());
@@ -127,7 +127,7 @@ public class CodeMapResolveModuleDependenciesTest {
         java.util.concurrent.TimeoutException timeoutException =
                 new java.util.concurrent.TimeoutException("Generic timeout");
 
-        ModuleDependencyResolver.handleException(response, timeoutException);
+        ResolveExceptionHandler.handleException(response, timeoutException);
 
         Assert.assertFalse(response.isSuccess());
         Assert.assertNotNull(response.getErrorMsg());

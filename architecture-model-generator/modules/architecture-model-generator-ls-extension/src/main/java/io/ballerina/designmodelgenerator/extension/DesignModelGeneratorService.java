@@ -33,7 +33,9 @@ import io.ballerina.designmodelgenerator.extension.response.CodeMapResolveModule
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
-import io.ballerina.designmodelgenerator.extension.utils.ModuleDependencyResolver;
+import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ModulePuller;
+import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ResolveExceptionHandler;
+import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.UnresolvedModuleChecker;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.langserver.common.utils.PathUtil;
@@ -173,7 +175,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
                 // Find packages with unresolved dependencies
-                List<Project> unresolvedPackages = ModuleDependencyResolver.findUnresolvedPackages(
+                List<Project> unresolvedPackages = UnresolvedModuleChecker.findUnresolvedPackages(
                         project, compilerApi);
 
                 if (unresolvedPackages.isEmpty()) {
@@ -183,12 +185,11 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
 
                 try {
                     // Resolve missing dependencies
-                    ModuleDependencyResolver.resolvePackages(
+                    ModulePuller.resolvePackages(
                             project, unresolvedPackages, workspaceManager, serverContext);
-                    unresolvedPackages.clear();
                     response.setSuccess(true);
                 } catch (Throwable e) {
-                    ModuleDependencyResolver.handleException(response, e);
+                    ResolveExceptionHandler.handleException(response, e);
                 }
             } catch (Throwable e) {
                 response.setSuccess(false);

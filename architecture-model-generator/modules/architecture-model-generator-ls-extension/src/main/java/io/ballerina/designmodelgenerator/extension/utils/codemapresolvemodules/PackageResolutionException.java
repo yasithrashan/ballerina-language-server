@@ -16,7 +16,7 @@
  *  under the License.
  */
 
-package io.ballerina.designmodelgenerator.extension.utils;
+package io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules;
 
 /**
  * Exception thrown when package dependency resolution fails.
