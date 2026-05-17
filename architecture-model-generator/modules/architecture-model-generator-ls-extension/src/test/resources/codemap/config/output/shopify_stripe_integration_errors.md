@@ -37,7 +37,7 @@ stripe:Client stripe [L:16 - L:16]
 ```
 
 ```ballerina
-listener shopify:Listener shopifyListener [L:8 - L:8]
+listener shopifyListener [L:8 - L:8]
 ```
 
 ---

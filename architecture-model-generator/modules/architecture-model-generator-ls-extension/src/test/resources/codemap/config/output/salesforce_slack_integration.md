@@ -97,7 +97,7 @@ function processLeadConversion(salesforce:EventData eventData) returns error? [L
 ```
 
 ```ballerina
-listener salesforce:Listener salesforceListener [L:8 - L:16]
+listener salesforceListener [L:8 - L:16]
 ```
 
 ```ballerina

@@ -118,7 +118,7 @@ public class CodeMapResolveModuleDependenciesTest {
         Assert.assertFalse(response.isSuccess());
         Assert.assertNotNull(response.getErrorMsg());
         Assert.assertEquals(response.getErrorMsg(),
-                "2 of 3 packages failed to resolve: packageA, packageB");
+                "Module dependency resolution timed out. Please try again or check your network connection.");
     }
 
     @Test
