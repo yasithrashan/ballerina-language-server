@@ -76,7 +76,10 @@ public class UnresolvedModuleChecker {
         try {
             compilation = currentPackage.getCompilation();
         } catch (RuntimeException e) {
-            return false;
+            throw new PackageResolutionException(
+                    "Failed to compile package while checking unresolved modules.",
+                    e.getMessage(),
+                    e);
         }
         for (ModuleId moduleId : currentPackage.moduleIds()) {
             if (hasUnresolvedModules(compilation.getSemanticModel(moduleId))) {

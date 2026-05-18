@@ -69,7 +69,11 @@ public class ModulePuller {
         for (Project packageProject : packages) {
             try {
                 executeResolveModulesForProject(packageProject, workspaceManager, serverContext);
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                failed.add(new FailedPackage(getPackageDisplayName(rootProject, packageProject), e));
+                break;
+            } catch (ExecutionException | TimeoutException e) {
                 failed.add(new FailedPackage(getPackageDisplayName(rootProject, packageProject), e));
             }
         }

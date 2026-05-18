@@ -24,6 +24,8 @@ import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.R
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -93,7 +95,8 @@ public class CodeMapResolveModuleDependenciesTest {
     @Test
     public void testCodeMapResolveModuleDependenciesWithInvalidPath() throws Exception {
         DesignModelGeneratorService service = new DesignModelGeneratorService();
-        String invalidProjectPath = "/invalid/path/to/project";
+        String invalidProjectPath = Paths.get(System.getProperty("java.io.tmpdir"),
+                "non-existent-" + UUID.randomUUID()).toString();
         CodeMapResolveModuleDependenciesRequest request =
                 new CodeMapResolveModuleDependenciesRequest(invalidProjectPath);
 
