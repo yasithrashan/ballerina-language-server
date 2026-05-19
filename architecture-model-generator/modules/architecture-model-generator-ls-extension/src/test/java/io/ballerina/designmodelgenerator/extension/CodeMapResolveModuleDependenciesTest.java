@@ -21,12 +21,18 @@ package io.ballerina.designmodelgenerator.extension;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapResolveModuleDependenciesRequest;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResolveModuleDependenciesResponse;
 import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ResolveExceptionHandler;
+import org.ballerinalang.langserver.commons.LanguageServerContext;
+import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
+import org.ballerinalang.langserver.commons.workspace.WorkspaceManagerProxy;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for the codeMapResolveModuleDependencies API and related utility methods.
@@ -95,6 +101,19 @@ public class CodeMapResolveModuleDependenciesTest {
     @Test
     public void testCodeMapResolveModuleDependenciesWithInvalidPath() throws Exception {
         DesignModelGeneratorService service = new DesignModelGeneratorService();
+        // Properly initialize the service with mocks to test actual invalid path behavior
+        // instead of NPE fallback when service is uninitialized
+        WorkspaceManager mockWorkspaceManager = mock(WorkspaceManager.class);
+        WorkspaceManagerProxy mockProxy = mock(WorkspaceManagerProxy.class);
+        LanguageServerContext mockContext = mock(LanguageServerContext.class);
+
+        // Mock the workspace manager to throw an exception when trying to load an invalid project
+        when(mockProxy.get()).thenReturn(mockWorkspaceManager);
+        when(mockWorkspaceManager.loadProject(org.mockito.ArgumentMatchers.any()))
+                .thenThrow(new RuntimeException("Project path does not exist or is invalid"));
+
+        service.init(null, mockProxy, mockContext);
+
         String invalidProjectPath = Paths.get(System.getProperty("java.io.tmpdir"),
                 "non-existent-" + UUID.randomUUID()).toString();
         CodeMapResolveModuleDependenciesRequest request =
