@@ -43,7 +43,7 @@ public class ResolveExceptionHandler {
      * Handles exceptions during dependency resolution.
      *
      * @param response the response to update
-     * @param e the exception that occurred
+     * @param e        the exception that occurred
      */
     public static void handleException(CodeMapResolveModuleDependenciesResponse response, Throwable e) {
         response.setSuccess(false);

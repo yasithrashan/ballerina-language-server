@@ -57,10 +57,10 @@ public class ModulePuller {
      * Resolves dependencies for multiple packages.
      * Continues processing remaining packages even if some fail or timeout.
      *
-     * @param rootProject the root project (workspace or single package) used to format failure names
-     * @param packages packages with unresolved dependencies
+     * @param rootProject      the root project (workspace or single package) used to format failure names
+     * @param packages         packages with unresolved dependencies
      * @param workspaceManager the workspace manager
-     * @param serverContext the language server context
+     * @param serverContext    the language server context
      */
     public static void resolvePackages(Project rootProject, List<Project> packages, WorkspaceManager workspaceManager,
                                        LanguageServerContext serverContext) {
@@ -98,12 +98,12 @@ public class ModulePuller {
     /**
      * Resolves dependencies for a project by pulling missing modules.
      *
-     * @param project the project to resolve dependencies for
+     * @param project          the project to resolve dependencies for
      * @param workspaceManager the workspace manager
-     * @param serverContext the language server context
-     * @throws ExecutionException if resolution fails
+     * @param serverContext    the language server context
+     * @throws ExecutionException   if resolution fails
      * @throws InterruptedException if interrupted
-     * @throws TimeoutException if resolution times out
+     * @throws TimeoutException     if resolution times out
      */
     public static void executeResolveModulesForProject(Project project, WorkspaceManager workspaceManager,
                                                        LanguageServerContext serverContext)
@@ -126,7 +126,7 @@ public class ModulePuller {
      * the project source root. For sub-modules, returns the modules/moduleName directory.
      *
      * @param project the project containing the module
-     * @param module the module to get the URI for
+     * @param module  the module to get the URI for
      * @return the module's root directory URI as a string
      */
     public static String getModuleUri(Project project, Module module) {

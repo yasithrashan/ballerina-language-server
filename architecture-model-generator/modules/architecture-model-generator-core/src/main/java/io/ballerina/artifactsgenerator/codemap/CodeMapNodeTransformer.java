@@ -405,6 +405,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 return accessorName.toString().trim();
             }
         } catch (ReflectiveOperationException e) {
+            // Safe to ignore: reflection fallback may fail if internal API changes
+            // Method will continue with function name fallback strategy
         }
 
         // Fallback: use function name

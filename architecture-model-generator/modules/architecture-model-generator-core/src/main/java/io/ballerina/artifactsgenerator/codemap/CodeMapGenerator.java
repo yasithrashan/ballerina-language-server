@@ -355,8 +355,8 @@ public class CodeMapGenerator {
 
     // Safely processes a single node with error handling
     private static void addArtifactSafely(io.ballerina.compiler.syntax.tree.Node node,
-                                        CodeMapNodeTransformer transformer,
-                                        List<CodeMapArtifact> artifacts) {
+                                          CodeMapNodeTransformer transformer,
+                                          List<CodeMapArtifact> artifacts) {
         if (hasErrorInNode(node)) {
             return; // Skip nodes that already have errors
         }

@@ -46,7 +46,7 @@ public class UnresolvedModuleChecker {
      * Walks each package's modules and short-circuits per-package on the first BCE2003 diagnostic,
      * so a package with one missing import does not trigger a full scan of its remaining modules.
      *
-     * @param project the root project (single package or workspace)
+     * @param project     the root project (single package or workspace)
      * @param compilerApi the compiler API instance
      * @return the packages containing unresolved modules; empty if everything resolves
      */
