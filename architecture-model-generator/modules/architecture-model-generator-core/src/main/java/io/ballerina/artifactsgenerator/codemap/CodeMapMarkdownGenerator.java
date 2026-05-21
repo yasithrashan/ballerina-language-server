@@ -43,11 +43,11 @@ public class CodeMapMarkdownGenerator {
      */
     public static String generateMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
-            return "# " + projectName + " Codebase Summary\n\nNo files found.";
+            return "# " + projectName + " - High-Level Codebase Summary\n\nNo files found.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# " + projectName + " Codebase Summary");
+        lines.add("# " + projectName + " - High-Level Codebase Summary");
 
         // Process each file and its artifacts
         for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
@@ -59,7 +59,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("");
             lines.add("---");
             lines.add("");
-            lines.add("## File Path : " + filePath);
+            lines.add("## File Path: " + filePath);
 
             if (!artifacts.isEmpty()) {
                 renderArtifacts(lines, artifacts);
@@ -83,11 +83,11 @@ public class CodeMapMarkdownGenerator {
     public static String generateMarkdownWithPackagePrefix(Map<String, CodeMapFile> files, String projectName,
                                                            String packagePrefix) {
         if (files == null || files.isEmpty()) {
-            return "# " + projectName + " Codebase Summary\n\nNo files found.";
+            return "# " + projectName + " - High-Level Codebase Summary\n\nNo files found.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# " + projectName + " Codebase Summary");
+        lines.add("# " + projectName + " - High-Level Codebase Summary");
 
         for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
             String filePath = entry.getKey();
@@ -98,7 +98,7 @@ public class CodeMapMarkdownGenerator {
             lines.add("---");
             lines.add("");
             String fullPath = packagePrefix + "/" + filePath;
-            lines.add("## File Path : " + fullPath);
+            lines.add("## File Path: " + fullPath);
 
             if (!artifacts.isEmpty()) {
                 renderArtifacts(lines, artifacts);
@@ -122,11 +122,11 @@ public class CodeMapMarkdownGenerator {
     public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap,
                                                    String workspaceName) {
         if (workspaceCodeMap == null || workspaceCodeMap.isEmpty()) {
-            return "# " + workspaceName + " Codebase Summary\n\nNo packages found in workspace.";
+            return "# " + workspaceName + " - High-Level Codebase Summary\n\nNo packages found in workspace.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# " + workspaceName + " Codebase Summary");
+        lines.add("# " + workspaceName + " - High-Level Codebase Summary");
 
         // Process each package in the workspace
         for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
@@ -149,7 +149,7 @@ public class CodeMapMarkdownGenerator {
             boolean skipInitialEmptyLines = false;
             for (String line : packageLines) {
                 // Skip the package-level header as we already added it
-                if (!skipFirstHeader && line.trim().startsWith("# " + packageName + " Codebase Summary")) {
+                if (!skipFirstHeader && line.trim().startsWith("# " + packageName + " - High-Level Codebase Summary")) {
                     skipFirstHeader = true;
                     skipInitialEmptyLines = true;
                     continue;

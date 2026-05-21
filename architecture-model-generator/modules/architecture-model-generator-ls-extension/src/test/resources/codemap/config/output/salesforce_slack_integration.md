@@ -1,12 +1,12 @@
-# salesforce_slack_integration Codebase Summary
+# salesforce_slack_integration - High-Level Codebase Summary
 
 ---
 
-## File Path : agents.bal
+## File Path: agents.bal
 
 ---
 
-## File Path : config.bal
+## File Path: config.bal
 
 ```ballerina
 configurable record {
@@ -31,7 +31,7 @@ configurable record {
 
 ---
 
-## File Path : connections.bal
+## File Path: connections.bal
 
 ```ballerina
 import ballerina/http [L:1 - L:1]
@@ -47,7 +47,7 @@ final http:Client slackHttpClient [L:24 - L:26]
 
 ---
 
-## File Path : data_mappings.bal
+## File Path: data_mappings.bal
 
 ```ballerina
 import ballerina/time [L:1 - L:1]
@@ -59,7 +59,7 @@ function buildLeadConversionDetails(Lead lead, LeadOwner owner, ConvertedAccount
 
 ---
 
-## File Path : functions.bal
+## File Path: functions.bal
 
 ```ballerina
 import ballerina/http [L:1 - L:1]
@@ -81,7 +81,7 @@ function getSlackUserIdFromEmail(string? email) returns string?|error [L:184 - L
 
 ---
 
-## File Path : main.bal
+## File Path: main.bal
 
 ```ballerina
 import ballerina/log [L:1 - L:1]
@@ -111,7 +111,7 @@ service "/data/ChangeEvents" on salesforceListener { [L:19 - L:40]
 
 ---
 
-## File Path : types.bal
+## File Path: types.bal
 
 ```ballerina
 import ballerina/time [L:1 - L:1]

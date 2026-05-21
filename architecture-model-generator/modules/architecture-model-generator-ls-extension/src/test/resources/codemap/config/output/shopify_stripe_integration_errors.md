@@ -1,16 +1,16 @@
-# shopify_stripe_integration Codebase Summary
+# shopify_stripe_integration - High-Level Codebase Summary
 
 ---
 
-## File Path : agents.bal
+## File Path: agents.bal
 
 ---
 
-## File Path : automation.bal
+## File Path: automation.bal
 
 ---
 
-## File Path : config.bal
+## File Path: config.bal
 
 ```ballerina
 configurable record {
@@ -23,7 +23,7 @@ configurable record {
 
 ---
 
-## File Path : connections.bal
+## File Path: connections.bal
 
 ```ballerina
 import ballerinax/trigger.shopify [L:1 - L:1]
@@ -42,15 +42,15 @@ listener shopify:Listener shopifyListener [L:8 - L:8]
 
 ---
 
-## File Path : data_mappings.bal
+## File Path: data_mappings.bal
 
 ---
 
-## File Path : functions.bal
+## File Path: functions.bal
 
 ---
 
-## File Path : main.bal
+## File Path: main.bal
 
 ```ballerina
 // [Parser Error] invalid token 'remotee' [L:19 - L:19]
@@ -65,4 +65,4 @@ import ballerina/log [L:3 - L:3]
 
 ---
 
-## File Path : types.bal
+## File Path: types.bal

@@ -1,11 +1,11 @@
-# order_management_system Codebase Summary
+# order_management_system - High-Level Codebase Summary
 
 ---
 
 ## Package: order_utils
 ---
 
-## File Path : order_utils/utils.bal
+## File Path: order_utils/utils.bal
 
 ```ballerina
 import ballerina/uuid [L:1 - L:1]
@@ -31,7 +31,7 @@ public function calculateLineTotal(decimal unitPrice, int quantity) returns deci
 ## Package: order_service
 ---
 
-## File Path : order_service/configurations.bal
+## File Path: order_service/configurations.bal
 
 ```ballerina
 configurable int SERVICE_PORT [L:1 - L:1]
@@ -39,7 +39,7 @@ configurable int SERVICE_PORT [L:1 - L:1]
 
 ---
 
-## File Path : order_service/functions.bal
+## File Path: order_service/functions.bal
 
 ```ballerina
 import ballerina/lang.value as value [L:1 - L:1]
@@ -58,7 +58,7 @@ function calculateTotal(OrderLinePayload[] lines) returns decimal [L:95 - L:100]
 
 ---
 
-## File Path : order_service/main.bal
+## File Path: order_service/main.bal
 
 ```ballerina
 import wso2/order_service.db [L:1 - L:1]
@@ -73,7 +73,7 @@ public function main() [L:6 - L:15]
 
 ---
 
-## File Path : order_service/service.bal
+## File Path: order_service/service.bal
 
 ```ballerina
 import ballerina/http [L:1 - L:1]
@@ -98,7 +98,7 @@ service /v1 on new http:Listener(SERVICE_PORT) { [L:12 - L:50]
 
 ---
 
-## File Path : order_service/types.bal
+## File Path: order_service/types.bal
 
 ```ballerina
 public type Order record [L:1 - L:13]
@@ -114,7 +114,7 @@ public type OrderStatus "PENDING"|"CONFIRMED"|"AWAITING_PAYMENT"|"FULFILLING"|"S
 
 ---
 
-## File Path : order_service/modules/db/db_client.bal
+## File Path: order_service/modules/db/db_client.bal
 
 ```ballerina
 import ballerinax/postgresql [L:1 - L:1]
@@ -130,7 +130,7 @@ public function closeClient() returns error? [L:11 - L:13]
 
 ---
 
-## File Path : order_service/modules/db/db_config.bal
+## File Path: order_service/modules/db/db_config.bal
 
 ```ballerina
 configurable string host [L:1 - L:1]
@@ -142,7 +142,7 @@ configurable string database [L:5 - L:5]
 
 ---
 
-## File Path : order_service/modules/db/db_operations.bal
+## File Path: order_service/modules/db/db_operations.bal
 
 ```ballerina
 import ballerina/sql [L:1 - L:1]
@@ -156,7 +156,7 @@ public function getOrderById(string orderId) returns OrderDbRow|OrderNotFoundErr
 
 ---
 
-## File Path : order_service/modules/db/db_types.bal
+## File Path: order_service/modules/db/db_types.bal
 
 ```ballerina
 public type OrderDbRow record [L:1 - L:11]
@@ -166,7 +166,7 @@ public type OrderNotFoundError distinct error [L:25 - L:25]
 
 ---
 
-## File Path : order_service/modules/messaging/kafka_config.bal
+## File Path: order_service/modules/messaging/kafka_config.bal
 
 ```ballerina
 configurable string brokerUrl [L:1 - L:1]
@@ -175,7 +175,7 @@ configurable string orderEventsTopic [L:2 - L:2]
 
 ---
 
-## File Path : order_service/modules/messaging/kafka_operations.bal
+## File Path: order_service/modules/messaging/kafka_operations.bal
 
 ```ballerina
 import ballerina/lang.value as value [L:1 - L:1]
@@ -188,7 +188,7 @@ public function publishOrderEvent(OrderCreatedEvent eventPayload) returns error?
 
 ---
 
-## File Path : order_service/modules/messaging/kafka_producer.bal
+## File Path: order_service/modules/messaging/kafka_producer.bal
 
 ```ballerina
 import ballerinax/kafka [L:1 - L:1]
@@ -204,7 +204,7 @@ public function closeProducer() returns error? [L:7 - L:9]
 
 ---
 
-## File Path : order_service/modules/messaging/kafka_types.bal
+## File Path: order_service/modules/messaging/kafka_types.bal
 
 ```ballerina
 public type OrderCreatedEvent record [L:1 - L:6]

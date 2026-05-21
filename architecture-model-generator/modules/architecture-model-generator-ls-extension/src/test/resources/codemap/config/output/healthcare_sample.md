@@ -1,8 +1,8 @@
-# healthcare_sample Codebase Summary
+# healthcare_sample - High-Level Codebase Summary
 
 ---
 
-## File Path : encounter_api_config.bal
+## File Path: encounter_api_config.bal
 
 ```ballerina
 import ballerinax/health.fhir.r4 [L:22 - L:22]
@@ -14,7 +14,7 @@ final r4:ResourceAPIConfig encounterApiConfig [L:24 - L:108]
 
 ---
 
-## File Path : mapping.bal
+## File Path: mapping.bal
 
 ```ballerina
 import healthcare_sample.db [L:17 - L:17]
@@ -36,7 +36,7 @@ isolated function generatePatientId() returns string [L:69 - L:84]
 
 ---
 
-## File Path : patient_api_config.bal
+## File Path: patient_api_config.bal
 
 ```ballerina
 import ballerinax/health.fhir.r4 [L:22 - L:22]
@@ -48,7 +48,7 @@ final r4:ResourceAPIConfig patientApiConfig [L:24 - L:128]
 
 ---
 
-## File Path : service.bal
+## File Path: service.bal
 
 ```ballerina
 import healthcare_sample.db [L:22 - L:22]
@@ -123,7 +123,7 @@ service /fhir/r4/Encounter on new fhirr4:Listener(config = encounterApiConfig) {
 
 ---
 
-## File Path : modules/db/persist_client.bal
+## File Path: modules/db/persist_client.bal
 
 ```ballerina
 import ballerina/jballerina.java [L:22 - L:22]
@@ -164,7 +164,7 @@ public isolated client class Client { [L:32 - L:174]
 
 ---
 
-## File Path : modules/db/persist_db_config.bal
+## File Path: modules/db/persist_db_config.bal
 
 ```ballerina
 import ballerinax/mysql [L:22 - L:22]
@@ -181,7 +181,7 @@ configurable mysql:Options & readonly connectionOptions [L:29 - L:29]
 
 ---
 
-## File Path : modules/db/persist_types.bal
+## File Path: modules/db/persist_types.bal
 
 ```ballerina
 public type PatientData record [L:22 - L:27]
