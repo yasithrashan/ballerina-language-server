@@ -325,12 +325,23 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .name(listenerDeclarationNode.variableName().text())
                 .type(TYPE_LISTENER);
 
-        listenerDeclarationNode.typeDescriptor().flatMap(semanticModel::symbol).ifPresent(symbol -> {
-            if (symbol instanceof TypeSymbol typeSymbol) {
-                listenerBuilder.addProperty(PROP_TYPE,
-                        CommonUtils.getTypeSignature(typeSymbol, moduleInfo));
+        // Get type information - prefer syntax tree representation to preserve aliases
+        listenerDeclarationNode.typeDescriptor().ifPresent(typeDesc -> {
+            String syntaxTypeString = typeDesc.toSourceCode().strip();
+            if (!syntaxTypeString.isEmpty()) {
+                listenerBuilder.addProperty(PROP_TYPE, syntaxTypeString);
             }
         });
+
+        // Fallback to semantic model if syntax tree doesn't provide type info
+        if (listenerDeclarationNode.typeDescriptor().isEmpty()) {
+            semanticModel.symbol(listenerDeclarationNode).ifPresent(symbol -> {
+                if (symbol instanceof VariableSymbol variableSymbol) {
+                    listenerBuilder.addProperty(PROP_TYPE,
+                            CommonUtils.getTypeSignature(variableSymbol.typeDescriptor(), moduleInfo));
+                }
+            });
+        }
 
         Node initializer = listenerDeclarationNode.initializer();
         if (initializer instanceof NewExpressionNode newExpressionNode) {
