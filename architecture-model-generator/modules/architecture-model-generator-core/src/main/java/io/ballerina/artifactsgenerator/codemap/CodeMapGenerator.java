@@ -33,7 +33,6 @@ import io.ballerina.tools.diagnostics.Diagnostic;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -257,7 +256,7 @@ public class CodeMapGenerator {
             return fileName;
         }
         String moduleName = module.moduleName().moduleNamePart();
-        return "modules" + File.separator + moduleName + File.separator + fileName;
+        return "modules/" + moduleName + "/" + fileName;
     }
 
     // Gets full document path for a file within a module
