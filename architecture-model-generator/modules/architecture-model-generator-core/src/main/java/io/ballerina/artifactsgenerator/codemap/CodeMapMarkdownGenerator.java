@@ -41,7 +41,7 @@ public class CodeMapMarkdownGenerator {
      * @param projectName the name to use in the document header
      * @return Markdown string representation
      */
-    public static String generateMarkdown(Map<String, CodeMapFile> files, String projectName) {
+    public static String generatePackageMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
             return "# " + projectName + " - High-Level Codebase Summary\n\nNo files found.";
         }

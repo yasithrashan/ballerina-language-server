@@ -38,12 +38,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -61,24 +59,9 @@ public class CodeMapGenerator {
      * @return a map of relative file paths to their code map files
      */
     public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager) {
-        return generateCodeMap(project, workspaceManager, null);
-    }
-
-    /**
-     * Generates a code map for specific files in the given project. If {@code fileNames} is {@code null},
-     * all files in the project are processed.
-     *
-     * @param project          the Ballerina project
-     * @param workspaceManager the workspace manager to obtain semantic models
-     * @param fileNames        the list of file names to process, or {@code null} to process all files
-     * @return a map of relative file paths to their code map files
-     */
-    public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager,
-                                                           List<String> fileNames) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
         String projectPath = project.sourceRoot().toAbsolutePath().toString();
-        Set<String> targetFiles = fileNames != null ? new HashSet<>(fileNames) : null;
 
         var sortedModules = currentPackage.moduleIds()
                 .stream()
@@ -101,10 +84,6 @@ public class CodeMapGenerator {
                 Document document = module.document(documentId);
                 String fileName = document.name();
                 String relativeFilePath = getRelativeFilePath(module, fileName);
-
-                if (targetFiles != null && !targetFiles.contains(relativeFilePath)) {
-                    continue;
-                }
 
                 Path filePath = getDocumentPath(project, module, fileName);
                 Optional<SemanticModel> semanticModelOpt = workspaceManager.semanticModel(filePath);
@@ -279,12 +258,12 @@ public class CodeMapGenerator {
      * @param workspaceManager the workspace manager
      * @return consolidated project markdown content
      */
-    public static String processFullProjectCodeMap(Project project, WorkspaceManager workspaceManager) {
+    public static String processPackageCodeMap(Project project, WorkspaceManager workspaceManager) {
         Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager);
 
         String projectName = project.currentPackage().packageName().value();
 
-        return CodeMapMarkdownGenerator.generateMarkdown(codeMapFiles, projectName);
+        return CodeMapMarkdownGenerator.generatePackageMarkdown(codeMapFiles, projectName);
     }
 
     /**
@@ -296,26 +275,12 @@ public class CodeMapGenerator {
      */
     public static Map<String, Map<String, CodeMapFile>> generateWorkspaceCodeMap(Project project,
                                                                                  WorkspaceManager workspaceManager) {
-        return generateWorkspaceCodeMap(project, workspaceManager, null);
-    }
-
-    /**
-     * Generates a code map for specific files in all packages of a workspace.
-     *
-     * @param project          the Ballerina workspace project
-     * @param workspaceManager the workspace manager to obtain semantic models
-     * @param fileNames        the list of file names to process, or {@code null} to process all files
-     * @return a map of package names to their code map files
-     */
-    public static Map<String, Map<String, CodeMapFile>> generateWorkspaceCodeMap(Project project,
-                                                                                 WorkspaceManager workspaceManager,
-                                                                                 List<String> fileNames) {
         Map<String, Map<String, CodeMapFile>> workspaceCodeMap = new LinkedHashMap<>();
         BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
 
         if (!compilerApi.isWorkspaceProject(project)) {
             String packageName = project.currentPackage().packageName().value();
-            workspaceCodeMap.put(packageName, generateCodeMap(project, workspaceManager, fileNames));
+            workspaceCodeMap.put(packageName, generateCodeMap(project, workspaceManager));
             return workspaceCodeMap;
         }
 
@@ -323,7 +288,7 @@ public class CodeMapGenerator {
 
         for (Project packageProject : workspaceProjects) {
             String packageName = packageProject.currentPackage().packageName().value();
-            Map<String, CodeMapFile> packageCodeMap = generateCodeMap(packageProject, workspaceManager, fileNames);
+            Map<String, CodeMapFile> packageCodeMap = generateCodeMap(packageProject, workspaceManager);
             workspaceCodeMap.put(packageName, packageCodeMap);
         }
 
@@ -338,7 +303,9 @@ public class CodeMapGenerator {
      * @param workspaceManager the workspace manager
      * @return consolidated workspace markdown content
      */
-    public static String processFullWorkspaceCodeMap(Project project, WorkspaceManager workspaceManager) {
+    public static String processWorkspaceCodeMap(Project project, WorkspaceManager workspaceManager) {
+
+        // Generate Code Map for all packages in the workspace
         Map<String, Map<String, CodeMapFile>> workspaceCodeMap = generateWorkspaceCodeMap(project, workspaceManager);
 
         Path sourceRoot = project.sourceRoot();

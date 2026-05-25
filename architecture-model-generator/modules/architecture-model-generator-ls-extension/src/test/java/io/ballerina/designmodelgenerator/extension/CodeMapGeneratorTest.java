@@ -72,7 +72,7 @@ public class CodeMapGeneratorTest extends AbstractLSTest {
 
     @Override
     protected String getApiName() {
-        return "codemap";
+        return "codeMap";
     }
 
     protected String getProjectPath(String source) {

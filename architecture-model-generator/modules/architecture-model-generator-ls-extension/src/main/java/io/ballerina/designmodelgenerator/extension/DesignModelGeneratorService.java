@@ -113,7 +113,7 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
     }
 
     @JsonRequest
-    public CompletableFuture<CodeMapResponse> codemap(CodeMapRequest request) {
+    public CompletableFuture<CodeMapResponse> codeMap(CodeMapRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             CodeMapResponse response = new CodeMapResponse();
             try {
@@ -125,11 +125,11 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 boolean isWorkspace = compilerApi.isWorkspaceProject(project);
 
                 if (isWorkspace) {
-                    String fullWorkspaceMarkdown = CodeMapGenerator.processFullWorkspaceCodeMap(
+                String fullWorkspaceMarkdown = CodeMapGenerator.processWorkspaceCodeMap(
                             project, workspaceManager);
                     response.setContent(fullWorkspaceMarkdown);
                 } else {
-                    String fullProjectMarkdown = CodeMapGenerator.processFullProjectCodeMap(
+                    String fullProjectMarkdown = CodeMapGenerator.processPackageCodeMap(
                             project, workspaceManager);
                     response.setContent(fullProjectMarkdown);
                 }
