@@ -1,4 +1,4 @@
-# healthcare_sample - High-Level Codebase Summary
+# healthcare_sample - High Level Codebase Overview
 
 ---
 

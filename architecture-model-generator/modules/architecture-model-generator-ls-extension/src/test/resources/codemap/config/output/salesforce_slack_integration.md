@@ -1,4 +1,4 @@
-# salesforce_slack_integration - High-Level Codebase Summary
+# salesforce_slack_integration - High Level Codebase Overview
 
 ---
 

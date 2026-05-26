@@ -1,4 +1,4 @@
-# shopify_stripe_integration - High-Level Codebase Summary
+# shopify_stripe_integration - High Level Codebase Overview
 
 ---
 

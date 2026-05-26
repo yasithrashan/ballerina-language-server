@@ -1,4 +1,4 @@
-# order_management_system - High-Level Codebase Summary
+# order_management_system - High Level Codebase Overview
 
 ---
 

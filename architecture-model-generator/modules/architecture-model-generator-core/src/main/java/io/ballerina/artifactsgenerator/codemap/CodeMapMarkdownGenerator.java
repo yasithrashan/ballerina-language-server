@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -43,11 +44,12 @@ public class CodeMapMarkdownGenerator {
      */
     public static String generatePackageMarkdown(Map<String, CodeMapFile> files, String projectName) {
         if (files == null || files.isEmpty()) {
-            return "# " + projectName + " - High-Level Codebase Summary\n\nNo files found.";
+            return "# " + projectName + " - High Level Codebase Overview"
+                    + System.lineSeparator() + System.lineSeparator() + "No files found.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# " + projectName + " - High-Level Codebase Summary");
+        lines.add("# " + projectName + " - High Level Codebase Overview");
 
         // Process each file and its artifacts
         for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
@@ -55,11 +57,7 @@ public class CodeMapMarkdownGenerator {
             CodeMapFile fileData = entry.getValue();
             List<CodeMapArtifact> artifacts = fileData.artifacts();
 
-            // Add file section with separator
-            lines.add("");
-            lines.add("---");
-            lines.add("");
-            lines.add("## File Path: " + filePath);
+            lines.add(String.format("%n---%n%n## File Path: %s", filePath));
 
             if (!artifacts.isEmpty()) {
                 renderArtifacts(lines, artifacts);
@@ -67,7 +65,7 @@ public class CodeMapMarkdownGenerator {
         }
 
         lines.add("");
-        return String.join("\n", lines);
+        return String.join(System.lineSeparator(), lines);
     }
 
     /**
@@ -83,22 +81,20 @@ public class CodeMapMarkdownGenerator {
     public static String generateMarkdownWithPackagePrefix(Map<String, CodeMapFile> files, String projectName,
                                                            String packagePrefix) {
         if (files == null || files.isEmpty()) {
-            return "# " + projectName + " - High-Level Codebase Summary\n\nNo files found.";
+            return "# " + projectName + " - High Level Codebase Overview"
+                    + System.lineSeparator() + System.lineSeparator() + "No files found.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# " + projectName + " - High-Level Codebase Summary");
+        lines.add("# " + projectName + " - High Level Codebase Overview");
 
         for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
             String filePath = entry.getKey();
             CodeMapFile fileData = entry.getValue();
             List<CodeMapArtifact> artifacts = fileData.artifacts();
 
-            lines.add("");
-            lines.add("---");
-            lines.add("");
             String fullPath = packagePrefix + "/" + filePath;
-            lines.add("## File Path: " + fullPath);
+            lines.add(String.format("%n---%n%n## File Path: %s", fullPath));
 
             if (!artifacts.isEmpty()) {
                 renderArtifacts(lines, artifacts);
@@ -106,7 +102,7 @@ public class CodeMapMarkdownGenerator {
         }
 
         lines.add("");
-        return String.join("\n", lines);
+        return String.join(System.lineSeparator(), lines);
     }
 
 
@@ -122,11 +118,12 @@ public class CodeMapMarkdownGenerator {
     public static String generateWorkspaceMarkdown(Map<String, Map<String, CodeMapFile>> workspaceCodeMap,
                                                    String workspaceName) {
         if (workspaceCodeMap == null || workspaceCodeMap.isEmpty()) {
-            return "# " + workspaceName + " - High-Level Codebase Summary\n\nNo packages found in workspace.";
+            return "# " + workspaceName + " - High Level Codebase Overview"
+                    + System.lineSeparator() + System.lineSeparator() + "No packages found in workspace.";
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add("# " + workspaceName + " - High-Level Codebase Summary");
+        lines.add("# " + workspaceName + " - High Level Codebase Overview");
 
         // Process each package in the workspace
         for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
@@ -137,19 +134,17 @@ public class CodeMapMarkdownGenerator {
                 continue;
             }
 
-            lines.add("");
-            lines.add("---");
-            lines.add("");
-            lines.add("## Package: " + packageName);
+            lines.add(String.format("%n---%n%n## Package: %s", packageName));
 
             // Generate package content and filter out redundant headers
             String packageMarkdown = generateMarkdownWithPackagePrefix(packageFiles, packageName, packageName);
-            String[] packageLines = packageMarkdown.split("\n");
+            String[] packageLines = packageMarkdown.split(Pattern.quote(System.lineSeparator()));
             boolean skipFirstHeader = false;
             boolean skipInitialEmptyLines = false;
             for (String line : packageLines) {
                 // Skip the package-level header as we already added it
-                if (!skipFirstHeader && line.trim().startsWith("# " + packageName + " - High-Level Codebase Summary")) {
+                String packageHeader = "# " + packageName + " - High Level Codebase Overview";
+                if (!skipFirstHeader && line.trim().startsWith(packageHeader)) {
                     skipFirstHeader = true;
                     skipInitialEmptyLines = true;
                     continue;
@@ -165,7 +160,7 @@ public class CodeMapMarkdownGenerator {
         }
 
         lines.add("");
-        return String.join("\n", lines);
+        return String.join(System.lineSeparator(), lines);
     }
 
     // Renders artifacts in logical order with grouping for readability
