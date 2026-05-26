@@ -20,6 +20,7 @@ package io.ballerina.artifactsgenerator.codemap;
 
 import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
+import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
 import io.ballerina.modelgenerator.commons.ModuleInfo;
 import io.ballerina.projects.Document;
@@ -29,12 +30,15 @@ import io.ballerina.projects.ModuleId;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectKind;
+import io.ballerina.tools.diagnostics.Diagnostic;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,9 +163,7 @@ public class CodeMapGenerator {
         List<CodeMapArtifact> artifacts = new ArrayList<>();
 
         if (syntaxTree.hasDiagnostics()) {
-            List<CodeMapArtifact> syntaxErrorArtifacts = CodeMapErrorHandler.createSyntaxErrorArtifacts(
-                    syntaxTree.diagnostics(), syntaxTree);
-            artifacts.addAll(syntaxErrorArtifacts);
+            artifacts.addAll(createSyntaxErrorArtifacts(syntaxTree.diagnostics(), syntaxTree));
         }
 
         if (!syntaxTree.containsModulePart()) {
@@ -173,13 +175,102 @@ public class CodeMapGenerator {
                 moduleInfo);
 
         // Process imports individually with per-node error handling
-        rootNode.imports().forEach(importNode -> CodeMapErrorHandler.addArtifactSafely(importNode,
-                codeMapNodeTransformer, artifacts));
+        rootNode.imports().forEach(importNode -> addArtifactSafely(importNode, codeMapNodeTransformer, artifacts));
 
         // Process members individually with per-node error handling
-        rootNode.members().forEach(member -> CodeMapErrorHandler.addArtifactSafely(member,
-                codeMapNodeTransformer, artifacts));
+        rootNode.members().forEach(member -> addArtifactSafely(member, codeMapNodeTransformer, artifacts));
         return artifacts;
+    }
+
+    private static List<CodeMapArtifact> createSyntaxErrorArtifacts(Iterable<Diagnostic> diagnostics,
+                                                                     SyntaxTree syntaxTree) {
+        List<CodeMapArtifact> syntaxErrorArtifacts = new ArrayList<>();
+
+        for (Diagnostic diagnostic : diagnostics) {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("diagnosticMessage", diagnostic.message());
+            properties.put("severity", diagnostic.diagnosticInfo().severity().toString());
+            properties.put("code", diagnostic.diagnosticInfo().code());
+
+            String rawCode = extractRawCodeFromDiagnostic(diagnostic, syntaxTree);
+            if (rawCode != null && !rawCode.trim().isEmpty()) {
+                properties.put("rawCode", rawCode);
+            }
+
+            syntaxErrorArtifacts.add(new CodeMapArtifact(
+                    "Syntax Error",
+                    "SYNTAX_ERROR",
+                    CodeMapArtifact.toRange(diagnostic.location().lineRange()),
+                    properties,
+                    Collections.emptyList()
+            ));
+        }
+
+        return syntaxErrorArtifacts;
+    }
+
+    private static String extractRawCodeFromDiagnostic(Diagnostic diagnostic, SyntaxTree syntaxTree) {
+        try {
+            String sourceText = syntaxTree.toSourceCode();
+            if (sourceText == null || sourceText.isEmpty()) {
+                return null;
+            }
+            String[] lines = sourceText.split("\\r?\\n");
+
+            int startLine = diagnostic.location().lineRange().startLine().line();
+            int endLine = diagnostic.location().lineRange().endLine().line();
+
+            if (startLine < 0 || startLine >= lines.length || endLine < startLine) {
+                return null;
+            }
+
+            int safeEndLine = Math.min(endLine, lines.length - 1);
+            StringBuilder codeBuilder = new StringBuilder();
+            for (int i = startLine; i <= safeEndLine; i++) {
+                if (i > startLine) {
+                    codeBuilder.append("\n");
+                }
+                codeBuilder.append(lines[i]);
+            }
+
+            return codeBuilder.toString().trim();
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static boolean hasErrorInNode(Node node) {
+        if (node == null || node.hasDiagnostics()) {
+            return true;
+        }
+        try {
+            String sourceText = node.toSourceCode();
+            if (sourceText == null || sourceText.trim().isEmpty()) {
+                return true;
+            }
+            return sourceText.contains("MISSING") || sourceText.contains("[error]");
+        } catch (RuntimeException e) {
+            return true;
+        }
+    }
+
+    private static void addArtifactSafely(Node node, CodeMapNodeTransformer transformer,
+                                          List<CodeMapArtifact> artifacts) {
+        if (hasErrorInNode(node)) {
+            return;
+        }
+        try {
+            Optional<CodeMapArtifact> artifact = node.apply(transformer);
+            artifact.ifPresent(artifacts::add);
+        } catch (Exception e) {
+            artifacts.add(new CodeMapArtifact(
+                    "Parsing Error",
+                    "SYNTAX_ERROR",
+                    null,
+                    Map.of("errorMessage", "Failed to parse file: " + e.getMessage()),
+                    Collections.emptyList()
+            ));
+        }
     }
 
     // Gets relative file path considering module structure
