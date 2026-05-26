@@ -68,8 +68,6 @@ import java.util.stream.Collectors;
  */
 class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> {
 
-    private final boolean extractComments;
-
     private static final String TYPE_FUNCTION = "FUNCTION";
     private static final String TYPE_SERVICE = "SERVICE";
     private static final String TYPE_IMPORT = "IMPORT";
@@ -97,14 +95,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
     private static final String ENUM_TYPE_NAME = "enum";
     private static final String ALIAS_SEPARATOR = " as ";
 
-    CodeMapNodeTransformer() {
-        this(true);
-    }
-
-    CodeMapNodeTransformer(boolean extractComments) {
-        this.extractComments = extractComments;
-    }
-
     @Override
     public Optional<CodeMapArtifact> transform(FunctionDefinitionNode functionDefinitionNode) {
         CodeMapArtifact.Builder functionBuilder = new CodeMapArtifact.Builder(functionDefinitionNode);
@@ -113,14 +103,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         functionBuilder.modifiers(extractModifiers(functionDefinitionNode.qualifierList()));
         functionBuilder.addProperty(PROP_PARAMETERS, extractParameters(functionDefinitionNode.functionSignature()));
         functionBuilder.addProperty(PROP_RETURNS, extractReturnType(functionDefinitionNode.functionSignature()));
-        extractDocumentation(functionDefinitionNode.metadata()).ifPresent(functionBuilder::documentation);
-        extractInlineComments(functionDefinitionNode).ifPresent(functionBuilder::comment);
-
-        List<String> annotations = extractAnnotations(functionDefinitionNode.metadata());
-        if (!annotations.isEmpty()) {
-            functionBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(functionBuilder, functionDefinitionNode.metadata());
         functionBuilder.type(TYPE_FUNCTION);
 
         if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
@@ -166,14 +149,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
 
         serviceBuilder.type(TYPE_SERVICE);
-        extractDocumentation(serviceDeclarationNode.metadata()).ifPresent(serviceBuilder::documentation);
-        extractInlineComments(serviceDeclarationNode).ifPresent(serviceBuilder::comment);
-
-        List<String> annotations = extractAnnotations(serviceDeclarationNode.metadata());
-        if (!annotations.isEmpty()) {
-            serviceBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(serviceBuilder, serviceDeclarationNode.metadata());
         serviceDeclarationNode.members().forEach(member ->
                 member.apply(this).ifPresent(serviceBuilder::addChild));
 
@@ -205,7 +181,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
         importBuilder.addProperty(PROP_MODULE_NAME, moduleName);
         alias.ifPresent(a -> importBuilder.addProperty(PROP_ALIAS, a));
-        extractInlineComments(importDeclarationNode).ifPresent(importBuilder::comment);
 
         return Optional.of(importBuilder.build());
     }
@@ -223,14 +198,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             }
         });
 
-        extractDocumentation(listenerDeclarationNode.metadata()).ifPresent(listenerBuilder::documentation);
-        extractInlineComments(listenerDeclarationNode).ifPresent(listenerBuilder::comment);
-
-        List<String> annotations = extractAnnotations(listenerDeclarationNode.metadata());
-        if (!annotations.isEmpty()) {
-            listenerBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(listenerBuilder, listenerDeclarationNode.metadata());
         return Optional.of(listenerBuilder.build());
     }
 
@@ -242,7 +210,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
 
         constantDeclarationNode.typeDescriptor().ifPresent(typeDesc ->
                 constantBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeDesc.toSourceCode().strip()));
-
         constantBuilder.addProperty(PROP_VALUE, constantDeclarationNode.initializer().toSourceCode().strip());
 
         List<String> modifiers = new ArrayList<>();
@@ -250,14 +217,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         modifiers.add(constantDeclarationNode.constKeyword().text());
         constantBuilder.modifiers(modifiers);
 
-        extractDocumentation(constantDeclarationNode.metadata()).ifPresent(constantBuilder::documentation);
-        extractInlineComments(constantDeclarationNode).ifPresent(constantBuilder::comment);
-
-        List<String> annotations = extractAnnotations(constantDeclarationNode.metadata());
-        if (!annotations.isEmpty()) {
-            constantBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(constantBuilder, constantDeclarationNode.metadata());
         return Optional.of(constantBuilder.build());
     }
 
@@ -285,14 +245,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             }
         }
 
-        extractDocumentation(moduleVariableDeclarationNode.metadata()).ifPresent(variableBuilder::documentation);
-        extractInlineComments(moduleVariableDeclarationNode).ifPresent(variableBuilder::comment);
-
-        List<String> annotations = extractAnnotations(moduleVariableDeclarationNode.metadata());
-        if (!annotations.isEmpty()) {
-            variableBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(variableBuilder, moduleVariableDeclarationNode.metadata());
         return Optional.of(variableBuilder.build());
     }
 
@@ -309,14 +262,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeDescriptor);
         }
 
-        List<String> annotations = extractAnnotations(typeDefinitionNode.metadata());
-        if (!annotations.isEmpty()) {
-            typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
-        extractDocumentation(typeDefinitionNode.metadata()).ifPresent(typeBuilder::documentation);
-        extractInlineComments(typeDefinitionNode).ifPresent(typeBuilder::comment);
-
+        applyMetadata(typeBuilder, typeDefinitionNode.metadata());
         return Optional.of(typeBuilder.build());
     }
 
@@ -333,15 +279,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         });
 
         typeBuilder.addProperty(PROP_TYPE_DESCRIPTOR, ENUM_TYPE_NAME);
-
-        extractDocumentation(enumDeclarationNode.metadata()).ifPresent(typeBuilder::documentation);
-        extractInlineComments(enumDeclarationNode).ifPresent(typeBuilder::comment);
-
-        List<String> annotations = extractAnnotations(enumDeclarationNode.metadata());
-        if (!annotations.isEmpty()) {
-            typeBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(typeBuilder, enumDeclarationNode.metadata());
         return Optional.of(typeBuilder.build());
     }
 
@@ -353,14 +291,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .modifiers(extractModifiers(classDefinitionNode.visibilityQualifier(),
                         classDefinitionNode.classTypeQualifiers()));
 
-        extractDocumentation(classDefinitionNode.metadata()).ifPresent(classBuilder::documentation);
-        extractInlineComments(classDefinitionNode).ifPresent(classBuilder::comment);
-
-        List<String> annotations = extractAnnotations(classDefinitionNode.metadata());
-        if (!annotations.isEmpty()) {
-            classBuilder.addProperty(PROP_ANNOTATIONS, annotations);
-        }
-
+        applyMetadata(classBuilder, classDefinitionNode.metadata());
         classDefinitionNode.members().forEach(member ->
                 member.apply(this).ifPresent(classBuilder::addChild));
 
@@ -379,8 +310,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                 .modifiers(modifiers);
 
         fieldBuilder.addProperty(PROP_TYPE, objectFieldNode.typeName().toSourceCode().strip());
-        extractInlineComments(objectFieldNode).ifPresent(fieldBuilder::comment);
-
         return Optional.of(fieldBuilder.build());
     }
 
@@ -390,21 +319,23 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (typeRefSource.isEmpty()) {
             return Optional.empty();
         }
-
-        String referencedType = typeRefSource.startsWith("*") ? typeRefSource.substring(1) : typeRefSource;
-
-        CodeMapArtifact.Builder inclusionBuilder = new CodeMapArtifact.Builder(typeReferenceNode)
+        return Optional.of(new CodeMapArtifact.Builder(typeReferenceNode)
                 .name(typeRefSource)
-                .type(TYPE_INCLUSION);
-        inclusionBuilder.addProperty(PROP_TYPE, referencedType);
-        extractInlineComments(typeReferenceNode).ifPresent(inclusionBuilder::comment);
-
-        return Optional.of(inclusionBuilder.build());
+                .type(TYPE_INCLUSION)
+                .build());
     }
 
     @Override
     protected Optional<CodeMapArtifact> transformSyntaxNode(Node node) {
         return Optional.empty();
+    }
+
+    private void applyMetadata(CodeMapArtifact.Builder builder, Optional<MetadataNode> metadata) {
+        extractDocumentation(metadata).ifPresent(builder::documentation);
+        List<String> annotations = extractAnnotations(metadata);
+        if (!annotations.isEmpty()) {
+            builder.addProperty(PROP_ANNOTATIONS, annotations);
+        }
     }
 
     private List<String> extractModifiers(Optional<Token> visibilityQualifier, NodeList<Token> classTypeQualifiers) {
@@ -426,50 +357,32 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             return parameters;
         }
 
-        SeparatedNodeList<ParameterNode> parameterNodes = functionSignature.parameters();
-        for (ParameterNode paramNode : parameterNodes) {
+        for (ParameterNode paramNode : functionSignature.parameters()) {
             if (paramNode == null) {
                 continue;
             }
             try {
-                if (paramNode instanceof RequiredParameterNode requiredParam) {
-                    String fullParamSource = safeExtractSourceCode(requiredParam);
-                    if (!fullParamSource.isEmpty()) {
-                        parameters.add(fullParamSource);
-                    } else {
-                        String paramType = safeExtractSourceCode(requiredParam.typeName());
-                        String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
-                        if (!paramType.isEmpty()) {
-                            parameters.add(paramType + " " + paramName);
-                        }
+                String fullSource = safeExtractSourceCode(paramNode);
+                if (!fullSource.isEmpty()) {
+                    parameters.add(fullSource);
+                } else if (paramNode instanceof RequiredParameterNode requiredParam) {
+                    String paramType = safeExtractSourceCode(requiredParam.typeName());
+                    String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
+                    if (!paramType.isEmpty()) {
+                        parameters.add(paramType + " " + paramName);
                     }
                 } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
-                    String fullParamSource = safeExtractSourceCode(defaultableParam);
-                    if (!fullParamSource.isEmpty()) {
-                        parameters.add(fullParamSource);
-                    } else {
-                        String paramType = safeExtractSourceCode(defaultableParam.typeName());
-                        String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
-                        String defaultValue = safeExtractSourceCode(defaultableParam.expression());
-                        if (!paramType.isEmpty()) {
-                            parameters.add(paramType + " " + paramName + " = " + defaultValue);
-                        }
+                    String paramType = safeExtractSourceCode(defaultableParam.typeName());
+                    String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
+                    String defaultValue = safeExtractSourceCode(defaultableParam.expression());
+                    if (!paramType.isEmpty()) {
+                        parameters.add(paramType + " " + paramName + " = " + defaultValue);
                     }
                 } else if (paramNode instanceof RestParameterNode restParam) {
-                    String fullParamSource = safeExtractSourceCode(restParam);
-                    if (!fullParamSource.isEmpty()) {
-                        parameters.add(fullParamSource);
-                    } else {
-                        String paramType = safeExtractSourceCode(restParam.typeName());
-                        String paramName = restParam.paramName().map(name -> name.text()).orElse("");
-                        if (!paramType.isEmpty()) {
-                            parameters.add(paramType + "... " + paramName);
-                        }
-                    }
-                } else {
-                    String paramSource = safeExtractSourceCode(paramNode);
-                    if (!paramSource.isEmpty()) {
-                        parameters.add(paramSource);
+                    String paramType = safeExtractSourceCode(restParam.typeName());
+                    String paramName = restParam.paramName().map(name -> name.text()).orElse("");
+                    if (!paramType.isEmpty()) {
+                        parameters.add(paramType + "... " + paramName);
                     }
                 }
             } catch (RuntimeException e) {
@@ -573,23 +486,6 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
                     return description.toString().strip();
                 })
                 .filter(doc -> !doc.isEmpty());
-    }
-
-    private Optional<String> extractInlineComments(Node node) {
-        if (!extractComments) {
-            return Optional.empty();
-        }
-        List<String> comments = new ArrayList<>();
-        node.leadingMinutiae().forEach(minutiae -> {
-            if (minutiae.kind() == SyntaxKind.COMMENT_MINUTIAE) {
-                String commentText = minutiae.text().strip();
-                if (commentText.startsWith("//")) {
-                    comments.add(commentText.substring(2).strip());
-                }
-            }
-        });
-        return comments.isEmpty() ? Optional.empty()
-                : Optional.of(String.join(System.lineSeparator(), comments));
     }
 
     private List<String> extractAnnotations(Optional<MetadataNode> metadata) {
