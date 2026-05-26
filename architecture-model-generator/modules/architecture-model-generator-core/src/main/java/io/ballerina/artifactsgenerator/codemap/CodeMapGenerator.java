@@ -18,18 +18,15 @@
 
 package io.ballerina.artifactsgenerator.codemap;
 
-import io.ballerina.compiler.api.SemanticModel;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
-import io.ballerina.modelgenerator.commons.ModuleInfo;
 import io.ballerina.projects.Document;
 import io.ballerina.projects.DocumentId;
 import io.ballerina.projects.Module;
 import io.ballerina.projects.ModuleId;
 import io.ballerina.projects.Package;
 import io.ballerina.projects.Project;
-import io.ballerina.projects.ProjectKind;
 import io.ballerina.tools.diagnostics.Diagnostic;
 import org.ballerinalang.langserver.commons.BallerinaCompilerApi;
 import org.ballerinalang.langserver.commons.workspace.WorkspaceManager;
@@ -62,7 +59,6 @@ public class CodeMapGenerator {
     public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager) {
         Package currentPackage = project.currentPackage();
         Map<String, CodeMapFile> codeMapFiles = new LinkedHashMap<>();
-        String projectPath = project.sourceRoot().toAbsolutePath().toString();
 
         var sortedModules = currentPackage.moduleIds()
                 .stream()
@@ -74,7 +70,6 @@ public class CodeMapGenerator {
 
         for (ModuleId moduleId : sortedModules) {
             Module module = currentPackage.module(moduleId);
-            ModuleInfo moduleInfo = ModuleInfo.from(module.descriptor());
 
             List<DocumentId> sortedDocs = module.documentIds()
                     .stream()
@@ -83,18 +78,10 @@ public class CodeMapGenerator {
 
             for (DocumentId documentId : sortedDocs) {
                 Document document = module.document(documentId);
-                String fileName = document.name();
-                String relativeFilePath = getRelativeFilePath(module, fileName);
-
-                Path filePath = getDocumentPath(project, module, fileName);
-                Optional<SemanticModel> semanticModelOpt = workspaceManager.semanticModel(filePath);
-                if (semanticModelOpt.isEmpty()) {
-                    continue;
-                }
+                String relativeFilePath = getRelativeFilePath(module, document.name());
 
                 SyntaxTree syntaxTree = document.syntaxTree();
-                List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(projectPath, syntaxTree,
-                        semanticModelOpt.get(), moduleInfo);
+                List<CodeMapArtifact> artifacts = collectArtifactsFromSyntaxTree(syntaxTree);
 
                 CodeMapFile codeMapFile = new CodeMapFile(artifacts);
                 codeMapFiles.put(relativeFilePath, codeMapFile);
@@ -156,10 +143,7 @@ public class CodeMapGenerator {
         return CodeMapMarkdownGenerator.generateWorkspaceMarkdown(workspaceCodeMap, workspaceName);
     }
 
-    // Collects code artifacts from syntax tree with error handling
-    private static List<CodeMapArtifact> collectArtifactsFromSyntaxTree(String projectPath, SyntaxTree syntaxTree,
-                                                                        SemanticModel semanticModel,
-                                                                        ModuleInfo moduleInfo) {
+    private static List<CodeMapArtifact> collectArtifactsFromSyntaxTree(SyntaxTree syntaxTree) {
         List<CodeMapArtifact> artifacts = new ArrayList<>();
 
         if (syntaxTree.hasDiagnostics()) {
@@ -171,8 +155,7 @@ public class CodeMapGenerator {
         }
 
         ModulePartNode rootNode = syntaxTree.rootNode();
-        CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer(projectPath, semanticModel,
-                moduleInfo);
+        CodeMapNodeTransformer codeMapNodeTransformer = new CodeMapNodeTransformer();
 
         // Process imports individually with per-node error handling
         rootNode.imports().forEach(importNode -> addArtifactSafely(importNode, codeMapNodeTransformer, artifacts));
@@ -282,16 +265,5 @@ public class CodeMapGenerator {
         return "modules/" + moduleName + "/" + fileName;
     }
 
-    // Gets full document path for a file within a module
-    private static Path getDocumentPath(Project project, Module module, String fileName) {
-        Path sourceRoot = project.sourceRoot();
-        if (project.kind() == ProjectKind.SINGLE_FILE_PROJECT) {
-            return sourceRoot;
-        }
-        if (module.isDefaultModule()) {
-            return sourceRoot.resolve(fileName);
-        }
-        return sourceRoot.resolve("modules").resolve(module.moduleName().moduleNamePart()).resolve(fileName);
-    }
-
 }
+

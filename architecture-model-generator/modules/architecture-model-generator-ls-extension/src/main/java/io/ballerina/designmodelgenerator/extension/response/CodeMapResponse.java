@@ -19,19 +19,10 @@
 package io.ballerina.designmodelgenerator.extension.response;
 
 /**
- * Represents the response for code map related operations.
+ * Record representing a response for code map.
  *
+ * @param content The generated code map content
  * @since 1.6.0
  */
-public class CodeMapResponse extends AbstractResponse {
-
-    private Object content;
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
-    }
+public record CodeMapResponse(String content) {
 }
