@@ -73,7 +73,7 @@ public class ModulePuller {
                 Thread.currentThread().interrupt();
                 failed.add(new FailedPackage(getPackageDisplayName(rootProject, packageProject), e));
                 break;
-            } catch (ExecutionException | TimeoutException e) {
+            } catch (ExecutionException | TimeoutException | RuntimeException e) {
                 failed.add(new FailedPackage(getPackageDisplayName(rootProject, packageProject), e));
             }
         }
@@ -173,12 +173,12 @@ public class ModulePuller {
 
     private static String getErrorMessage(Exception exception) {
         return switch (exception) {
-            case TimeoutException te -> ResolveExceptionHandler.RESOLVE_MODULE_TIMEOUT_MESSAGE;
+            case TimeoutException te -> ModuleResolutionHandler.RESOLVE_MODULE_TIMEOUT_MESSAGE;
             case InterruptedException ie -> "Module dependency resolution was interrupted";
             case ExecutionException ex -> {
                 Throwable cause = ex.getCause();
                 if (cause instanceof TimeoutException) {
-                    yield ResolveExceptionHandler.RESOLVE_MODULE_TIMEOUT_MESSAGE;
+                    yield ModuleResolutionHandler.RESOLVE_MODULE_TIMEOUT_MESSAGE;
                 }
                 if (cause != null && cause.getMessage() != null) {
                     yield cause.getMessage();

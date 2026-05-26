@@ -29,14 +29,14 @@ import java.util.concurrent.TimeoutException;
  *
  * @since 1.6.0
  */
-public class ResolveExceptionHandler {
+public class ModuleResolutionHandler {
 
     static final String RESOLVE_MODULE_FAILURE_MESSAGE =
             "An internal error occurred while resolving module dependencies.";
     static final String RESOLVE_MODULE_TIMEOUT_MESSAGE =
             "Module dependency resolution timed out. Please try again or check your network connection.";
 
-    private ResolveExceptionHandler() {
+    private ModuleResolutionHandler() {
     }
 
     /**

@@ -34,7 +34,7 @@ import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
 import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ModulePuller;
-import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ResolveExceptionHandler;
+import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ModuleResolutionHandler;
 import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.UnresolvedModuleChecker;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
@@ -189,11 +189,10 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                             project, unresolvedPackages, workspaceManager, serverContext);
                     response.setSuccess(true);
                 } catch (Throwable e) {
-                    ResolveExceptionHandler.handleException(response, e);
+                    ModuleResolutionHandler.handleException(response, e);
                 }
             } catch (Throwable e) {
-                response.setSuccess(false);
-                response.setErrorMsg("An internal error occurred while processing codemap module dependencies.");
+                ModuleResolutionHandler.handleException(response, e);
             }
             return response;
         });
