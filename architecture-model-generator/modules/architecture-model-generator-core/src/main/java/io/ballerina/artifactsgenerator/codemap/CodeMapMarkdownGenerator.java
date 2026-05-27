@@ -422,12 +422,13 @@ public class CodeMapMarkdownGenerator {
     private static String renderConfigurable(CodeMapArtifact artifact) {
         StringBuilder configurableLine = new StringBuilder("configurable ");
         String typeDescriptor = getPropertyAsString(artifact, "typeDescriptor", "");
-        String type = getPropertyAsString(artifact, "type", "");
-
-        if (!typeDescriptor.isEmpty()) {
+        if (typeDescriptor.isEmpty()) {
+            String type = getPropertyAsString(artifact, "type", "");
+            if (!type.isEmpty()) {
+                configurableLine.append(type).append(" ");
+            }
+        } else {
             configurableLine.append(typeDescriptor).append(" ");
-        } else if (!type.isEmpty()) {
-            configurableLine.append(type).append(" ");
         }
 
         configurableLine.append(artifact.name());
