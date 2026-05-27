@@ -116,10 +116,10 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 boolean isWorkspace = compilerApi.isWorkspaceProject(project);
 
                 if (isWorkspace) {
-                    return new CodeMapResponse(CodeMapGenerator.processWorkspaceCodeMap(
+                    return new CodeMapResponse(CodeMapGenerator.renderWorkspaceMarkdown(
                             project, workspaceManager));
                 } else {
-                    return new CodeMapResponse(CodeMapGenerator.processPackageCodeMap(
+                    return new CodeMapResponse(CodeMapGenerator.renderPackageMarkdown(
                             project, workspaceManager));
                 }
             } catch (Throwable e) {

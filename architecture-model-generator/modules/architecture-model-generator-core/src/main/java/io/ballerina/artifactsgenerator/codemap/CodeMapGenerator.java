@@ -43,18 +43,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Generates code map from Ballerina projects by extracting artifacts from source files.
- *
- * @since 1.6.0
+ * Generates codeMap from Ballerina projects by extracting artifacts from source files.
+ * @since 1.8.0
  */
 public class CodeMapGenerator {
 
     /**
-     * Generates a code map for all files in the given project.
+     * Generates a codeMap for all files in the given project.
      *
      * @param project          the Ballerina project
      * @param workspaceManager the workspace manager to obtain semantic models
-     * @return a map of relative file paths to their code map files
+     * @return a map of relative file paths to their codeMap files
      */
     public static Map<String, CodeMapFile> generateCodeMap(Project project, WorkspaceManager workspaceManager) {
         Package currentPackage = project.currentPackage();
@@ -92,13 +91,13 @@ public class CodeMapGenerator {
     }
 
     /**
-     * Processes full project codeMap and returns consolidated markdown content.
+     * Renders consolidated markdown content for the given package codeMap.
      *
      * @param project          the Ballerina project
      * @param workspaceManager the workspace manager
      * @return consolidated project markdown content
      */
-    public static String processPackageCodeMap(Project project, WorkspaceManager workspaceManager) {
+    public static String renderPackageMarkdown(Project project, WorkspaceManager workspaceManager) {
         Map<String, CodeMapFile> codeMapFiles = generateCodeMap(project, workspaceManager);
 
         String projectName = project.currentPackage().packageName().value();
@@ -107,13 +106,13 @@ public class CodeMapGenerator {
     }
 
     /**
-     * Processes full workspace codeMap and returns consolidated markdown content for all packages.
+     * Renders consolidated markdown content for all packages in the workspace codeMap.
      *
      * @param project          the Ballerina workspace project
      * @param workspaceManager the workspace manager
      * @return consolidated workspace markdown content
      */
-    public static String processWorkspaceCodeMap(Project project, WorkspaceManager workspaceManager) {
+    public static String renderWorkspaceMarkdown(Project project, WorkspaceManager workspaceManager) {
         Map<String, Map<String, CodeMapFile>> workspaceCodeMap = new LinkedHashMap<>();
         BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
 

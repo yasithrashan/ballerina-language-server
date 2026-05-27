@@ -27,17 +27,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Utility class for generating Markdown documentation from Ballerina code map artifacts.
+ * Utility class for generating Markdown documentation from Ballerina codeMap artifacts.
  * This class provides functionality to create structured documentation in Markdown format
  * from parsed Ballerina source code artifacts including functions, types, services, etc.
+ * @since 1.8.0
  */
 public class CodeMapMarkdownGenerator {
 
     /**
-     * Generates Markdown documentation from code map files.
+     * Generates Markdown documentation from codeMap files.
      * Creates a structured document with proper section headers and separators.
      *
-     * @param files       map of file paths to their code map data
+     * @param files       map of file paths to their codeMap data
      * @param projectName the name to use in the document header
      * @return Markdown string representation
      */
@@ -60,7 +61,7 @@ public class CodeMapMarkdownGenerator {
      * This is useful for workspace-level documentation where file paths need to be
      * qualified with their package names.
      *
-     * @param files         map of file paths to their code map data
+     * @param files         map of file paths to their codeMap data
      * @param projectName   the name to use in the document header
      * @param packagePrefix prefix to prepend to all file paths
      * @return Markdown string representation with prefixed file paths
@@ -136,9 +137,7 @@ public class CodeMapMarkdownGenerator {
         }
     }
 
-    // Renders artifacts in logical order with grouping for readability
     private static void renderArtifacts(List<String> lines, List<CodeMapArtifact> artifacts) {
-        // Categorize artifacts by type for organized rendering
         ArtifactGroups groups = new ArtifactGroups();
         categorizeArtifacts(artifacts, groups);
 
@@ -204,7 +203,6 @@ public class CodeMapMarkdownGenerator {
         lines.add("");
 
         for (CodeMapArtifact artifact : artifacts) {
-            // Extract error details from artifact properties
             String diagnosticMessage = getPropertyAsString(artifact, "diagnosticMessage", "");
             String errorMessage = getPropertyAsString(artifact, "errorMessage", "");
             String rawCode = getPropertyAsString(artifact, "rawCode", "");
@@ -237,7 +235,6 @@ public class CodeMapMarkdownGenerator {
 
             issueDescription.append(" ").append(formatRange(artifact));
 
-            // Render as code block with error comment and problematic code
             lines.add("```ballerina");
             lines.add("// " + issueDescription);
             if (!rawCode.isEmpty()) {
@@ -262,7 +259,6 @@ public class CodeMapMarkdownGenerator {
         for (CodeMapArtifact artifact : artifacts) {
             renderApiDocumentation(lines, artifact, "");
 
-            // Build service declaration with modifiers, service path, and listener binding
             StringBuilder serviceLine = new StringBuilder()
                     .append(modifiersPrefix(artifact))
                     .append("service ");
@@ -271,13 +267,11 @@ public class CodeMapMarkdownGenerator {
             String servicePath = getPropertyAsString(artifact, "basePath", "");
             String listener = getPropertyAsString(artifact, "listener", "");
 
-            // Add service name if present (e.g., http:Service)
             boolean hasServiceName = serviceName != null && !serviceName.isEmpty();
             if (hasServiceName) {
                 serviceLine.append(serviceName);
             }
 
-            // Add service path if present (e.g., /fhir/r4/metadata)
             if (!servicePath.isEmpty()) {
                 if (hasServiceName) {
                     serviceLine.append(" ");
@@ -285,7 +279,6 @@ public class CodeMapMarkdownGenerator {
                 serviceLine.append(servicePath);
             }
 
-            // Add listener if present (e.g., httpListener, new fhirr4:Listener(...))
             if (!listener.isEmpty()) {
                 serviceLine.append(" on ").append(listener);
             }
@@ -293,7 +286,6 @@ public class CodeMapMarkdownGenerator {
             serviceLine.append(" { ").append(formatRange(artifact));
             lines.add(serviceLine.toString());
 
-            // Render nested resource functions and methods
             if (!artifact.children().isEmpty()) {
                 renderChildren(lines, artifact.children(), "    ");
             }
@@ -334,7 +326,6 @@ public class CodeMapMarkdownGenerator {
      */
     private static void renderChildren(List<String> lines, List<CodeMapArtifact> children, String indent) {
         for (CodeMapArtifact child : children) {
-            // Handle fields and variables
             if ("VARIABLE".equals(child.type()) || "FIELD".equals(child.type())) {
                 renderApiDocumentation(lines, child, indent);
 
@@ -349,11 +340,9 @@ public class CodeMapMarkdownGenerator {
                 fieldLine.append(" ").append(formatRange(child));
                 lines.add(fieldLine.toString());
             } else if ("FUNCTION".equals(child.type())) {
-                // Handle methods and resource functions
                 renderApiDocumentation(lines, child, indent);
                 lines.add(renderSingleFunction(child, indent));
             } else if ("TYPE_INCLUSION".equals(child.type())) {
-                // Handle object type inclusions (e.g., *persist:AbstractPersistClient;)
                 renderApiDocumentation(lines, child, indent);
                 lines.add(indent + child.name() + " " + formatRange(child));
             }
@@ -367,12 +356,10 @@ public class CodeMapMarkdownGenerator {
     private static String renderSingleFunction(CodeMapArtifact artifact, String indent) {
         StringBuilder signature = new StringBuilder(indent);
 
-        // Determine if this is a resource function
         String category = getPropertyAsString(artifact, "category", "").toUpperCase(Locale.ROOT);
         Object accessor = artifact.properties().get("accessor");
         boolean isResource = "RESOURCE".equals(category) || accessor != null;
 
-        // Build function signature based on type
         if (isResource) {
             // Resource function: "resource function [method] [path]"
             signature.append(modifiersPrefixExcluding(artifact, "resource"));
@@ -388,7 +375,6 @@ public class CodeMapMarkdownGenerator {
             signature.append(artifact.name());
         }
 
-        // Add parameters
         String params = parametersInline(artifact);
         signature.append("(");
         if (!params.isEmpty()) {
@@ -559,7 +545,6 @@ public class CodeMapMarkdownGenerator {
     }
 
     private static void categorizeArtifacts(List<CodeMapArtifact> artifacts, ArtifactGroups groups) {
-        // Sort artifacts into appropriate groups for organized rendering
         for (CodeMapArtifact artifact : artifacts) {
             switch (artifact.type()) {
                 case "SYNTAX_ERROR":
@@ -602,7 +587,6 @@ public class CodeMapMarkdownGenerator {
     }
 
     private static void categorizeVariable(CodeMapArtifact artifact, ArtifactGroups groups) {
-        // Sub-categorize variables based on their purpose and modifiers
         String category = getPropertyAsString(artifact, "category", "").toUpperCase(Locale.ROOT);
         List<String> modifiers = getPropertyAsStringList(artifact, "modifiers");
 

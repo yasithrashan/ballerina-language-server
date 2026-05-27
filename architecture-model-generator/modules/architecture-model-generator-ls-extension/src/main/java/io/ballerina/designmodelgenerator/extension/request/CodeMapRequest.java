@@ -19,7 +19,7 @@
 package io.ballerina.designmodelgenerator.extension.request;
 
 /**
- * Record representing a request for code map.
+ * Record representing a request for codeMap.
  *
  * @param projectPath The path to the project for which code map is requested
  * @since 1.6.0

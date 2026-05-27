@@ -31,14 +31,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a code artifact extracted from Ballerina source code for the code map.
+ * Represents a code artifact extracted from Ballerina source code for the codeMap.
  *
  * @param name       the name of the artifact
  * @param type       the type of the artifact (e.g., function, service, class)
  * @param range      the range in source code where this artifact is located
  * @param properties additional properties of the artifact
  * @param children   nested artifacts contained within this artifact
- * @since 1.6.0
+ * @since 1.8.0
  */
 public record CodeMapArtifact(String name, String type, Range range,
                               Map<String, Object> properties, List<CodeMapArtifact> children) {

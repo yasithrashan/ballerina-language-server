@@ -63,8 +63,7 @@ import java.util.stream.Collectors;
 
 /**
  * Transforms Ballerina syntax tree nodes into {@link CodeMapArtifact} instances.
- *
- * @since 1.6.0
+ * @since 1.8.0
  */
 class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> {
 
@@ -107,6 +106,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         functionBuilder.type(TYPE_FUNCTION);
 
         if (functionDefinitionNode.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION) {
+            // Resource functions use path as name and HTTP method (get/post/...) as accessor
             String pathString = getPathString(functionDefinitionNode.relativeResourcePath());
             functionBuilder
                     .name(pathString.isEmpty() ? "/" : pathString)
@@ -126,6 +126,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         Optional<TypeDescriptorNode> typeDescriptorNode = serviceDeclarationNode.typeDescriptor();
         NodeList<Node> resourcePaths = serviceDeclarationNode.absoluteResourcePath();
 
+        // Name resolves from type descriptor if present; falls back to listener expression for untyped services
         if (typeDescriptorNode.isPresent()) {
             serviceBuilder.name(typeDescriptorNode.get().toSourceCode().strip());
         } else if (resourcePaths.isEmpty() && firstExpression != null) {
@@ -237,6 +238,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (typeDesc != null) {
             String typeString = typeDesc.toSourceCode().strip();
             if (!typeString.isEmpty()) {
+                // Configurables use PROP_TYPE_DESCRIPTOR so the renderer can emit the full type notation
                 if (hasQualifier(moduleVariableDeclarationNode.qualifiers(), SyntaxKind.CONFIGURABLE_KEYWORD)) {
                     variableBuilder.addProperty(PROP_TYPE_DESCRIPTOR, typeString);
                 } else {
@@ -407,6 +409,7 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         }
         String sourceCode = safeExtractSourceCode(typeDescriptor);
 
+        // Truncate record body to "record" label — inline field details bloat the codeMap output
         if (sourceCode.contains("record {|") && sourceCode.contains("|}")) {
             int recordStart = sourceCode.indexOf("record {|");
             int recordEnd = sourceCode.indexOf("|}", recordStart);

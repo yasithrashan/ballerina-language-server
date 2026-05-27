@@ -19,7 +19,7 @@
 package io.ballerina.designmodelgenerator.extension.response;
 
 /**
- * Record representing a response for code map.
+ * Record representing a response for codeMap.
  *
  * @param content The generated code map content
  * @since 1.6.0

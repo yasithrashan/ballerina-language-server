@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Tests for getting the code map for a package.
+ * Tests for getting the codeMap for a package.
  *
  * @since 1.6.0
  */
