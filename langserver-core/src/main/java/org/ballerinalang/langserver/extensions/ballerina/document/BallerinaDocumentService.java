@@ -23,7 +23,6 @@ import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.NonTerminalNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
 import io.ballerina.projects.Document;
-import io.ballerina.projects.Module;
 import io.ballerina.projects.PackageCompilation;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.ProjectKind;
@@ -549,30 +548,13 @@ public class BallerinaDocumentService implements ExtendedLanguageServerService {
             }
 
             try {
-                boolean hasUnresolved;
-                if (request.isResolveAllModules()) {
-                    Optional<Project> project = this.workspaceManagerProxy.get(fileUri).project(filePath.get());
-                    if (project.isEmpty()) {
-                        return createFailureResponse(reply);
-                    }
-                    PackageCompilation compilation = project.get().currentPackage().getCompilation();
-                    hasUnresolved = false;
-                    for (Module module : project.get().currentPackage().modules()) {
-                        if (CommonUtil.hasUnresolvedModules(compilation.getSemanticModel(module.moduleId()))) {
-                            hasUnresolved = true;
-                            break;
-                        }
-                    }
-                } else {
-                    Optional<SemanticModel> semanticModel =
-                            this.workspaceManagerProxy.get(fileUri).semanticModel(filePath.get());
-                    if (semanticModel.isEmpty()) {
-                        return createFailureResponse(reply);
-                    }
-                    hasUnresolved = CommonUtil.hasUnresolvedModules(semanticModel.get());
+                Optional<SemanticModel> semanticModel =
+                        this.workspaceManagerProxy.get(fileUri).semanticModel(filePath.get());
+                if (semanticModel.isEmpty()) {
+                    return createFailureResponse(reply);
                 }
 
-                if (!hasUnresolved) {
+                if (!CommonUtil.hasUnresolvedModules(semanticModel.get())) {
                     reply.setSuccess(true);
                     return reply;
                 }

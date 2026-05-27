@@ -25,7 +25,6 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 public class BallerinaSyntaxTreeRequest {
 
     private TextDocumentIdentifier documentIdentifier;
-    private boolean resolveAllModules;
 
     public BallerinaSyntaxTreeRequest() {
     }
@@ -40,13 +39,5 @@ public class BallerinaSyntaxTreeRequest {
 
     public void setDocumentIdentifier(TextDocumentIdentifier documentIdentifier) {
         this.documentIdentifier = documentIdentifier;
-    }
-
-    public boolean isResolveAllModules() {
-        return resolveAllModules;
-    }
-
-    public void setResolveAllModules(boolean resolveAllModules) {
-        this.resolveAllModules = resolveAllModules;
     }
 }
