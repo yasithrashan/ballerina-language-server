@@ -361,32 +361,28 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
             if (paramNode == null) {
                 continue;
             }
-            try {
-                String fullSource = safeExtractSourceCode(paramNode);
-                if (!fullSource.isEmpty()) {
-                    parameters.add(fullSource);
-                } else if (paramNode instanceof RequiredParameterNode requiredParam) {
-                    String paramType = safeExtractSourceCode(requiredParam.typeName());
-                    String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
-                    if (!paramType.isEmpty()) {
-                        parameters.add(paramType + " " + paramName);
-                    }
-                } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
-                    String paramType = safeExtractSourceCode(defaultableParam.typeName());
-                    String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
-                    String defaultValue = safeExtractSourceCode(defaultableParam.expression());
-                    if (!paramType.isEmpty()) {
-                        parameters.add(paramType + " " + paramName + " = " + defaultValue);
-                    }
-                } else if (paramNode instanceof RestParameterNode restParam) {
-                    String paramType = safeExtractSourceCode(restParam.typeName());
-                    String paramName = restParam.paramName().map(name -> name.text()).orElse("");
-                    if (!paramType.isEmpty()) {
-                        parameters.add(paramType + "... " + paramName);
-                    }
+            String fullSource = safeExtractSourceCode(paramNode);
+            if (!fullSource.isEmpty()) {
+                parameters.add(fullSource);
+            } else if (paramNode instanceof RequiredParameterNode requiredParam) {
+                String paramType = safeExtractSourceCode(requiredParam.typeName());
+                String paramName = requiredParam.paramName().map(name -> name.text()).orElse("");
+                if (!paramType.isEmpty()) {
+                    parameters.add(paramType + " " + paramName);
                 }
-            } catch (RuntimeException e) {
-                // skip malformed parameter nodes
+            } else if (paramNode instanceof DefaultableParameterNode defaultableParam) {
+                String paramType = safeExtractSourceCode(defaultableParam.typeName());
+                String paramName = defaultableParam.paramName().map(name -> name.text()).orElse("");
+                String defaultValue = safeExtractSourceCode(defaultableParam.expression());
+                if (!paramType.isEmpty()) {
+                    parameters.add(paramType + " " + paramName + " = " + defaultValue);
+                }
+            } else if (paramNode instanceof RestParameterNode restParam) {
+                String paramType = safeExtractSourceCode(restParam.typeName());
+                String paramName = restParam.paramName().map(name -> name.text()).orElse("");
+                if (!paramType.isEmpty()) {
+                    parameters.add(paramType + "... " + paramName);
+                }
             }
         }
         return parameters;
@@ -431,12 +427,8 @@ class CodeMapNodeTransformer extends NodeTransformer<Optional<CodeMapArtifact>> 
         if (node == null) {
             return "";
         }
-        try {
-            String sourceCode = node.toSourceCode();
-            return sourceCode != null ? sourceCode.replaceAll("\\s+", " ").strip() : "";
-        } catch (RuntimeException e) {
-            return "";
-        }
+        String sourceCode = node.toSourceCode();
+        return sourceCode != null ? sourceCode.replaceAll("\\s+", " ").strip() : "";
     }
 
     private static String getPathString(NodeList<Node> nodes) {
