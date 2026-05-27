@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -50,20 +49,8 @@ public class CodeMapMarkdownGenerator {
 
         List<String> lines = new ArrayList<>();
         lines.add("# " + projectName + " - High Level Codebase Overview");
-
-        // Process each file and its artifacts
-        for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
-            String filePath = entry.getKey();
-            CodeMapFile fileData = entry.getValue();
-            List<CodeMapArtifact> artifacts = fileData.artifacts();
-
-            lines.add(String.format("%n---%n%n## File Path: %s", filePath));
-
-            if (!artifacts.isEmpty()) {
-                renderArtifacts(lines, artifacts);
-            }
-        }
-
+        lines.add("");
+        renderFileSections(lines, files, "");
         lines.add("");
         return String.join(System.lineSeparator(), lines);
     }
@@ -87,20 +74,8 @@ public class CodeMapMarkdownGenerator {
 
         List<String> lines = new ArrayList<>();
         lines.add("# " + projectName + " - High Level Codebase Overview");
-
-        for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
-            String filePath = entry.getKey();
-            CodeMapFile fileData = entry.getValue();
-            List<CodeMapArtifact> artifacts = fileData.artifacts();
-
-            String fullPath = packagePrefix + "/" + filePath;
-            lines.add(String.format("%n---%n%n## File Path: %s", fullPath));
-
-            if (!artifacts.isEmpty()) {
-                renderArtifacts(lines, artifacts);
-            }
-        }
-
+        lines.add("");
+        renderFileSections(lines, files, packagePrefix);
         lines.add("");
         return String.join(System.lineSeparator(), lines);
     }
@@ -125,7 +100,6 @@ public class CodeMapMarkdownGenerator {
         List<String> lines = new ArrayList<>();
         lines.add("# " + workspaceName + " - High Level Codebase Overview");
 
-        // Process each package in the workspace
         for (Map.Entry<String, Map<String, CodeMapFile>> packageEntry : workspaceCodeMap.entrySet()) {
             String packageName = packageEntry.getKey();
             Map<String, CodeMapFile> packageFiles = packageEntry.getValue();
@@ -135,32 +109,31 @@ public class CodeMapMarkdownGenerator {
             }
 
             lines.add(String.format("%n---%n%n## Package: %s", packageName));
-
-            // Generate package content and filter out redundant headers
-            String packageMarkdown = generateMarkdownWithPackagePrefix(packageFiles, packageName, packageName);
-            String[] packageLines = packageMarkdown.split(Pattern.quote(System.lineSeparator()));
-            boolean skipFirstHeader = false;
-            boolean skipInitialEmptyLines = false;
-            for (String line : packageLines) {
-                // Skip the package-level header as we already added it
-                String packageHeader = "# " + packageName + " - High Level Codebase Overview";
-                if (!skipFirstHeader && line.trim().startsWith(packageHeader)) {
-                    skipFirstHeader = true;
-                    skipInitialEmptyLines = true;
-                    continue;
-                }
-                // Skip empty lines after header
-                if (skipInitialEmptyLines && line.trim().isEmpty()) {
-                    continue;
-                } else {
-                    skipInitialEmptyLines = false;
-                }
-                lines.add(line);
-            }
+            renderFileSections(lines, packageFiles, packageName);
         }
 
         lines.add("");
         return String.join(System.lineSeparator(), lines);
+    }
+
+    private static void renderFileSections(List<String> lines, Map<String, CodeMapFile> files, String pathPrefix) {
+        boolean first = true;
+        for (Map.Entry<String, CodeMapFile> entry : files.entrySet()) {
+            String filePath = entry.getKey();
+            CodeMapFile fileData = entry.getValue();
+            List<CodeMapArtifact> artifacts = fileData.artifacts();
+
+            String fullPath = pathPrefix.isEmpty() ? filePath : pathPrefix + "/" + filePath;
+            if (!first) {
+                lines.add("");
+            }
+            lines.add(String.format("---%n%n## File Path: %s", fullPath));
+            first = false;
+
+            if (!artifacts.isEmpty()) {
+                renderArtifacts(lines, artifacts);
+            }
+        }
     }
 
     // Renders artifacts in logical order with grouping for readability
