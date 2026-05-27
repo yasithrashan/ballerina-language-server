@@ -25,17 +25,12 @@ import io.ballerina.designmodelgenerator.core.DesignModelGenerator;
 import io.ballerina.designmodelgenerator.core.model.DesignModel;
 import io.ballerina.designmodelgenerator.extension.request.ArtifactsRequest;
 import io.ballerina.designmodelgenerator.extension.request.CodeMapRequest;
-import io.ballerina.designmodelgenerator.extension.request.CodeMapResolveModuleDependenciesRequest;
 import io.ballerina.designmodelgenerator.extension.request.GetDesignModelRequest;
 import io.ballerina.designmodelgenerator.extension.request.ProjectInfoRequest;
 import io.ballerina.designmodelgenerator.extension.response.ArtifactResponse;
-import io.ballerina.designmodelgenerator.extension.response.CodeMapResolveModuleDependenciesResponse;
 import io.ballerina.designmodelgenerator.extension.response.CodeMapResponse;
 import io.ballerina.designmodelgenerator.extension.response.GetDesignModelResponse;
 import io.ballerina.designmodelgenerator.extension.response.ProjectInfoResponse;
-import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ModulePuller;
-import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.ModuleResolutionHandler;
-import io.ballerina.designmodelgenerator.extension.utils.codemapresolvemodules.UnresolvedModuleChecker;
 import io.ballerina.projects.Project;
 import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.langserver.common.utils.PathUtil;
@@ -49,7 +44,6 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @JavaSPIService("org.ballerinalang.langserver.commons.service.spi.ExtendedLanguageServerService")
@@ -57,14 +51,12 @@ import java.util.concurrent.CompletableFuture;
 public class DesignModelGeneratorService implements ExtendedLanguageServerService {
 
     private WorkspaceManagerProxy workspaceManagerProxy;
-    private LanguageServerContext serverContext;
 
     @Override
     public void init(LanguageServer langServer,
                      WorkspaceManagerProxy workspaceManagerProxy,
                      LanguageServerContext serverContext) {
         this.workspaceManagerProxy = workspaceManagerProxy;
-        this.serverContext = serverContext;
         ArtifactsCache.initialize();
     }
 
@@ -148,47 +140,6 @@ public class DesignModelGeneratorService implements ExtendedLanguageServerServic
                 visitor.populate();
             } catch (Throwable e) {
                 response.setError(e);
-            }
-            return response;
-        });
-    }
-
-    /**
-     * Resolves missing module dependencies for codemap generation.
-     *
-     * @param request the dependency resolution request
-     * @return response indicating success or failure with error details
-     */
-    @JsonRequest
-    public CompletableFuture<CodeMapResolveModuleDependenciesResponse> codeMapResolveModuleDependencies(
-            CodeMapResolveModuleDependenciesRequest request) {
-        return CompletableFuture.supplyAsync(() -> {
-            CodeMapResolveModuleDependenciesResponse response = new CodeMapResolveModuleDependenciesResponse();
-            try {
-                Path projectPath = Path.of(request.projectPath());
-                WorkspaceManager workspaceManager = workspaceManagerProxy.get();
-                Project project = workspaceManager.loadProject(projectPath);
-
-                BallerinaCompilerApi compilerApi = BallerinaCompilerApi.getInstance();
-                // Find packages with unresolved dependencies
-                List<Project> unresolvedPackages = UnresolvedModuleChecker.findUnresolvedPackages(
-                        project, compilerApi);
-
-                if (unresolvedPackages.isEmpty()) {
-                    response.setSuccess(true);
-                    return response;
-                }
-
-                try {
-                    // Resolve missing dependencies
-                    ModulePuller.resolvePackages(
-                            project, unresolvedPackages, workspaceManager, serverContext);
-                    response.setSuccess(true);
-                } catch (Throwable e) {
-                    ModuleResolutionHandler.handleException(response, e);
-                }
-            } catch (Throwable e) {
-                ModuleResolutionHandler.handleException(response, e);
             }
             return response;
         });
