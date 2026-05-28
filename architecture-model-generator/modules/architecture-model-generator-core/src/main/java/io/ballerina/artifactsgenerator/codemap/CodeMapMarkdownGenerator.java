@@ -57,32 +57,6 @@ public class CodeMapMarkdownGenerator {
     }
 
     /**
-     * Generates Markdown documentation with a package prefix prepended to file paths.
-     * This is useful for workspace-level documentation where file paths need to be
-     * qualified with their package names.
-     *
-     * @param files         map of file paths to their codeMap data
-     * @param projectName   the name to use in the document header
-     * @param packagePrefix prefix to prepend to all file paths
-     * @return Markdown string representation with prefixed file paths
-     */
-    public static String generateMarkdownWithPackagePrefix(Map<String, CodeMapFile> files, String projectName,
-                                                           String packagePrefix) {
-        if (files == null || files.isEmpty()) {
-            return "# " + projectName + " - High Level Codebase Overview"
-                    + System.lineSeparator() + System.lineSeparator() + "No files found.";
-        }
-
-        List<String> lines = new ArrayList<>();
-        lines.add("# " + projectName + " - High Level Codebase Overview");
-        lines.add("");
-        renderFileSections(lines, files, packagePrefix);
-        lines.add("");
-        return String.join(System.lineSeparator(), lines);
-    }
-
-
-    /**
      * Generates comprehensive workspace-level Markdown documentation.
      * Combines multiple packages into a single document with package sections.
      * Filters out redundant headers and empty lines for cleaner output.
